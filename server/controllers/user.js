@@ -1,7 +1,7 @@
 'use strict'
 
 var xss = require('xss')
-var mongoose =  require('mongoose')
+var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var uuid = require('uuid')
 var userHelper = require('../dbhelper/userHelper')
@@ -13,43 +13,40 @@ var userHelper = require('../dbhelper/userHelper')
  * @yield {[type]}   [description]
  */
 exports.signup = async (ctx, next) => {
-	var phoneNumber = xss(ctx.request.body.phoneNumber.trim())
-	var user = await User.findOne({
-	  phoneNumber: phoneNumber
-	}).exec()
+  var phoneNumber = xss(ctx.request.body.phoneNumber.trim())
+  var user = await User.findOne({
+    phoneNumber: phoneNumber
+  }).exec()
   console.log(user)
-	
-	var verifyCode = Math.floor(Math.random()*10000+1)
+  var verifyCode = Math.floor(Math.random() * 10000 + 1)
   console.log(phoneNumber)
-	if (!user) {
-	  var accessToken = uuid.v4()
+  if (!user) {
+    var accessToken = uuid.v4()
 
-	  user = new User({
-	    nickname: '测试用户',
-	    avatar: 'http://upload-images.jianshu.io/upload_images/5307186-eda1b28e54a4d48e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
-	    phoneNumber: xss(phoneNumber),
-	    verifyCode: verifyCode,
-	    accessToken: accessToken
-	  })
-	}
-	else {
-	  user.verifyCode = verifyCode
-	}
+    user = new User({
+      nickname: '测试用户',
+      avatar:
+        'http://upload-images.jianshu.io/upload_images/5307186-eda1b28e54a4d48e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
+      phoneNumber: xss(phoneNumber),
+      verifyCode: verifyCode,
+      accessToken: accessToken
+    })
+  } else {
+    user.verifyCode = verifyCode
+  }
 
-	try {
+  try {
     user = await user.save()
     ctx.body = {
       success: true
     }
-  }
-  catch (e) {
+  } catch (e) {
     ctx.body = {
       success: false
     }
 
     return next
   }
-
 }
 
 /**
@@ -85,7 +82,10 @@ exports.update = async (ctx, next) => {
   }
 }
 
-
+exports.login = async (ctx, next) => {
+  var body = ctx.request.body
+  console.log(body)
+}
 
 /**
  * 数据库接口测试
@@ -97,7 +97,7 @@ exports.users = async (ctx, next) => {
   var data = await userHelper.findAllUsers()
   // var obj = await userHelper.findByPhoneNumber({phoneNumber : '13525584568'})
   // console.log('obj=====================================>'+obj)
-  
+
   ctx.body = {
     success: true,
     data
@@ -105,24 +105,24 @@ exports.users = async (ctx, next) => {
 }
 exports.addUser = async (ctx, next) => {
   var user = new User({
-      nickname: '测试用户',
-      avatar: 'http://ip.example.com/u/xxx.png',
-      phoneNumber: xss('13800138000'),
-      verifyCode: '5896',
-      accessToken: uuid.v4()
-    })
-  var user2 =  await userHelper.addUser(user)
-  if(user2){
+    nickname: '测试用户',
+    avatar: 'http://ip.example.com/u/xxx.png',
+    phoneNumber: xss('13800138000'),
+    verifyCode: '5896',
+    accessToken: uuid.v4()
+  })
+  var user2 = await userHelper.addUser(user)
+  if (user2) {
     ctx.body = {
       success: true,
-      data : user2
+      data: user2
     }
   }
 }
 exports.deleteUser = async (ctx, next) => {
   const phoneNumber = xss(ctx.request.body.phoneNumber.trim())
   console.log(phoneNumber)
-  var data  = await userHelper.deleteUser({phoneNumber})
+  var data = await userHelper.deleteUser({ phoneNumber })
   ctx.body = {
     success: true,
     data

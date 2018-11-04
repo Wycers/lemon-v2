@@ -19,28 +19,24 @@ mongoose.connect(db)
  */
 const models_path = path.join(__dirname, './models')
 
-
 /**
  * 已递归的形式，读取models文件夹下的js模型文件，并require
  * @param  {[type]} modelPath [description]
  * @return {[type]}           [description]
  */
 var walk = function(modelPath) {
-  fs
-    .readdirSync(modelPath)
-    .forEach(function(file) {
-      var filePath = path.join(modelPath, '/' + file)
-      var stat = fs.statSync(filePath)
+  fs.readdirSync(modelPath).forEach(function(file) {
+    var filePath = path.join(modelPath, '/' + file)
+    var stat = fs.statSync(filePath)
 
-      if (stat.isFile()) {
-        if (/(.*)\.(js|coffee)/.test(file)) {
-          require(filePath)
-        }
+    if (stat.isFile()) {
+      if (/(.*)\.(js|coffee)/.test(file)) {
+        require(filePath)
       }
-      else if (stat.isDirectory()) {
-        walk(filePath)
-      }
-    })
+    } else if (stat.isDirectory()) {
+      walk(filePath)
+    }
+  })
 }
 walk(models_path)
 
@@ -56,15 +52,16 @@ app.keys = ['zhangivon']
 app.use(logger())
 app.use(session(app))
 app.use(bodyParser())
-app.use(new CSRF({
-  invalidSessionSecretMessage: 'Invalid session secret',
-  invalidSessionSecretStatusCode: 403,
-  invalidTokenMessage: 'Invalid CSRF token',
-  invalidTokenStatusCode: 403,
-  excludedMethods: [ 'GET', 'HEAD', 'OPTIONS' ],
-  disableQuery: false
-}));
-
+app.use(
+  new CSRF({
+    invalidSessionSecretMessage: 'Invalid session secret',
+    invalidSessionSecretStatusCode: 403,
+    invalidTokenMessage: 'Invalid CSRF token',
+    invalidTokenStatusCode: 403,
+    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    disableQuery: false
+  })
+)
 
 /**
  * 使用路由转发请求
@@ -72,11 +69,19 @@ app.use(new CSRF({
  */
 const router = require('./route/router')()
 
-app
-  .use(router.routes())
-  .use(router.allowedMethods());
+app.use(async ctx => {
+  ctx.cookies.set('cid', 'hello world', {
+    domain: 'localhost', // 写cookie所在的域名
+    path: '/', // 写cookie所在的路径
+    maxAge: 2 * 60 * 60 * 1000, // cookie有效时长
+    expires: new Date('2018-12-08'), // cookie失效时间
+    httpOnly: false, // 是否只用于http请求中获取
+    overwrite: false // 是否允许重写
+  })
+})
 
-  
+app.use(router.routes()).use(router.allowedMethods())
+
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 

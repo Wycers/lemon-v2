@@ -42,8 +42,7 @@ exports.hasToken = async (ctx, next) => {
 
   var user = await User.findOne({
     accessToken: accessToken
-  })
-  .exec()
+  }).exec()
 
   if (!user) {
     ctx.body = {

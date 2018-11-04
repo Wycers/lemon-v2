@@ -55,6 +55,12 @@
       >
         <v-icon>menu</v-icon>
       </v-btn>
+      <v-spacer />
+      <v-btn 
+        flat 
+        large 
+        color="primary"
+        to="/login">login</v-btn>
     </v-toolbar>
     <v-content>
       <v-container>
