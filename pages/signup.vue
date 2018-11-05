@@ -22,13 +22,23 @@ v-dialog(value="true", max-width="290", persistent='')
         type="password"
         required
       )
+      v-text-field(
+        v-model="rpassword"
+        :rules="rpasswordRules"
+        label="password"
+        type="password"
+        required
+      )
+      v-text-field(
+        v-model="ic"
+        :rules="icRules"
+        label="Invite Code"
+        required
+      )
       v-btn(
         :disabled="!valid"
         @click="onSubmit"
       ) submit
-      v-btn(
-        to="/signup"
-      ) sign up
 </template>
 
 <script>
@@ -41,6 +51,8 @@ export default {
       valid: true,
       username: '',
       password: '',
+      rpassword: '',
+      ic: '',
       usernameRules: [
         v => !!v || 'Username is required'
         // v => (v && v.length <= 10) || 'Name must be less than 10 characters'
@@ -48,6 +60,15 @@ export default {
       passwordRules: [
         v => !!v || 'Password is required'
         // v => (v && v.length <= 10) || 'Name must be less than 10 characters'
+      ],
+      rpasswordRules: [
+        v => !!v || 'Password is required',
+        v => v == this.password || 'Not the same'
+        // v => (v && v.length <= 10) || 'Name must be less than 10 characters'
+      ],
+      icRules: [
+        v => !!v || 'Invite Code is required'
+        //
       ]
     }
   },
