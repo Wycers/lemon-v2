@@ -69,8 +69,8 @@ app.use(
  */
 const router = require('./route/router')()
 
-app.use(async ctx => {
-  ctx.cookies.set('cid', 'hello world', {
+app.use(async (ctx, next) => {
+  ctx.cookies.set('csrf', ctx.csrf, {
     domain: 'localhost', // 写cookie所在的域名
     path: '/', // 写cookie所在的路径
     maxAge: 2 * 60 * 60 * 1000, // cookie有效时长
@@ -78,6 +78,7 @@ app.use(async ctx => {
     httpOnly: false, // 是否只用于http请求中获取
     overwrite: false // 是否允许重写
   })
+  await next()
 })
 
 app.use(router.routes()).use(router.allowedMethods())
@@ -91,6 +92,20 @@ const port = process.env.PORT || 3000
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js')
 config.dev = !(app.env === 'production')
+
+
+// app.use(async (ctx, next) => {
+//   consola.log(ctx)
+//   ctx.cookies.set('csrf', ctx.csrf, {
+//     domain: 'localhost', // 写cookie所在的域名
+//     path: '/', // 写cookie所在的路径
+//     maxAge: 2 * 60 * 60 * 1000, // cookie有效时长
+//     expires: new Date('2018-12-08'), // cookie失效时间
+//     httpOnly: false, // 是否只用于http请求中获取
+//     overwrite: true // 是否允许重写
+//   })
+//   await next()
+// })
 
 async function start() {
   // Instantiate nuxt.js
@@ -107,6 +122,7 @@ async function start() {
     return new Promise((resolve, reject) => {
       ctx.res.on('close', resolve)
       ctx.res.on('finish', resolve)
+      consola.log(ctx)
       nuxt.render(ctx.req, ctx.res, promise => {
         // nuxt.render passes a rejected promise into callback on error.
         promise.then(resolve).catch(reject)

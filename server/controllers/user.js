@@ -84,7 +84,12 @@ exports.update = async (ctx, next) => {
 
 exports.login = async (ctx, next) => {
   var body = ctx.request.body
+  ctx.body = {
+    success: true,
+    data: '233'
+  }
   console.log(body)
+  console.log('==>', ctx.session)
 }
 
 /**

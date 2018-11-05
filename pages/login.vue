@@ -51,11 +51,28 @@ export default {
     onSuccess(data) {
       // this.$store.commit('setAuth', data)
     },
+    get_cookie(Name) {
+      var search = Name + '=' //查询检索的值
+      var returnvalue = '' //返回值
+      if (document.cookie.length > 0) {
+        var sd = document.cookie.indexOf(search)
+        if (sd != -1) {
+          sd += search.length
+          var end = document.cookie.indexOf(';', sd)
+          if (end == -1) end = document.cookie.length
+          //unescape() 函数可对通过 escape() 编码的字符串进行解码。
+          returnvalue = unescape(document.cookie.substring(sd, end))
+        }
+      }
+      return returnvalue
+    },
     onSubmit() {
       console.log(233)
-      axios.post('/api/login', {
+      console.log(this.get_cookie('csrf'))
+      axios.post('/api/u/login', {
         username: this.username,
-        password: this.password
+        password: this.password,
+        _csrf: this.get_cookie('csrf')
       })
       // this.$store.commit('login')
       this.$router.replace('/')
