@@ -60,7 +60,7 @@
         flat 
         large 
         color="primary"
-        to="/login">Login</v-btn>
+        to="/signin">Sign in</v-btn>
       <v-btn 
         flat 
         large 

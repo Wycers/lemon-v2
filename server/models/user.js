@@ -11,8 +11,11 @@ var Schema = mongoose.Schema;
  * @type {mongoose}
  */
 var UserSchema = new Schema({
-	phoneNumber: {
+  username: {
     unique: true,
+    type: String
+  },
+  password: {
     type: String
   },
   areaCode: String,

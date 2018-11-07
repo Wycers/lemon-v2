@@ -42,7 +42,6 @@ walk(models_path)
 
 require('babel-register')
 const Koa = require('koa')
-const CSRF = require('koa-csrf')
 const logger = require('koa-logger')
 const session = require('koa-session')
 const bodyParser = require('koa-bodyparser')
@@ -52,34 +51,11 @@ app.keys = ['zhangivon']
 app.use(logger())
 app.use(session(app))
 app.use(bodyParser())
-app.use(
-  new CSRF({
-    invalidSessionSecretMessage: 'Invalid session secret',
-    invalidSessionSecretStatusCode: 403,
-    invalidTokenMessage: 'Invalid CSRF token',
-    invalidTokenStatusCode: 403,
-    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
-    disableQuery: false
-  })
-)
-
 /**
  * 使用路由转发请求
  * @type {[type]}
  */
 const router = require('./route/router')()
-
-app.use(async (ctx, next) => {
-  await ctx.cookies.set('csrf', ctx.csrf, {
-    domain: 'localhost', // 写cookie所在的域名
-    path: '/', // 写cookie所在的路径
-    maxAge: 2 * 60 * 60 * 1000, // cookie有效时长
-    expires: new Date('2018-12-08'), // cookie失效时间
-    httpOnly: false, // 是否只用于http请求中获取
-    overwrite: true // 是否允许重写
-  })
-  await next()
-})
 
 app.use(router.routes()).use(router.allowedMethods())
 

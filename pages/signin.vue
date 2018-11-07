@@ -75,14 +75,13 @@ export default {
       console.log(this.get_cookie('csrf'))
       // this.$store.commit('login')
       axios
-        .post('/api/u/login', {
+        .post('/api/u/signin', {
           username: this.username,
-          password: md5(this.password),
-          _csrf: this.get_cookie('csrf')
+          password: md5(this.password)
         })
         .then(res => {
           console.log(res)
-          if (res.status === 200) {
+          if (res.data.success === true) {
             this.$router.replace('/')
           }
         })

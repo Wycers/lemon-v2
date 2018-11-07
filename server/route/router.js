@@ -10,7 +10,7 @@ module.exports = function() {
   })
 
   // user
-  router.post('/u/login', App.hasBody, User.login)
+  router.post('/u/signin', App.hasBody, User.signin)
   router.post('/u/signup', App.hasBody, User.signup)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
 
