@@ -33,7 +33,6 @@ exports.signup = async (ctx, next) => {
       verifyCode: verifyCode,
       accessToken: accessToken
     })
-    
     try {
       user = await user.save()
       ctx.body = {
@@ -136,7 +135,7 @@ exports.addUser = async (ctx, next) => {
 exports.deleteUser = async (ctx, next) => {
   // const phoneNumber = xss(ctx.request.body.phoneNumber.trim())
   // console.log(phoneNumber)
-  var data = await userHelper.deleteUser({ phoneNumber })
+  // var data = await userHelper.deleteUser({ phoneNumber })
   ctx.body = {
     success: true,
     data

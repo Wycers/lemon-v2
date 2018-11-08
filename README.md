@@ -26,3 +26,4 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 ## TODOS
 - [ ] 登录验证码
 - [ ] 登录态
+- [ ] Travis
