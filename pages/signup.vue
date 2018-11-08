@@ -40,6 +40,9 @@ v-dialog(value="true", max-width="290", persistent='')
           :disabled="!valid"
           @click="onSubmit"
         ) submit
+        v-btn(
+          to="/signin"
+        ) sign in
 </template>
 
 <script>

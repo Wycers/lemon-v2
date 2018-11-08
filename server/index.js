@@ -45,12 +45,45 @@ const Koa = require('koa')
 const logger = require('koa-logger')
 const session = require('koa-session')
 const bodyParser = require('koa-bodyparser')
+const ratelimit = require('koa-ratelimit')
+const Redis = require('ioredis')
 const app = new Koa()
 
 app.keys = ['zhangivon']
 app.use(logger())
+const handler = async (ctx, next) => {
+  try {
+    await next()
+    console.log(ctx.response)
+  } catch (err) {
+    ctx.response.status = err.statusCode || err.status || 500
+    ctx.response.body = {
+      message: err.message
+    }
+  }
+}
+app.use(handler)
 app.use(session(app))
 app.use(bodyParser())
+app.use(
+  ratelimit({
+    db: new Redis(),
+    duration: 30000,
+    errorMessage: {
+      msg: 'Reject'
+    },
+    id: ctx => ctx.ip,
+    max: 60,
+    disableHeader: true
+  })
+)
+app.use(async (ctx, next) => {
+  console.log(ctx.session)
+  ctx.session = {
+    username: 'XD'
+  }
+  await next()
+})
 /**
  * 使用路由转发请求
  * @type {[type]}
