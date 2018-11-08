@@ -56,6 +56,33 @@
         <v-icon>menu</v-icon>
       </v-btn>
       <v-spacer />
+      <div v-if="token !== ''" >
+        <v-avatar
+          :size="40"
+          color="grey lighten-4"
+        >
+          <img 
+            :src=" avatar "
+            alt="avatar">
+        </v-avatar>
+        <v-menu offset-y>
+          <v-btn
+            slot="activator"
+            flat
+            color="primary"> 
+            {{ nickname }} 
+          </v-btn>
+          <v-list>
+            <v-list-tile
+              v-for="(item, index) in items"
+              :key="index"
+            >
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </div>
+      <div v-else>
       <v-btn 
         flat 
         large 
@@ -66,6 +93,7 @@
         large 
         color="primary"
         to="/signup">Sign up</v-btn>
+      </div>
     </v-toolbar>
     <v-content>
       <v-container>
@@ -97,6 +125,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -112,6 +141,13 @@ export default {
       rightDrawer: false,
       title: 'Lemon-v2'
     }
+  },
+  computed: {
+    ...mapState({
+      nickname: state => state.auth.nickname,
+      avatar: state => state.auth.avatar,
+      token: state => state.auth.token
+    })
   }
 }
 </script>
