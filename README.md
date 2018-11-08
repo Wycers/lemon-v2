@@ -21,3 +21,8 @@ $ yarn run generate
 
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
 # lemon-v2
+
+
+## TODOS
+- [ ] 登录验证码
+- [ ] 登录态
