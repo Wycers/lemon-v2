@@ -24,6 +24,8 @@ v-dialog(value="true", max-width="290", persistent='')
           type="password"
           required
         )
+        v-alert(v-model="toggle" :color="color" :icon="icon") 
+          div {{ message }}
         v-btn(
           :disabled="!valid"
           @click="onSubmit"
@@ -53,33 +55,36 @@ export default {
         v => !!v || 'Password is required',
         v => (v && v.length >= 6) || '6 characters at least',
         v => this.uValid || 'Username or Password Wrong'
-      ]
+      ],
+      color: 'info',
+      icon: 'info',
+      toggle: false,
+      message: null
     }
   },
   methods: {
     onFocus() {
-      this.uValid = true
+      this.toggle = false
     },
-    onSuccess(data) {
-      // this.$store.commit('setAuth', data)
-    },
-    onSubmit() {
-      // this.$store.commit('login')
+    async onSubmit() {
       if (this.$refs.form.validate()) {
-        axios
-          .post('/api/u/signin', {
-            username: this.username,
-            password: md5(this.password)
-          })
-          .then(res => {
-            console.log(res)
-            if (res.data.success === true) {
+        const username = this.username
+        const password = this.password
+        try {
+          await this.$store.dispatch('auth/signin', { username, password })
+          this.color = 'success'
+          this.icon = 'check_circle'
+          this.message = 'success'
+          this.toggle = true
+          setTimeout(() => {
               this.$router.replace('/')
-            } else {
-              this.uValid = false
-              this.$refs.form.validate()
+          }, 1000)
+        } catch (error) {
+          this.color = 'error'
+          this.icon = 'error'
+          this.toggle = true
+          this.message = 'error'
             }
-          })
       }
     }
   }

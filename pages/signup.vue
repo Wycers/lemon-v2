@@ -36,6 +36,8 @@ v-dialog(value="true", max-width="290", persistent='')
           label="Invite Code"
           required
         )
+        v-alert(v-model="toggle" :color="color" :icon="icon") 
+          div {{ message }}
         v-btn(
           :disabled="!valid"
           @click="onSubmit"
@@ -62,8 +64,7 @@ export default {
       usernameRules: [
         v => !!v || 'Username is required',
         v => (v && /^[\da-z]+$/i.test(v)) || 'Invalid character!',
-        v => (v && v.length >= 6) || '6 characters at least',
-        v => this.uValid || 'ducplicated'
+        v => (v && v.length >= 6) || '6 characters at least'
       ],
       passwordRules: [
         v => !!v || 'Password is required',
@@ -76,31 +77,40 @@ export default {
       icRules: [
         v => !!v || 'Invite Code is required'
         //
-      ]
+      ],
+      color: 'info',
+      icon: 'info',
+      toggle: false,
+      message: null
     }
   },
   methods: {
-    usernameOnFocus() {
-      this.uValid = true
+    onFocus() {
+      this.toggle = false
     },
-    onSuccess(data) {
-      // this.$store.commit('setAuth', data)
-    },
-    onSubmit() {
-      // this.$store.commit('login')
+    async onSubmit() {
       if (this.$refs.form.validate()) {
-        axios
-          .post('/api/u/signup', {
-            username: this.username,
-            password: md5(this.password)
+        const username = this.username
+        const password = this.password
+        const inviteCode = this.inviteCode
+        try {
+          await this.$store.dispatch('auth/signup', {
+            username,
+            password,
+            inviteCode
           })
-          .then(res => {
-            if (res.data.success === true) {
-              // do sth
+          this.color = 'success'
+          this.icon = 'check_circle'
+          this.message = 'success'
+          this.toggle = true
+          setTimeout(() => {
               this.$router.replace('/')
-            } else {
-              this.uValid = false
-              this.$refs.form.validate()
+          }, 1000)
+        } catch (error) {
+          this.color = 'error'
+          this.icon = 'error'
+          this.toggle = true
+          this.message = 'error'
             }
           })
       }

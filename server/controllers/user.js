@@ -35,8 +35,18 @@ exports.signup = async (ctx, next) => {
     })
     try {
       user = await user.save()
+      const token = uuid.v4()
+      ctx.session = {
+        username: username,
+        token: token
+      }
       ctx.body = {
-        success: true
+        success: true,
+        user: {
+          avatar: user.avatar,
+          nickname: user.nickname,
+          token: token
+        }
       }
     } catch (e) {
       console.log(e)
@@ -93,11 +103,26 @@ exports.signin = async (ctx, next) => {
     username: username,
     password: password
   }).exec()
-  ctx.body = {
-    success: user !== null,
-    data: '233'
+  if (user === null) {
+    ctx.body = {
+      success: false,
+      data: 'unmatch'
+    }
+  } else {
+    const token = uuid.v4()
+    ctx.session = {
+      username: username,
+      token: token
+    }
+    ctx.body = {
+      success: true,
+      user: {
+        avatar: user.avatar,
+        nickname: user.nickname,
+        token: token
+      }
+    }
   }
-  console.log('==>', ctx.session)
 }
 
 /**
