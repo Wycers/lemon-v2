@@ -10,34 +10,29 @@ v-dialog(value="true", max-width="290", persistent='')
         lazy-validation
       )
         v-text-field(
-          v-model="username"
-          :rules="usernameRules"
+          label="username" v-model="username" :rules="usernameRules" required
           @focus="onFocus"
-          label="username"
-          required
+          
         )
         v-text-field(
-          v-model="password"
-          :rules="passwordRules"
+          label="password" v-model="password" :rules="passwordRules" required
           @focus="onFocus"
-          label="password"
           type="password"
-          required
         )
         v-alert(v-model="toggle" :color="color" :icon="icon") 
           div {{ message }}
         v-btn(
           :disabled="!valid"
           @click="onSubmit"
+          round
         ) submit
         v-btn(
           to="/signup"
+          round
         ) sign up
 </template>
 
 <script>
-import axios from 'axios'
-import md5 from 'md5'
 export default {
   layout: 'login',
   data() {
@@ -77,14 +72,14 @@ export default {
           this.message = 'success'
           this.toggle = true
           setTimeout(() => {
-              this.$router.replace('/')
+            this.$router.replace('/')
           }, 1000)
         } catch (error) {
           this.color = 'error'
           this.icon = 'error'
           this.toggle = true
           this.message = 'error'
-            }
+        }
       }
     }
   }

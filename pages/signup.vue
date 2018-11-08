@@ -10,25 +10,16 @@ v-dialog(value="true", max-width="290", persistent='')
         lazy-validation
       )
         v-text-field(
-          v-model="username"
-          :rules="usernameRules"
-          @focus="usernameOnFocus"
-          label="username"
-          required
+          label="username" v-model="username" :rules="usernameRules" required
+          @focus="onFocus"
         )
         v-text-field(
-          v-model="password"
-          :rules="passwordRules"
-          label="password"
+          label="password" v-model="password" :rules="passwordRules" required
           type="password"
-          required
         )
         v-text-field(
-          v-model="rpassword"
-          :rules="rpasswordRules"
-          label="password"
+          label="password" v-model="rpassword" :rules="rpasswordRules" required
           type="password"
-          required
         )
         v-text-field(
           v-model="ic"
@@ -59,7 +50,6 @@ export default {
       username: '',
       password: '',
       rpassword: '',
-      uValid: true,
       ic: '',
       usernameRules: [
         v => !!v || 'Username is required',
@@ -104,15 +94,14 @@ export default {
           this.message = 'success'
           this.toggle = true
           setTimeout(() => {
-              this.$router.replace('/')
+            this.$router.replace('/')
           }, 1000)
         } catch (error) {
           this.color = 'error'
           this.icon = 'error'
           this.toggle = true
           this.message = 'error'
-            }
-          })
+        }
       }
     }
   }
