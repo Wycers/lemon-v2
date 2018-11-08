@@ -1,7 +1,7 @@
 'use strict'
 
 var mongoose = require('mongoose')
-var Schema = mongoose.Schema;
+var Schema = mongoose.Schema
 
 /**
  * 定义一个模式(相当于传统意义的表结构)
@@ -46,13 +46,11 @@ var UserSchema = new Schema({
 UserSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
-  }
-  else {
+  } else {
     this.meta.updateAt = Date.now()
   }
   next()
 })
-
 
 /**
  * 定义模型User
