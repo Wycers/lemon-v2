@@ -3,8 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
-
-const db = 'mongodb://localhost/test'
+const db = 'mongodb://localhost/lemon'
 
 /**
  * mongoose连接数据库
