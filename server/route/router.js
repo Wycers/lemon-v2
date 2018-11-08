@@ -3,6 +3,7 @@
 const Router = require('koa-router')
 const User = require('../controllers/user')
 const App = require('../controllers/app')
+const Limiter = require('../middleware/ratelimit')
 
 module.exports = function() {
   var router = new Router({
@@ -10,8 +11,8 @@ module.exports = function() {
   })
 
   // user
-  router.post('/u/signin', App.hasBody, User.signin)
-  router.post('/u/signup', App.hasBody, User.signup)
+  router.post('/u/signin', Limiter, App.hasBody, User.signin)
+  router.post('/u/signup', Limiter, App.hasBody, User.signup)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
 
   // DB Interface test
