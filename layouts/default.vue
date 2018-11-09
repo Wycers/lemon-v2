@@ -26,7 +26,7 @@
     </v-navigation-drawer>
     <v-toolbar
       :clipped-left="clipped"
-      fixed
+      fixed 
       app
     >
       <v-toolbar-side-icon @click="drawer = !drawer" />
@@ -56,7 +56,7 @@
         <v-icon>menu</v-icon>
       </v-btn>
       <v-spacer />
-      <div v-if="token !== ''" >
+      <div v-if="token !== null" >
         <v-avatar
           :size="40"
           color="grey lighten-4"
@@ -73,11 +73,12 @@
             {{ nickname }} 
           </v-btn>
           <v-list>
-            <v-list-tile
-              v-for="(item, index) in items"
-              :key="index"
-            >
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile>
+              <v-list-tile-title> 账号设置 </v-list-tile-title>
+            </v-list-tile>
+            <v-divider />
+            <v-list-tile @click="signout">
+              <v-list-tile-title> 登出 </v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
@@ -148,6 +149,15 @@ export default {
       avatar: state => state.auth.avatar,
       token: state => state.auth.token
     })
+  },
+  methods: {
+    async signout() {
+      try {
+        await this.$store.dispatch('auth/signout')
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 }
 </script>

@@ -5,16 +5,22 @@ export default {
   namespaced: true,
   // State
   state: {
-    nickname: '',
-    avatar: '',
-    token: ''
+    nickname: null,
+    avatar: null,
+    token: null
   },
   // Mutations
   mutations: {
     SET_USER(state, user) {
-      state.nickname = user.nickname
-      state.avatar = user.avatar
-      state.token = user.token
+      if (user === null) {
+        state.nickname = null
+        state.avatar = null
+        state.token = null
+      } else {
+        state.nickname = user.nickname
+        state.avatar = user.avatar
+        state.token = user.token
+      }
     }
   },
   // Actions
@@ -48,7 +54,18 @@ export default {
           throw new Error(res.data.data)
         }
       } catch (error) {
-        console.log(error)
+        throw error
+      }
+    },
+    async signout({ state, commit }) {
+      try {
+        const res = await axios.post('/api/u/signout', { token: state.token })
+        if (res.data.success === true) {
+          commit('SET_USER', null)
+        } else {
+          throw new Error(res.data.data)
+        }
+      } catch (error) {
         throw error
       }
     }

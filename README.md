@@ -31,3 +31,4 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 - [x] Travis
 - [ ] 用户信息设置
 - [ ] 绑定CAS账号
+- [ ] 脚注

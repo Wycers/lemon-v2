@@ -25,13 +25,13 @@ exports.hasBody = async (ctx, next) => {
 
 // 检验token
 exports.hasToken = async (ctx, next) => {
-  var accessToken = ctx.query.accessToken
+  var token = ctx.query.token
 
-  if (!accessToken) {
-    accessToken = ctx.request.body.accessToken
+  if (!token) {
+    token = ctx.request.body.token
   }
 
-  if (!accessToken) {
+  if (!token) {
     ctx.body = {
       success: false,
       err: '令牌失效'
@@ -41,7 +41,7 @@ exports.hasToken = async (ctx, next) => {
   }
 
   var user = await User.findOne({
-    accessToken: accessToken
+    token: token
   }).exec()
 
   if (!user) {

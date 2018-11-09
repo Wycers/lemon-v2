@@ -13,6 +13,7 @@ module.exports = function() {
   // user
   router.post('/u/signin', Limiter, App.hasBody, User.signin)
   router.post('/u/signup', Limiter, App.hasBody, User.signup)
+  router.post('/u/signout', App.hasBody, App.hasToken, User.signout)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
 
   // DB Interface test

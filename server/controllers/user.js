@@ -22,7 +22,7 @@ exports.signup = async (ctx, next) => {
   console.log(user)
   var verifyCode = Math.floor(Math.random() * 10000 + 1)
   if (!user) {
-    var accessToken = uuid.v4()
+    var token = uuid.v4()
 
     user = new User({
       username: username,
@@ -31,7 +31,7 @@ exports.signup = async (ctx, next) => {
       avatar:
         'http://upload-images.jianshu.io/upload_images/5307186-eda1b28e54a4d48e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
       verifyCode: verifyCode,
-      accessToken: accessToken
+      token: token
     })
     try {
       user = await user.save()
@@ -86,7 +86,7 @@ exports.update = async (ctx, next) => {
     success: true,
     data: {
       nickname: user.nickname,
-      accessToken: user.accessToken,
+      token: user.token,
       avatar: user.avatar,
       age: user.age,
       breed: user.breed,
@@ -110,6 +110,9 @@ exports.signin = async (ctx, next) => {
     }
   } else {
     const token = uuid.v4()
+    console.log(token)
+    user.token = token
+    user = await user.save()
     ctx.session = {
       username: username,
       token: token
@@ -121,6 +124,18 @@ exports.signin = async (ctx, next) => {
         nickname: user.nickname,
         token: token
       }
+    }
+  }
+}
+
+exports.signout = async (ctx, next) => {
+  const token = ctx.request.body.token
+  console.log(token)
+  console.log(ctx.session)
+  if (ctx.session.token === token) {
+    ctx.session = {}
+    ctx.body = {
+      success: true
     }
   }
 }
@@ -147,7 +162,7 @@ exports.addUser = async (ctx, next) => {
     avatar: 'http://ip.example.com/u/xxx.png',
     // phoneNumber: xss('13800138000'),
     verifyCode: '5896',
-    accessToken: uuid.v4()
+    token: uuid.v4()
   })
   var user2 = await userHelper.addUser(user)
   if (user2) {

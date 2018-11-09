@@ -16,6 +16,7 @@
       <v-card>
         <v-card-title class="headline">Welcome to the Vuetify + Nuxt.js template</v-card-title>
         <v-card-text>
+          <p> {{ nickname }}</p>
           <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
           <p>For more information on Vuetify, check out the <a
             href="https://vuetifyjs.com"
@@ -57,6 +58,7 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -80,6 +82,13 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState({
+      nickname: state => state.auth.nickname,
+      avatar: state => state.auth.avatar,
+      token: state => state.auth.token
+    })
   }
 }
 </script>

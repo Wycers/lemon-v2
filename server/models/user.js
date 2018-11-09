@@ -24,7 +24,7 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  accessToken: String,
+  token: String,
   nickname: String,
   gender: String,
   breed: String,
