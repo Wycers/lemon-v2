@@ -32,3 +32,4 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 - [ ] 用户信息设置
 - [ ] 绑定CAS账号
 - [ ] 脚注
+- [ ] Docker部署
