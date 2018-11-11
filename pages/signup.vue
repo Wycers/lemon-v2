@@ -39,7 +39,6 @@ v-dialog(value="true", max-width="290", persistent='')
 </template>
 
 <script>
-import axios from 'axios'
 import md5 from 'md5'
 export default {
   layout: 'login',

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import http from '../../utils/http'
 import md5 from 'md5'
 
 export default {
@@ -27,7 +27,7 @@ export default {
   actions: {
     async signin({ commit }, { username, password }) {
       try {
-        const res = await axios.post('/api/u/signin', {
+        const res = await http.post('/u/signin', {
           username: username,
           password: md5(password)
         })
@@ -43,7 +43,7 @@ export default {
     },
     async signup({ commit }, { username, password, inviteCode }) {
       try {
-        const res = await axios.post('/api/u/signup', {
+        const res = await http.post('/u/signup', {
           username: username,
           password: md5(password),
           ic: inviteCode
@@ -59,7 +59,7 @@ export default {
     },
     async signout({ state, commit }) {
       try {
-        const res = await axios.post('/api/u/signout', { token: state.token })
+        const res = await http.post('/u/signout', { token: state.token })
         if (res.data.success === true) {
           commit('SET_USER', null)
         } else {
