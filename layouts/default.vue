@@ -120,7 +120,12 @@
       :fixed="fixed"
       app
     >
-      <span>&copy; 2017</span>
+      <v-spacer />
+      <span> Wycer &copy; 2017</span>
+      <span>
+        <v-icon small>build</v-icon>
+        {{ commit }}
+      </span>
     </v-footer>
   </v-app>
 </template>
@@ -148,7 +153,11 @@ export default {
       nickname: state => state.auth.nickname,
       avatar: state => state.auth.avatar,
       token: state => state.auth.token
-    })
+    }),
+    commit() {
+      let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')
+      return `Build:${XD.substring(0, 8)}`
+    }
   },
   methods: {
     async signout() {
