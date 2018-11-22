@@ -12,15 +12,12 @@ export default {
   // Mutations
   mutations: {
     SET_USER(state, user) {
-      if (user === null) {
-        state.nickname = null
-        state.avatar = null
-        state.token = null
-      } else {
-        state.nickname = user.nickname
-        state.avatar = user.avatar
-        state.token = user.token
-      }
+      var fields = 'nickname,avatar,token'.split(',')
+      fields.forEach(field => {
+        if (user[field]) {
+          state[field] = user[field]
+        }
+      })
     }
   },
   // Actions
