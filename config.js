@@ -7,14 +7,6 @@ const config = {
     mock: false, // enable mock
     http: true // http request log
   },
-  api: `${baseUrl}/api`,
-  qiniu: {
-    accessKey: 'XD',
-    secretKey: 'XD',
-    callback: 'XD'
-  }
+  api: `${baseUrl}/api`
 }
-
-global.config = config
-
 export default config

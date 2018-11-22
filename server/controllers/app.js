@@ -25,16 +25,18 @@ exports.hasBody = async (ctx, next) => {
 
 // 检验token
 exports.hasToken = async (ctx, next) => {
-  var token = ctx.query.token
+  var token = ctx.query.token || ctx.request.body.token
 
-  if (!token) {
-    token = ctx.request.body.token
+  if (ctx.session === null || token === null) {
+    ctx.body = {
+      success: false
+    }
   }
 
   if (!token) {
     ctx.body = {
       success: false,
-      err: '令牌失效'
+      err: 'invalid token'
     }
 
     return next
