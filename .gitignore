@@ -78,4 +78,10 @@ dist
 .serverless
 
 # IDE
+<<<<<<< HEAD
 .idea
+=======
+.idea
+
+config.js
+>>>>>>> settings

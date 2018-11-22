@@ -5,8 +5,9 @@ var uuid = require('uuid')
 var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var userHelper = require('../dbhelper/userHelper')
+var { config } = require('../config')
 // import userHelper from '../dbhelper/userHelper'
-
+const cdnurl = config.qiniu.url
 /**
  * 注册新用户
  * @param {Function} next          [description]
@@ -179,5 +180,41 @@ exports.deleteUser = async (ctx, next) => {
   ctx.body = {
     success: true,
     data
+  }
+}
+
+exports.setAvatar = async (ctx, next) => {
+  const username = ctx.request.body.username
+  const filename = ctx.request.body.key
+  if (username === null || username === undefined || username === '') {
+    ctx.body = {
+      success: false
+    }
+    console.log('qwq')
+    return
+  }
+  var user = await User.findOne({
+    username: username
+  }).exec()
+  user.avatar = `${cdnurl}${filename}`
+  try {
+    user = await user.save()
+    const token = uuid.v4()
+    ctx.session = {
+      username: username,
+      token: token
+    }
+    ctx.body = {
+      success: true,
+      user: {
+        avatar: user.avatar,
+        nickname: user.nickname,
+        token: token
+      }
+    }
+  } catch (e) {
+    ctx.body = {
+      success: false
+    }
   }
 }
