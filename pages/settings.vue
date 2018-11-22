@@ -74,13 +74,20 @@ export default {
           console.log(imgLoadPercent)
         }
       })
-        .then(data => {
-          alert('ok')
-          // 上传成功...  (登录七牛账号，找到七牛给你的 URL地址) 和 data里面的key 拼接成图片下载地址
+        .then(res => {
+          console.log(res)
+          if (res.data.success === true) {
+            try {
+              this.$store.commit('auth/SET_USER', res.data.user)
+            } catch (error) {
+              alert('failed')
+            }
+          } else {
+            alert('failed')
+          }
         })
-        .catch(function(err) {
+        .catch(err => {
           alert('failed')
-          //上传失败
         })
     },
     onFilePicked(e) {
