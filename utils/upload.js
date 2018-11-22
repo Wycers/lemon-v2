@@ -1,12 +1,16 @@
 import axios from 'axios'
 import config from '../config'
 
+// enable mock
+import mock from './mock'
+if (!config.debug.mock) {
+  mock.restore()
+}
+
 var http = axios.create({
   baseURL: config.api,
-  timeout: 1000,
-  headers: {
-    Authorization: localStorage.getItem('token')
-  }
+  timeout: 1000
+  // headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
 })
 
 http.interceptors.request.use(
@@ -20,7 +24,7 @@ http.interceptors.request.use(
 )
 http.interceptors.response.use(
   res => {
-    const request = res.config
+    const request = response.config
     if (config.debug.http) {
       console.log(
         '>>>',
@@ -28,15 +32,15 @@ http.interceptors.response.use(
         request.url,
         request.params,
         '\n   ',
-        res.status,
-        res.data
+        response.status,
+        response.data
       )
     }
-    return res
+    return response
   },
   error => {
     if (config.debug.http) {
-      let { res, config: request } = error
+      let { response, config: request } = error
       if (request) {
         console.log(
           '>>>',
@@ -44,8 +48,8 @@ http.interceptors.response.use(
           request.url,
           request.params,
           '\n   ',
-          res.status,
-          res.data
+          response.status,
+          response.data
         )
       }
     }
