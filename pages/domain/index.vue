@@ -25,7 +25,7 @@
               required
             )
             v-radio-group(
-              v-model="radioGroup"
+              v-model="radio"
             )
               v-radio(
                 v-for="item in types"
@@ -45,7 +45,7 @@
           v-btn(
             color="primary"
             flat
-            @click="dialog = false"
+            @click="onSubmit"
           ) submit
 </template>
 <script>
@@ -103,16 +103,16 @@ export default {
       ],
       dialog: false,
       name: '',
-      radioGroup: 2
+      radio: 2
     }
   },
   methods: {
     async onSubmit() {
       if (this.$refs.form.validate()) {
         const name = this.name
-        const radio = this.radioGroup
+        const radio = this.radio
         try {
-          const res = await http.post('/domain/create', { name, radio })
+          const res = await http.put('/domain', { name, radio })
         } catch (error) {
           console.log(error)
         }

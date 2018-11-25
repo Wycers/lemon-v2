@@ -4,6 +4,7 @@ const Router = require('koa-router')
 const User = require('../controllers/user')
 const App = require('../controllers/app')
 const Qiniu = require('../controllers/qiniu')
+const Domain = require('../controllers/domain')
 const Limiter = require('../middleware/ratelimit')
 
 module.exports = function() {
@@ -20,6 +21,9 @@ module.exports = function() {
   // qiniu
   router.post('/qiniu/upload', Qiniu.upload)
   router.post('/qiniu/callback', Qiniu.callback, User.setAvatar)
+
+  //domain
+  router.put('/domain', Domain.createDomain)
 
   // DB Interface test
   router.get('/test/user/users', User.users)
