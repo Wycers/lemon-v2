@@ -24,7 +24,7 @@ http.interceptors.request.use(
 )
 http.interceptors.response.use(
   res => {
-    const request = response.config
+    const request = res.config
     if (config.debug.http) {
       console.log(
         '>>>',
@@ -32,24 +32,24 @@ http.interceptors.response.use(
         request.url,
         request.params,
         '\n   ',
-        response.status,
-        response.data
+        res.status,
+        res.data
       )
     }
-    return response
+    return res
   },
   error => {
     if (config.debug.http) {
-      let { response, config: request } = error
+      let { res, config: request } = error
       if (request) {
         console.log(
           '>>>',
-          equest.method.toUpperCase(),
+          request.method.toUpperCase(),
           request.url,
           request.params,
           '\n   ',
-          response.status,
-          response.data
+          res.status,
+          res.data
         )
       }
     }
