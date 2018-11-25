@@ -12,7 +12,8 @@ var Schema = mongoose.Schema
  */
 var DomainSchema = new Schema({
    name: {
-     type: String
+     type: String,
+     unique: true
    },
    type: {
      type: Number
@@ -48,7 +49,3 @@ DomainSchema.pre('save', function(next) {
 var Domain = mongoose.model('Domain', DomainSchema)
 
 module.exports = Domain
-
-/**
- * nodejs中文社区这篇帖子对mongoose的用法总结的不错：https://cnodejs.org/topic/548e54d157fd3ae46b233502
- */
