@@ -11,23 +11,39 @@ var Schema = mongoose.Schema
  * @type {mongoose}
  */
 var DomainSchema = new Schema({
-   name: {
-     type: String,
-     unique: true
-   },
-   type: {
-     type: Number
-   },
-   meta: {
-     createAt: {
-       type: Date,
-       dafault: Date.now()
-     },
-     updateAt: {
-       type: Date,
-       dafault: Date.now()
-     }
-   }
+  id: {
+    type: String,
+    unique: true
+  },
+  avatar: {
+    type: String,
+  },
+  name: {
+    type: String,
+    unique: true
+  },
+  type: {
+    type: Number
+  },
+  users: [
+    {
+      user: {
+        type: Schema.ObjectId,
+        ref: 'users',
+      },
+      role: 0
+    }
+  ],
+  meta: {
+    createAt: {
+      type: Date,
+      dafault: Date.now()
+    },
+    updateAt: {
+      type: Date,
+      dafault: Date.now()
+    }
+  }
 })
 
 // Defines a pre hook for the document.

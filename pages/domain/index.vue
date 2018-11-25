@@ -5,12 +5,12 @@
         template(v-for="(item, index) in domains")
           v-subheader(v-if="item.header" :key="item.header") {{ item.header }}
           v-divider(v-else-if="item.divider" :inset="item.inset" :key="index") 
-          v-list-tile(v-else :key="item.title" :to="item.url" avatar)
-            v-list-tile-avatar
-              img(:src="item.avatar")
+          v-list-tile(v-else :key="item.id" :to="`/domain/${item.id}`")
+            //- v-list-tile-avatar
+            //-   img(:src="item.avatar")
             v-list-tile-content
-              v-list-tile-title(v-html="item.title")
-              v-list-tile-sub-title(v-html="item.subtitle")
+              v-list-tile-title(v-html="item.name")
+              //- v-list-tile-sub-title(v-html="item.subtitle")
     v-dialog(v-model="dialog" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) New domain
       v-card
@@ -53,6 +53,10 @@ import http from '../../utils/http'
 export default {
   data() {
     return {
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => (v && /[&<>"']/im.test(v) === false) || 'Invalid character'
+      ],
       domains: [
         { header: 'Today' },
         {
@@ -103,16 +107,25 @@ export default {
       ],
       dialog: false,
       name: '',
-      radio: 2
+      radio: 2,
+      valid: true
     }
   },
+  created() {
+    this.fetch()
+  },
   methods: {
+    async fetch() {
+      const res = await http.get('/domain')
+      this.domains = res.data
+    },
     async onSubmit() {
       if (this.$refs.form.validate()) {
         const name = this.name
         const radio = this.radio
         try {
           const res = await http.put('/domain', { name, radio })
+          this.dialog = false
         } catch (error) {
           console.log(error)
         }
