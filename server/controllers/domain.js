@@ -20,33 +20,21 @@ exports.createDomain = async (ctx, next) => {
     return next
   }
   let domain = new Domain({
-    id: uuid(),
     name: name,
     type: radio,
     users: [
       {
-        user: user,
-        role: 0
+        user
       }
     ]
   })
   try {
     domain = await domain.save()
-    user.domains.$push({domain})
     user = await user.save()
-    User.update({ '_id': user._id }, {
-      $push: {
-        domains: {domain}
-      },
-      callback: (err) => {
-        console.log(err)
-      }
-    })
     ctx.body = {
       success: true
     }
   } catch (e) {
-    console.log(e)
     ctx.body = {
       success: false  
     }
@@ -63,9 +51,31 @@ exports.queryDomain = async (ctx, next) => {
     username: username
   })
   let res = await Domain.find(
-    {users: {$elemMatch: {user: user._id}}},
-    {_id: 0, name: 1, id: 1}
+    {users: {$elemMatch: { $eq: user._id}}},
+    {_id: 1, name: 1}
   )
   ctx.body = res
   console.log(res)
+}
+
+exports.getDomain = async (ctx, next) => {
+  const _id = ctx.params.id
+  const domain = await Domain.findOne({
+    _id: _id
+  }, {
+    name: 1,
+    type: 1,
+    users: 1
+  }).populate({
+    path: 'users',
+    select: ['username', '_id', 'avatar']
+  })
+  console.log(domain)
+  if (domain === null) {
+    ctx.body = {
+      success: false
+    }
+    return next
+  }
+  ctx.body = domain
 }

@@ -5,7 +5,7 @@
         template(v-for="(item, index) in domains")
           v-subheader(v-if="item.header" :key="item.header") {{ item.header }}
           v-divider(v-else-if="item.divider" :inset="item.inset" :key="index") 
-          v-list-tile(v-else :key="item.id" :to="`/domain/${item.id}`")
+          v-list-tile(v-else :key="item.id" :to="`/domain/${item._id}`")
             //- v-list-tile-avatar
             //-   img(:src="item.avatar")
             v-list-tile-content

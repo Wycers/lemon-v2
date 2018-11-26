@@ -1,12 +1,15 @@
 <template lang="pug">
-  div gg
+  div {{ domain }}
 </template>
 
 <script>
+import http from '../../utils/http'
 export default {
-  validate({ params }) {
-    // 必须是number类型
-    return /^\d+$/.test(params.id)
+  async asyncData({ params }) {
+    const res = await http.get(`/domain/${params.id}`)
+    return {
+      domain: res.data
+    }
   }
 }
 </script>

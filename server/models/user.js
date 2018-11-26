@@ -10,7 +10,7 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var UserSchema = new Schema({
+var userSchema = new Schema({
   username: {
     unique: true,
     type: String
@@ -43,7 +43,7 @@ var UserSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-UserSchema.pre('save', function(next) {
+userSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -58,7 +58,7 @@ UserSchema.pre('save', function(next) {
  * @type {[type]}
  */
 // 参数User 数据库中的集合名称, 不存在会创建.
-var User = mongoose.model('User', UserSchema)
+var User = mongoose.model('User', userSchema)
 
 module.exports = User
 
