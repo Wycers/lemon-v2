@@ -25,6 +25,7 @@ module.exports = function() {
   //domain
   router.put('/domain', Domain.createDomain)
   router.get('/domain', Domain.queryDomain)
+  router.get('/domain/:id', Domain.getDomain)
 
   // DB Interface test
   router.get('/test/user/users', User.users)

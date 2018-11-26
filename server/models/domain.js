@@ -10,7 +10,7 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var DomainSchema = new Schema({
+var domainSchema = new Schema({
   id: {
     type: String,
     unique: true
@@ -27,11 +27,8 @@ var DomainSchema = new Schema({
   },
   users: [
     {
-      user: {
-        type: Schema.ObjectId,
-        ref: 'users',
-      },
-      role: 0
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
   meta: {
@@ -47,7 +44,7 @@ var DomainSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-DomainSchema.pre('save', function(next) {
+domainSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -62,6 +59,6 @@ DomainSchema.pre('save', function(next) {
  * @type {[type]}
  */
 // 参数User 数据库中的集合名称, 不存在会创建.
-var Domain = mongoose.model('Domain', DomainSchema)
+var Domain = mongoose.model('Domain', domainSchema)
 
 module.exports = Domain
