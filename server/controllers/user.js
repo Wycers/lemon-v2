@@ -20,7 +20,6 @@ exports.signup = async (ctx, next) => {
   var user = await User.findOne({
     username: username
   }).exec()
-  console.log(user)
   var verifyCode = Math.floor(Math.random() * 10000 + 1)
   if (!user) {
     var token = uuid.v4()
@@ -111,11 +110,11 @@ exports.signin = async (ctx, next) => {
     }
   } else {
     const token = uuid.v4()
-    console.log(token)
     user.token = token
     user = await user.save()
     ctx.session = {
       username: username,
+      userId: user._id,
       token: token
     }
     ctx.body = {
@@ -190,7 +189,6 @@ exports.setAvatar = async (ctx, next) => {
     ctx.body = {
       success: false
     }
-    console.log('qwq')
     return
   }
   var user = await User.findOne({
@@ -217,4 +215,20 @@ exports.setAvatar = async (ctx, next) => {
       success: false
     }
   }
+}
+
+exports.queryUser = async (ctx, next) => {
+  const key = ctx.request.body.key
+  console.log(key)
+  const user = await User.find({
+    $or: [
+      { username: { $regex: key, $options: 'i' }},
+      { studentId: { $regex: key }}
+    ] // 支持用户名和学号的模糊查询，用户名忽略大小写
+  }, {
+    nickname: 1,
+    studentId: 1,
+    avatar: 1
+  }).limit(8)
+  ctx.body = user
 }

@@ -18,7 +18,6 @@ var userSchema = new Schema({
   password: {
     type: String
   },
-  areaCode: String,
   verifyCode: String,
   verified: {
     type: Boolean,
@@ -26,9 +25,6 @@ var userSchema = new Schema({
   },
   token: String,
   nickname: String,
-  gender: String,
-  breed: String,
-  age: String,
   avatar: String,
   meta: {
     createAt: {
