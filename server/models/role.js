@@ -1,3 +1,4 @@
+
 'use strict'
 
 var mongoose = require('mongoose')
@@ -10,43 +11,22 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var domainSchema = new Schema({
-  avatar: {
-    type: String,
-  },
-  type: {
-    type: Number
+var roleSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   name: {
     type: String,
-    unique: true
   },
-  intro: {
-    type: String
+  system: {
+    type: String,
+    default: 'domain'
   },
-  father: {
+  domain: {
     type: Schema.Types.ObjectId,
-    ref: 'Domain',
-    default: null
+    ref: 'Domain'
   },
-  notice: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Notice'
-    }
-  ],
-  event: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Event'
-    }
-  ],
-  user: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
   meta: {
     createAt: {
       type: Date,
@@ -60,7 +40,7 @@ var domainSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-domainSchema.pre('save', function(next) {
+roleSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -70,11 +50,11 @@ domainSchema.pre('save', function(next) {
 })
 
 /**
- * 定义模型User
+ * 定义模型Notice
  * 模型用来实现我们定义的模式，调用mongoose.model来编译Schema得到Model
  * @type {[type]}
  */
-// 参数User 数据库中的集合名称, 不存在会创建.
-var Domain = mongoose.model('Domain', domainSchema)
+// 参数Notice 数据库中的集合名称, 不存在会创建.
+var Role = mongoose.model('Role', roleSchema)
 
-module.exports = Domain
+module.exports = Role

@@ -1,14 +1,76 @@
 <template lang="pug">
-  div {{ domain }}
+div
+  div {{ domain }} {{ active }}
+  div.headline {{ domain.name }}
+  v-tabs(
+    v-model="active"
+    color="cyan"
+    dark
+    slider-color="yellow"
+  )
+    v-tab(ripple) Overview
+    v-tab-item 
+      v-card(flat)
+        v-card-title {{ domain.intro }}
+
+    v-tab(ripple) Resources
+    v-tab-item()
+      v-card(flat)
+        v-card-title resources
+
+    v-tab(ripple) Announcements
+    v-tab-item
+      v-card(flat)
+        v-card-title announcements
+
+    v-tab(ripple) Assignments
+    v-tab-item
+      v-card(flat)
+        v-card-title assignments
+
+
+    v-tab(ripple @click="fetchUsers") Users
+    v-tab-item
+      User(:id="id" :users="users")
+
+
+
+
+    v-tab(v-if="domain.isAdmin") Settings
+    v-tab-item(v-if="domain.isAdmin")
+      v-card
+        v-card-text
+          v-form(ref="form")
+            v-text-field(
+              label="name"
+            )
 </template>
 
 <script>
 import http from '../../utils/http'
+import User from './User'
 export default {
+  components: {
+    User
+  },
   async asyncData({ params }) {
     const res = await http.get(`/domain/${params.id}`)
     return {
+      id: params.id,
       domain: res.data
+    }
+  },
+  data() {
+    return {
+      active: null,
+      users: []
+    }
+  },
+  methods: {
+    fetchUsers() {
+      http.get(`/domain/${this.id}/users`).then(res => {
+        this.users = res.data.data
+      })
     }
   }
 }

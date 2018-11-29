@@ -4,7 +4,7 @@ const Router = require('koa-router')
 const User = require('../app/controllers/user')
 const App = require('../app/controllers/app')
 
-module.exports = function(){
+module.exports = () => {
 	var router = new Router({
     prefix: '/api'
   })

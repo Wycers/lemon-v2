@@ -44,7 +44,7 @@ http.interceptors.response.use(
       if (request) {
         console.log(
           '>>>',
-          equest.method.toUpperCase(),
+          request.method.toUpperCase(),
           request.url,
           request.params,
           '\n   ',

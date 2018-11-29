@@ -7,7 +7,7 @@ const Qiniu = require('../controllers/qiniu')
 const Domain = require('../controllers/domain')
 const Limiter = require('../middleware/ratelimit')
 
-module.exports = function() {
+module.exports = () => {
   var router = new Router({
     prefix: '/api'
   })
@@ -17,6 +17,7 @@ module.exports = function() {
   router.post('/u/signup', Limiter, App.hasBody, User.signup)
   router.post('/u/signout', App.hasBody, App.hasToken, User.signout)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
+  router.post('/user/query', User.queryUser)
 
   // qiniu
   router.post('/qiniu/upload', Qiniu.upload)
@@ -26,6 +27,7 @@ module.exports = function() {
   router.put('/domain', Domain.createDomain)
   router.get('/domain', Domain.queryDomain)
   router.get('/domain/:id', Domain.getDomain)
+  router.get('/domain/:id/users', Domain.getUsers)
 
   // DB Interface test
   router.get('/test/user/users', User.users)

@@ -4,12 +4,14 @@ var mongoose = require('mongoose')
 var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
+var Role = mongoose.model('Role')
+var util = require('../utils/authenticate')
 
 exports.createDomain = async (ctx, next) => {
   const username = ctx.session.username
   const name = ctx.request.body.name
   const radio = ctx.request.body.radio
-  let user = await User.findOne({
+  const user = await User.findOne({
     username: username
   })
   if (user === null)
@@ -19,28 +21,33 @@ exports.createDomain = async (ctx, next) => {
     } 
     return next
   }
-  let domain = new Domain({
-    name: name,
-    type: radio,
-    users: [
-      {
-        user
-      }
-    ]
-  })
+  
+  const session = await Domain.startSession()
+  session.startTransaction()
   try {
-    domain = await domain.save()
-    user = await user.save()
+    const opts = { session };
+    const domain = await Domain({
+      name: name,
+      type: radio,
+      user: [{ _id: user._id }]
+    }).save(opts)
+    const role = await Role({
+      user: { _id: user._id },
+      domain: { _id: domain._id }
+    }).save(opts)
+    await session.commitTransaction();
+    session.endSession();
     ctx.body = {
       success: true
     }
-  } catch (e) {
+  } catch(error) {
+    await session.abortTransaction();
+    session.endSession();
     ctx.body = {
-      success: false  
+      success: false
     }
-  }
-  ctx.body = {
-    success: true
+    console.log(error)
+    throw error;
   }
   return next 
 }
@@ -51,7 +58,7 @@ exports.queryDomain = async (ctx, next) => {
     username: username
   })
   let res = await Domain.find(
-    {users: {$elemMatch: { $eq: user._id}}},
+    {user: {$elemMatch: { $eq: user._id }}},
     {_id: 1, name: 1}
   )
   ctx.body = res
@@ -60,16 +67,8 @@ exports.queryDomain = async (ctx, next) => {
 
 exports.getDomain = async (ctx, next) => {
   const _id = ctx.params.id
-  const domain = await Domain.findOne({
-    _id: _id
-  }, {
-    name: 1,
-    type: 1,
-    users: 1
-  }).populate({
-    path: 'users',
-    select: ['username', '_id', 'avatar']
-  })
+  const domain = await Domain.findById(_id)
+  const userId = ctx.session.userId
   console.log(domain)
   if (domain === null) {
     ctx.body = {
@@ -77,5 +76,29 @@ exports.getDomain = async (ctx, next) => {
     }
     return next
   }
-  ctx.body = domain
+  ctx.body = {
+    domain,
+    isAdmin: await util.isAdministrator(userId, domain) !== null
+  }
+  console.log(ctx.body)
+}
+
+exports.getUsers = async (ctx, next) => {
+  const _id = ctx.params.id
+  const domain = await Domain.findById(_id).populate({
+    path: 'user', 
+    select: ['username', '_id', 'avatar']
+  })
+  console.log(domain)
+  if (domain === null) {
+    ctx.body = {
+      code: -1
+    }
+    return next
+  }
+  ctx.body = {
+    code: 0,
+    data: domain.user
+  }
+  return next
 }
