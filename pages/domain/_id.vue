@@ -31,7 +31,7 @@ div
 
     v-tab(ripple @click="fetchUsers") Users
     v-tab-item
-      User(:id="id" :users="users")
+      User(:id="id" :users="users" :isAdmin="domain.isAdmin")
 
 
 

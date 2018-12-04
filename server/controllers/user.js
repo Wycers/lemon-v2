@@ -223,6 +223,7 @@ exports.queryUser = async (ctx, next) => {
   const user = await User.find({
     $or: [
       { username: { $regex: key, $options: 'i' }},
+      { nickname: { $regex: key, $options: 'i' }},
       { studentId: { $regex: key }}
     ] // 支持用户名和学号的模糊查询，用户名忽略大小写
   }, {
