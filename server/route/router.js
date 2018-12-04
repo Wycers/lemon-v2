@@ -28,6 +28,8 @@ module.exports = () => {
   router.get('/domain', Domain.queryDomain)
   router.get('/domain/:id', Domain.getDomain)
   router.get('/domain/:id/users', Domain.getUsers)
+  router.put('/domain/:id/user', Domain.addUser)
+  // router.delete('/domain/:id/user',)
 
   // DB Interface test
   router.get('/test/user/users', User.users)

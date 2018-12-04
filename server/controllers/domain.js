@@ -62,7 +62,6 @@ exports.queryDomain = async (ctx, next) => {
     {_id: 1, name: 1}
   )
   ctx.body = res
-  console.log(res)
 }
 
 exports.getDomain = async (ctx, next) => {
@@ -89,16 +88,47 @@ exports.getUsers = async (ctx, next) => {
     path: 'user', 
     select: ['username', '_id', 'avatar']
   })
-  console.log(domain)
   if (domain === null) {
-    ctx.body = {
-      code: -1
-    }
-    return next
+    ctx.throw(400, 'domain required')
   }
   ctx.body = {
     code: 0,
     data: domain.user
   }
   return next
+}
+
+exports.addUser = async (ctx, next) => {
+  const domainId = ctx.params.id
+  const userId = ctx.request.body.id
+  let user = null
+  try {
+    user = await User.findById(userId)
+  } catch (error) {
+    if (error.name === 'CastError')
+      ctx.throw(400, 'user required')
+    ctx.throw(500)
+  }
+
+  try {
+    const res = await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
+    if (res != null) {
+      ctx.body = {
+        success: true
+      }
+      return next
+    }
+  } catch (error) {
+    if (error.name === 'CastError')
+      ctx.throw(400, 'domain required')
+    ctx.throw(500)
+  }
+  try {
+    await Domain.updateOne({ _id: domainId }, { $push: { user: userId }})
+  } catch (error) {
+    ctx.throw(500)
+  }
+  ctx.body = {
+    success: true
+  }
 }
