@@ -3,14 +3,14 @@
 const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
-const db = 'mongodb://localhost/lemon'
+const db = 'mongodb://localhost:27017,localhost:27018,localhost:27019/lemon?replicaSet=rs'
 
 /**
  * mongoose连接数据库
  * @type {[type]}
  */
 mongoose.Promise = require('bluebird')
-mongoose.connect(db)
+mongoose.connect(db, { useNewUrlParser: true })
 
 /**
  * 获取数据库表对应的js对象所在的路径
@@ -54,6 +54,7 @@ const handler = async (ctx, next) => {
     // console.log(ctx.response)
   } catch (err) {
     ctx.response.status = err.statusCode || err.status || 500
+    console.log(err.status)
     ctx.response.body = {
       message: err.message
     }
