@@ -138,6 +138,13 @@ exports.removeUser = async (ctx, next) => {
   console.log(userId)
   if (userId === null || userId === undefined || userId === '') 
     ctx.throw(400, 'user required')
+
+  if (await util.isAdministrator(userId, domain) !== null) {
+    ctx.body = {
+      success: false
+    }
+    return next
+  }
   try {
     await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
   } catch (error) {
