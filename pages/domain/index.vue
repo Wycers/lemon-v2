@@ -1,16 +1,8 @@
 <template lang="pug">
-  v-layout
-    v-flex(text-xs-center)
-      v-list(two-line)
-        template(v-for="(item, index) in domains")
-          v-subheader(v-if="item.header" :key="item.header") {{ item.header }}
-          v-divider(v-else-if="item.divider" :inset="item.inset" :key="index") 
-          v-list-tile(v-else :key="item.id" :to="`/domain/${item._id}`")
-            //- v-list-tile-avatar
-            //-   img(:src="item.avatar")
-            v-list-tile-content
-              v-list-tile-title(v-html="item.name")
-              //- v-list-tile-sub-title(v-html="item.subtitle")
+div
+  v-toolbar(flat color="white")
+    v-toolbar-title Domains
+    v-spacer
     v-dialog(v-model="dialog" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) New domain
       v-card
@@ -47,6 +39,18 @@
             flat
             @click="onSubmit"
           ) submit
+  v-layout
+    v-flex(text-xs-center)
+      v-list(two-line)
+        template(v-for="(item, index) in domains")
+          v-subheader(v-if="item.header" :key="item.header") {{ item.header }}
+          v-divider(v-else-if="item.divider" :inset="item.inset" :key="index") 
+          v-list-tile(v-else :key="item.id" :to="`/domain/${item._id}`")
+            //- v-list-tile-avatar
+            //-   img(:src="item.avatar")
+            v-list-tile-content
+              v-list-tile-title(v-html="item.name")
+              //- v-list-tile-sub-title(v-html="item.subtitle")
 </template>
 <script>
 import http from '../../utils/http'
@@ -116,8 +120,12 @@ export default {
   },
   methods: {
     async fetch() {
-      const res = await http.get('/domain')
-      this.domains = res.data
+      try {
+        const res = await http.get('/domain')
+        this.domains = res.data
+      } catch (error) {
+        console.log(error)
+      }
     },
     async onSubmit() {
       if (this.$refs.form.validate()) {
