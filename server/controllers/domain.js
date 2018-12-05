@@ -101,7 +101,6 @@ exports.getUsers = async (ctx, next) => {
 exports.addUser = async (ctx, next) => {
   const domainId = ctx.params.id
   const userId = ctx.request.body.id
-  let user = null
   try {
     user = await User.findById(userId)
   } catch (error) {
@@ -125,6 +124,29 @@ exports.addUser = async (ctx, next) => {
   }
   try {
     await Domain.updateOne({ _id: domainId }, { $push: { user: userId }})
+  } catch (error) {
+    ctx.throw(500)
+  }
+  ctx.body = {
+    success: true
+  }
+}
+
+exports.removeUser = async (ctx, next) => {
+  const domainId = ctx.params.id
+  const userId = ctx.request.body.id
+  console.log(userId)
+  if (userId === null || userId === undefined || userId === '') 
+    ctx.throw(400, 'user required')
+  try {
+    await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
+  } catch (error) {
+    if (error.name === 'CastError')
+      ctx.throw(400, 'domain required')
+    ctx.throw(500)
+  }
+  try {
+    await Domain.updateOne({ _id: domainId}, { $pull: { user: userId }})
   } catch (error) {
     ctx.throw(500)
   }

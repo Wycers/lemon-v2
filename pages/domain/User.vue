@@ -66,22 +66,15 @@ div
         v-list-tile-avatar
           img(:src="item.avatar")
         v-list-tile-content(@click="test")
-          v-list-tile-title {{ item.username }}
+          v-list-tile-title {{ item.username }} {{ item._id }}
         v-list-tile-action
-          v-btn(icon ripple)
-            v-icon(
-              color="info"
-              @click="view(item._id)"
-            ) info
+          v-btn(icon ripple @click="viewUser(item._id)")
+            v-icon(color="info") info
         v-list-tile-action(v-if="isAdmin")
-          v-btn(icon ripple)
-            v-icon(
-              color="red lighen-2"
-              @click="remove(item._id)"
-            ) delete
+          v-btn(icon ripple @click="removeUser(item._id)")
+            v-icon(color="red lighen-2") delete
           //- v-list-tile-sub-title(v-html="item.subtitle")
       v-divider(v-else-if="item.divider" :inset="item.inset" :key="index")
-
 </template>
 <script>
 import http from '../../utils/http'
@@ -134,22 +127,25 @@ export default {
   },
   methods: {
     test() {
-      alert('clcik')
+      alert('click')
     },
-    view(id) {
+    viewUser(id) {
       this.$router.push(`/user/${id}`)
     },
     async addUser() {
-      id = this.model
+      const id = this.model
       try {
-        const res = await http.put('/domain/user', { id })
+        const res = await http.put(`/domain/${this.id}/user`, { id: id })
       } catch (err) {
         console.log(err)
       }
     },
-    async delete(id) {
+    async removeUser(id) {
+      console.log(id)
       try {
-        const res = await http.delete('/domain/user', { id })
+        const res = await http.delete(`/domain/${this.id}/user/`, {
+          data: { id }
+        })
       } catch (err) {
         console.log(err)
       }
