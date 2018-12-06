@@ -21,7 +21,8 @@ module.exports = () => {
 
   // qiniu
   router.post('/qiniu/upload', Qiniu.upload)
-  router.post('/qiniu/callback', Qiniu.callback, User.setAvatar)
+  router.post('/qiniu/callback', Qiniu.callback)
+  router.post('/resource/upload', Qiniu.uploadResouce)
 
   //domain
   router.put('/domain', Domain.createDomain)
@@ -31,6 +32,7 @@ module.exports = () => {
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
 
+  
   // DB Interface test
   router.get('/test/user/users', User.users)
   router.post('/test/user/add', User.addUser)
