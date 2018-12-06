@@ -21,8 +21,9 @@ module.exports = () => {
 
   // qiniu
   router.post('/qiniu/upload', Qiniu.upload)
-  router.post('/qiniu/callback', Qiniu.callback)
-  router.post('/resource/upload', Qiniu.uploadResouce)
+  router.post('/qiniu/callback', Qiniu.callback, User.setAvatar)
+  router.post('/resource/upload', Qiniu.resourceUpload)
+  router.post('/resource/callback', Qiniu.resourceCallback)
 
   //domain
   router.put('/domain', Domain.createDomain)

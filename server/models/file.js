@@ -24,7 +24,7 @@ var fileSchema = new Schema({
   },
   belong: {
     type: Schema.Types.ObjectId,
-    ref: ''
+    ref: 'Folder'
   },
   meta: {
     createAt: {

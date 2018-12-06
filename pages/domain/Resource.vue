@@ -261,17 +261,9 @@ export default {
       })
         .then(res => {
           console.log(res)
-          if (res.data.success === true) {
-            try {
-              this.$store.commit('auth/SET_USER', res.data.user)
-            } catch (error) {
-              alert('failed')
-            }
-          } else {
-            alert('failed')
-          }
         })
         .catch(err => {
+          console.log(err)
           alert('failed')
         })
     },
