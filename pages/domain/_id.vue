@@ -15,16 +15,16 @@ div
 
     v-tab(ripple) Resources
     v-tab-item
-      Resource(v-if="domain.folder" :id="id" :isAdmin="domain.isAdmin")
-
-      
-      v-card(flat)
-        v-flex(
+      Resource(v-if="domain.domain.folder !== undefined" :id="id" :isAdmin="domain.isAdmin" :rootId="domain.domain.folder")
+      v-card(v-else flat)
+        v-flex.my-3(
+          class="text-xs-center text-sm-center text-md-center text-lg-center"
+        ) 
+          div.headline There is no folder for this domain
+        v-flex.my-3(
           class="text-xs-center text-sm-center text-md-center text-lg-center"
         )
-          v-card-title There is no folder for this domain.
-          v-card-actions 
-              v-btn Create One?
+          v-btn(@click="createFolder") Create One
 
     v-tab(ripple) Announcements
     v-tab-item
@@ -80,6 +80,11 @@ export default {
     fetchUsers() {
       http.get(`/domain/${this.id}/users`).then(res => {
         this.users = res.data.data
+      })
+    },
+    createFolder() {
+      http.put(`/domain/${this.id}/folder`).then(res => {
+        console.log(res)
       })
     }
   }

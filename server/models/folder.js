@@ -14,10 +14,6 @@ var folderSchema = new Schema({
   foldername: {
     type: String
   },
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  },
   folder: [
     {
       type: Schema.Types.ObjectId,
@@ -31,7 +27,8 @@ var folderSchema = new Schema({
     }
   ],
   belong: {
-    
+    type: Schema.Types.ObjectId,
+    ref: 'Domain'
   },
   meta: {
     createAt: {

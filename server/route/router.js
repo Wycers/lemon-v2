@@ -33,7 +33,8 @@ module.exports = () => {
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
-  router.put('/domain/:id/folder', Folder.createFolder)
+  router.put('/domain/:domainId/folder', Folder.createFolder)
+  router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
 
   // DB Interface test
   router.get('/test/user/users', User.users)

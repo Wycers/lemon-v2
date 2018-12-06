@@ -3,10 +3,10 @@ div(color="white")
   v-toolbar(flat color="white")
     v-toolbar-title Resouces
     v-breadcrumbs(
-      :items="items"
+      :items="paths"
     )
       template(slot="item" slot-scope="props")
-        a(@click="goto(props.item.href)") {{ props.item.text }}
+        a(@click="goto(props.item.id)") {{ props.item.text }}
       v-icon(slot="divider") chevron_right
     v-spacer
     v-dialog(v-model="folder.dialog" width="30%")
@@ -82,6 +82,10 @@ export default {
     isAdmin: {
       type: Boolean,
       required: true
+    },
+    rootId: {
+      type: String,
+      required: true
     }
   },
   data: () => ({
@@ -98,10 +102,11 @@ export default {
       { text: 'Protein (g)', value: 'protein' },
       { text: 'Actions', value: 'name', align: 'center', sortable: false }
     ],
-    items: [
+    paths: [
       {
         text: 'Root',
-        href: '#'
+        href: '#',
+        id: null
       }
     ],
     desserts: [],
@@ -147,6 +152,7 @@ export default {
   },
 
   created() {
+    this.paths[0].id = this.rootId
     this.initialize()
   },
 
@@ -318,8 +324,11 @@ export default {
       if (this.$refs.folder.validate()) {
         const domainId = this.id
         const folder = this.folder.name
+        const now = this.paths[this.paths.length - 1]
         try {
-          const res = await http.put(`/domain/${domainId}/folder`, { folder })
+          const res = await http.put(`/domain/${domainId}/folder/${now.id}`, {
+            folder
+          })
         } catch (error) {
           console.log(error)
         }
