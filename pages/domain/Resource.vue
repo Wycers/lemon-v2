@@ -4,13 +4,34 @@ div(color="white")
     v-toolbar-title Resouces
     v-breadcrumbs(
       :items="items"
-      divider=">"
     )
+      template(slot="item" slot-scope="props")
+        a(@click="goto(props.item.href)") {{ props.item.text }}
+      v-icon(slot="divider") chevron_right
     v-spacer
+    v-dialog(v-model="folder.dialog" width="30%")
+      v-btn(slot="activator" color="red lighten-2" dark) New folder
+      v-card
+        v-card-title.headline.blue(primary-title) New folder
+        v-card-text
+          v-flex(
+            class="text-xs-center text-sm-center text-md-center text-lg-center"
+          )
+            v-form(ref="folder")
+              v-text-field(
+                v-model="folder.name"
+                label="Folder Name"
+                prepend-icon="folder"
+                :rules="folder.rules"
+              )
+        v-card-actions
+          v-spacer
+          v-btn(flat ripple @click="folder.dialog = false") cancel
+          v-btn(flat ripple @click="newFolder") confirm
     v-dialog(v-model="dialog" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) Upload file
       v-card
-        v-card-title.headline.blue(primary-title) Add user!
+        v-card-title.headline.blue(primary-title) Upload file
         v-card-text
           v-flex(
             class="text-xs-center text-sm-center text-md-center text-lg-center"
@@ -28,7 +49,6 @@ div(color="white")
               accept="*/*"
               @change="onFilePicked"
             )
-  </v-flex>
   v-data-table(
     :headers="headers"
     :items="desserts"
@@ -52,37 +72,36 @@ div(color="white")
 
 <script>
 import axios from 'axios'
+import http from '../../utils/http'
 export default {
+  props: {
+    id: {
+      type: String,
+      required: true
+    },
+    isAdmin: {
+      type: Boolean,
+      required: true
+    }
+  },
   data: () => ({
     dialog: false,
     headers: [
       {
         text: 'Dessert (100g serving)',
         align: 'left',
-        sortable: false,
         value: 'name'
       },
       { text: 'Calories', value: 'calories' },
       { text: 'Fat (g)', value: 'fat' },
       { text: 'Carbs (g)', value: 'carbs' },
       { text: 'Protein (g)', value: 'protein' },
-      { text: 'Actions', value: 'name', sortable: false }
+      { text: 'Actions', value: 'name', align: 'center', sortable: false }
     ],
     items: [
       {
-        text: 'Dashboard',
-        disabled: false,
-        href: 'breadcrumbs_dashboard'
-      },
-      {
-        text: 'Link 1',
-        disabled: false,
-        href: 'breadcrumbs_link_1'
-      },
-      {
-        text: 'Link 2',
-        disabled: true,
-        href: 'breadcrumbs_link_2'
+        text: 'Root',
+        href: '#'
       }
     ],
     desserts: [],
@@ -104,7 +123,15 @@ export default {
     title: 'Image Upload',
     imageName: '',
     imageUrl: '',
-    imageFile: ''
+    imageFile: '',
+    folder: {
+      name: '',
+      rules: [
+        v => v && (/^[\da-z]+$/i.test(v) || 'Invalid character!'),
+        v => v && (v.length <= 32 || '32 characters at most')
+      ],
+      dialog: false
+    }
   }),
 
   computed: {
@@ -235,7 +262,7 @@ export default {
       let file = document.getElementById('uploadFileInput').files[0] // 选择的图片文件
       this.uploadImgToQiniu(file)
     },
-    // 上传图片到七牛
+    // 上传到七牛
     async uploadImgToQiniu(file) {
       const res = await axios.post('/api/resource/upload', {
         token: this.$store.state.token
@@ -286,6 +313,20 @@ export default {
         this.imageFile = ''
         this.imageUrl = ''
       }
+    },
+    async newFolder() {
+      if (this.$refs.folder.validate()) {
+        const domainId = this.id
+        const folder = this.folder.name
+        try {
+          const res = await http.put(`/domain/${domainId}/folder`, { folder })
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    },
+    goto(id) {
+      console.log(id)
     }
   }
 }

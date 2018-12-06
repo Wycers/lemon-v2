@@ -15,7 +15,7 @@ div
 
     v-tab(ripple) Resources
     v-tab-item
-      Resource
+      Resource(:id="id" :isAdmin="domain.isAdmin")
 
     v-tab(ripple) Announcements
     v-tab-item

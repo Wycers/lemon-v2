@@ -6,6 +6,7 @@ const App = require('../controllers/app')
 const Qiniu = require('../controllers/qiniu')
 const Domain = require('../controllers/domain')
 const Limiter = require('../middleware/ratelimit')
+const Folder = require('../controllers/folder')
 
 module.exports = () => {
   var router = new Router({
@@ -32,8 +33,8 @@ module.exports = () => {
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
+  router.put('/domain/:id/folder', Folder.createFolder)
 
-  
   // DB Interface test
   router.get('/test/user/users', User.users)
   router.post('/test/user/add', User.addUser)
