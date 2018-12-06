@@ -75,6 +75,18 @@ div
             v-icon(color="red lighen-2") delete
           //- v-list-tile-sub-title(v-html="item.subtitle")
       v-divider(v-else-if="item.divider" :inset="item.inset" :key="index")
+  v-snackbar(
+    v-model="snackbar.model"
+    :color="snackbar.color"
+    right
+    top
+    :timeout="parseInt('3000')"
+  ) {{ snackbar.text }}
+    v-btn(
+      dark
+      flat
+      @click="snackbar.model = false"
+    ) Close
 </template>
 <script>
 import http from '../../utils/http'
@@ -99,7 +111,12 @@ export default {
       loading: false,
       model: null,
       search: null,
-      entries: []
+      entries: [],
+      snackbar: {
+        model: false,
+        text: '',
+        color: 'info'
+      }
     }
   },
   computed: {
@@ -132,11 +149,21 @@ export default {
     viewUser(id) {
       this.$router.push(`/user/${id}`)
     },
+    showSnackbar(text, color) {
+      this.snackbar = {
+        model: true,
+        text: text,
+        color: color
+      }
+    },
     async addUser() {
       const id = this.model
       try {
         const res = await http.put(`/domain/${this.id}/user`, { id: id })
+        this.dialog = false
+        this.showSnackbar('success', 'success')
       } catch (err) {
+        this.showSnackbar('Something wrong...', 'error')
         console.log(err)
       }
     },
@@ -146,7 +173,12 @@ export default {
         const res = await http.delete(`/domain/${this.id}/user/`, {
           data: { id }
         })
+        if (res.data.success === true) {
+          this.dialog = false
+          this.showSnackbar('success', 'success')
+        } else throw Error('rejected')
       } catch (err) {
+        this.showSnackbar('Something wrong...', 'error')
         console.log(err)
       }
     }

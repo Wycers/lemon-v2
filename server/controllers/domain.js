@@ -102,13 +102,12 @@ exports.addUser = async (ctx, next) => {
   const domainId = ctx.params.id
   const userId = ctx.request.body.id
   try {
-    user = await User.findById(userId)
+    await User.findById(userId)
   } catch (error) {
     if (error.name === 'CastError')
       ctx.throw(400, 'user required')
     ctx.throw(500)
   }
-
   try {
     const res = await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
     if (res != null) {
@@ -139,6 +138,7 @@ exports.removeUser = async (ctx, next) => {
   if (userId === null || userId === undefined || userId === '') 
     ctx.throw(400, 'user required')
 
+  const domain = await Domain.findById(domainId)
   if (await util.isAdministrator(userId, domain) !== null) {
     ctx.body = {
       success: false
