@@ -37,7 +37,7 @@ div(color="white")
             class="text-xs-center text-sm-center text-md-center text-lg-center"
           )
             v-text-field(
-              v-model="name"
+              v-model="imageName"
               label="Select file"
               prepend-icon="attach_file"
               @click="pickFile"

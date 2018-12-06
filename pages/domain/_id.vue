@@ -15,7 +15,16 @@ div
 
     v-tab(ripple) Resources
     v-tab-item
-      Resource(:id="id" :isAdmin="domain.isAdmin")
+      Resource(v-if="domain.folder" :id="id" :isAdmin="domain.isAdmin")
+
+      
+      v-card(flat)
+        v-flex(
+          class="text-xs-center text-sm-center text-md-center text-lg-center"
+        )
+          v-card-title There is no folder for this domain.
+          v-card-actions 
+              v-btn Create One?
 
     v-tab(ripple) Announcements
     v-tab-item
