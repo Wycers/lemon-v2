@@ -1,8 +1,14 @@
 exports.config = {
   qiniu: {
+  },
+  cdn: {
+    bucket: 'file',
     url: 'http://cdn.wycer.cn/',
-    accessKey: 'RLo_me2EdSkZxwyKO9xPhaRwjxXeXKGNJ5sCTj_3',
-    secretKey: '4kAQIqCrQITJq6ewksVuNW1kcMdw5D1gYUoZl9rk',
-    callback: 'http://218.5.5.242:9021/test'
+    callback: 'https://cac1d59c.ngrok.io/api/qiniu/callback'
+  },
+  pan: {
+    bucket: 'disk',
+    url: 'http://pan.wycer.cn/',
+    callback: 'https://cac1d59c.ngrok.io/api/qiniu/callback'
   }
 }
