@@ -7,24 +7,28 @@ div(color="white")
       divider=">"
     )
     v-spacer
-    v-dialog(v-model="dialog" v-if="isAdmin" width="30%")
-      v-btn(slot="activator" color="red lighten-2" dark) Add User
+    v-dialog(v-model="dialog" width="30%")
+      v-btn(slot="activator" color="red lighten-2" dark) Upload file
       v-card
         v-card-title.headline.blue(primary-title) Add user!
-        v-card-text hello
-        v-divider
-        v-card-actions
-          v-spacer
-          v-btn(
-            color="primary"
-            flat
-            @click="dialog = false"
-          ) cancel
-          v-btn(
-            color="primary"
-            flat
-            @click="addUser"
-          ) submit
+        v-card-text
+          v-flex(
+            class="text-xs-center text-sm-center text-md-center text-lg-center"
+          )
+            v-text-field(
+              v-model="name"
+              label="Select file"
+              prepend-icon="attach_file"
+              @click="pickFile"
+            )
+            input(
+              ref="file"
+              type="file"
+              style="display: none"
+              accept="*/*"
+              @change="onFilePicked"
+            )
+  </v-flex>
   v-data-table(
     :headers="headers"
     :items="desserts"
@@ -43,9 +47,11 @@ div(color="white")
         color="primary"
         @click="initialize"
       ) Reset
+  //- TODO: Upload progress
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data: () => ({
     dialog: false,
@@ -95,7 +101,10 @@ export default {
       carbs: 0,
       protein: 0
     },
-    test: 'jASKdlJKSADHJKASDASD'
+    title: 'Image Upload',
+    imageName: '',
+    imageUrl: '',
+    imageFile: ''
   }),
 
   computed: {
@@ -217,6 +226,74 @@ export default {
         this.desserts.push(this.editedItem)
       }
       this.close()
+    },
+
+    pickFile() {
+      this.$refs.file.click()
+    },
+    uploadInputchange() {
+      let file = document.getElementById('uploadFileInput').files[0] // 选择的图片文件
+      this.uploadImgToQiniu(file)
+    },
+    // 上传图片到七牛
+    async uploadImgToQiniu(file) {
+      const res = await axios.post('/api/resource/upload', {
+        token: this.$store.state.token
+      })
+      console.log(res)
+      const axiosInstance = axios.create({ withCredentials: false })
+      // withCredentials 禁止携带cookie，带cookie在七牛上有可能出现跨域问题
+      let data = new FormData()
+      data.append('token', res.data.token)
+      data.append('file', file)
+      axiosInstance({
+        method: 'POST',
+        url: 'http://upload-z2.qiniup.com', //上传地址
+        data: data,
+        // 超时时间，因为图片上传有可能需要很久
+        onUploadProgress: progressEvent => {
+          //imgLoadPercent 是上传进度，可以用来添加进度条
+          let imgLoadPercent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          )
+          console.log(imgLoadPercent)
+        }
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.success === true) {
+            try {
+              this.$store.commit('auth/SET_USER', res.data.user)
+            } catch (error) {
+              alert('failed')
+            }
+          } else {
+            alert('failed')
+          }
+        })
+        .catch(err => {
+          alert('failed')
+        })
+    },
+    onFilePicked(e) {
+      const files = e.target.files
+      if (files[0] !== undefined) {
+        this.imageName = files[0].name
+        if (this.imageName.lastIndexOf('.') <= 0) {
+          return
+        }
+        const fr = new FileReader()
+        fr.readAsDataURL(files[0])
+        fr.addEventListener('load', () => {
+          this.imageUrl = fr.result
+          this.imageFile = files[0] // this is an image file that can be sent to server...
+          this.uploadImgToQiniu(files[0])
+        })
+      } else {
+        this.imageName = ''
+        this.imageFile = ''
+        this.imageUrl = ''
+      }
     }
   }
 }
