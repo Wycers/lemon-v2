@@ -29,6 +29,10 @@ var domainSchema = new Schema({
     ref: 'Domain',
     default: null
   },
+  folder: {
+    type: Schema.Types.ObjectId,
+    ref: 'Folder'
+  },
   notice: [
     {
       type: Schema.Types.ObjectId,
