@@ -12,6 +12,6 @@ exports.isAdministrator = async (userId, domain) => {
       domain = domain.father
     else
       return role
-  } while (domain === null)
+  } while (domain !== null)
   return null
 }
