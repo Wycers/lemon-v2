@@ -14,9 +14,8 @@ div
         v-card-title {{ domain.intro }}
 
     v-tab(ripple) Resources
-    v-tab-item()
-      v-card(flat)
-        v-card-title resources
+    v-tab-item
+      Resource
 
     v-tab(ripple) Announcements
     v-tab-item
@@ -49,9 +48,11 @@ div
 <script>
 import http from '../../utils/http'
 import User from './User'
+import Resource from './Resource'
 export default {
   components: {
-    User
+    User,
+    Resource
   },
   async asyncData({ params }) {
     const res = await http.get(`/domain/${params.id}`)
