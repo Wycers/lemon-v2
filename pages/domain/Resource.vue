@@ -33,6 +33,13 @@ div(color="white")
       v-card
         v-card-title.headline.blue(primary-title) Upload file
         v-card-text
+          v-progress-linear(
+            v-model="progress"
+            :active="show"
+            :indeterminate="query"
+            :query="true"
+            color="blue"
+          )
           v-flex(
             class="text-xs-center text-sm-center text-md-center text-lg-center"
           )
@@ -51,28 +58,31 @@ div(color="white")
             )
   v-data-table(
     :headers="headers"
-    :items="desserts"
+    :items="files"
   )
     template(slot="items" slot-scope="props")
-      td {{ props.item.name }}
-      td {{ props.item.calories }}
-      td {{ props.item.fat }}
-      td {{ props.item.carbs }}
-      td {{ props.item.protein }}
+      td
+        v-icon.small {{ props.item.type === 'folder' ? 'folder' : 'file_copy' }}
+        a(@click="enter(props.item)" href="#") {{ props.item.filename }}
+      td {{ props.item.filesize }}
+      td {{ props.item.updateTime }}
       td.justify-center.layout.px-0
         v-icon(small @click="editItem(props.item)") edit
         v-icon(small @click="deleteItem(props.item)") delete
     template(slot="no-data")
-      v-btn(
-        color="primary"
-        @click="initialize"
-      ) Reset
+      v-alert(
+        :value="true"
+        color="info"
+        icon="info"
+      ) Sorry, nothing to display here :(
   //- TODO: Upload progress
 </template>
 
 <script>
 import axios from 'axios'
 import http from '../../utils/http'
+import filesize from 'filesize'
+
 export default {
   props: {
     id: {
@@ -92,24 +102,16 @@ export default {
     dialog: false,
     headers: [
       {
-        text: 'Dessert (100g serving)',
+        text: 'filename',
         align: 'left',
-        value: 'name'
+        value: 'filename'
       },
-      { text: 'Calories', value: 'calories' },
-      { text: 'Fat (g)', value: 'fat' },
-      { text: 'Carbs (g)', value: 'carbs' },
-      { text: 'Protein (g)', value: 'protein' },
+      { text: 'filesize', value: 'filesize' },
+      { text: 'update_time', value: 'updateTime' },
       { text: 'Actions', value: 'name', align: 'center', sortable: false }
     ],
-    paths: [
-      {
-        text: 'Root',
-        href: '#',
-        id: null
-      }
-    ],
-    desserts: [],
+    paths: [],
+    files: [],
     editedIndex: -1,
     editedItem: {
       name: '',
@@ -136,100 +138,66 @@ export default {
         v => v && (v.length <= 32 || '32 characters at most')
       ],
       dialog: false
-    }
+    },
+    progress: 0,
+    query: false,
+    show: true,
+    interval: 0
   }),
 
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    },
+    now() {
+      return this.paths[this.paths.length - 1].id
     }
   },
 
   watch: {
     dialog(val) {
       val || this.close()
+    },
+    paths(val) {
+      this.initialize()
     }
   },
 
   created() {
-    this.paths[0].id = this.rootId
-    this.initialize()
+    this.paths.push({
+      text: 'Root',
+      id: this.rootId
+    })
   },
 
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
-        },
-        {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3
-        },
-        {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7
-        }
-      ]
+    async initialize() {
+      const domainId = this.id
+      try {
+        const res = await http.get(`/domain/${domainId}/folder/${this.now}`)
+        let files = []
+        res.data.folder.forEach(folder => {
+          files.push({
+            id: folder._id,
+            filename: folder.foldername,
+            updateTime: folder.meta.updateAt,
+            filesize: 0,
+            type: 'folder'
+          })
+        })
+        res.data.file.forEach(file => {
+          files.push({
+            id: file._id,
+            filename: file.filename,
+            updateTime: file.meta.updateAt,
+            filesize: filesize(file.entity.size),
+            tpye: 'file'
+          })
+        })
+        this.files = files
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     editItem(item) {
@@ -270,7 +238,10 @@ export default {
     },
     // 上传到七牛
     async uploadImgToQiniu(file) {
-      const res = await axios.post('/api/resource/upload', {
+      this.query = true
+      this.show = true
+      this.progress = 0
+      const res = await axios.post(`/api/folder/${this.now}/upload`, {
         token: this.$store.state.token
       })
       console.log(res)
@@ -279,6 +250,7 @@ export default {
       let data = new FormData()
       data.append('token', res.data.token)
       data.append('file', file)
+      this.query = false
       axiosInstance({
         method: 'POST',
         url: 'http://upload-z2.qiniup.com', //上传地址
@@ -289,11 +261,14 @@ export default {
           let imgLoadPercent = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           )
+          this.progress = imgLoadPercent
           console.log(imgLoadPercent)
         }
       })
         .then(res => {
-          console.log(res)
+          this.dialog = false
+          this.show = false
+          this.initialize()
         })
         .catch(err => {
           console.log(err)
@@ -324,18 +299,34 @@ export default {
       if (this.$refs.folder.validate()) {
         const domainId = this.id
         const folder = this.folder.name
-        const now = this.paths[this.paths.length - 1]
         try {
-          const res = await http.put(`/domain/${domainId}/folder/${now.id}`, {
+          const res = await http.put(`/domain/${domainId}/folder/${this.now}`, {
             folder
           })
+          this.initialize()
         } catch (error) {
           console.log(error)
+        } finally {
+          this.folder.dialog = false
         }
       }
     },
     goto(id) {
-      console.log(id)
+      this.paths.forEach((path, index) => {
+        if (path.id === id) {
+          this.paths.splice(index + 1, this.paths.length)
+          return
+        }
+      })
+    },
+    enter(val) {
+      if (val.type === 'folder') {
+        this.paths.push({
+          text: val.filename,
+          id: val.id
+        })
+      }
+      console.log(val)
     }
   }
 }

@@ -5,6 +5,7 @@ var xss = require('xss')
 var mongoose = require('mongoose')
 var Entity = mongoose.model('Entity')
 var File = mongoose.model('File')
+var Folder = mongoose.model('Folder')
 
 const accessKey = config.qiniu.accessKey
 const secretKey = config.qiniu.secretKey
@@ -115,9 +116,97 @@ exports.resourceCallback = async (ctx, next) => {
         owner: body.userId,
         entity: entity._id
       }).save(opts)
-      await session.commitTransaction();
-      session.endSession();
     }
+    await session.commitTransaction();
+    session.endSession();
+    ctx.body = {
+      success: true
+    }
+  } catch(error) {
+    console.log(error)
+    await session.abortTransaction();
+    session.endSession();
+    ctx.body = {
+      success: false
+    }
+    throw error;
+  }
+}
+
+
+
+const folderCallback = 'http://wycer.free.idcfengye.com/api/folder/callback'
+exports.folderUpload = async (ctx, next) => {
+  const body = ctx.request.body || {}
+  const folderId = ctx.params.folderId || 'null'
+  var options = { 
+    scope: panBucket,
+    callbackUrl: folderCallback,
+    callbackBody: `
+      {
+        "userId": "${ctx.session.userId}",
+        "folder": "${folderId}",
+        "key": "$(key)",
+        "hash":"$(etag)", 
+        "mimeType": "$(mimeType)",
+        "fsize":"$(fsize)",
+        "fname":"$(fname)"
+      }
+    `,
+    callbackBodyType: 'application/json'
+  }
+  const putPolicy = new qiniu.rs.PutPolicy(options)
+  const uploadToken = putPolicy.uploadToken(mac)
+  if (Object.keys(body).length === 0) {
+    ctx.body = {
+      token: uploadToken
+    }
+  }
+}
+
+exports.folderCallback = async (ctx, next) => {
+  const auth = ctx.request.headers.authorization
+  if (qiniu.util.isQiniuCallback(mac, folderCallback, null, auth) === false) {
+    ctx.body = {
+      success: false
+    }
+    return
+  }
+  const body = ctx.request.body || {}
+  console.log(body)
+  const session = await Entity.startSession()
+  session.startTransaction()
+  try {
+    const opts = { session };
+    let entity = await Entity.findOne({ key: body.key });
+    if (entity === null) {
+      entity = await Entity({
+        key: body.key,
+        mimeType: body.mimeType,
+        size: body.fsize
+      }).save(opts)
+    }
+    let file = await File.findOne({
+      owner: body.userId,
+      entity: entity._id
+    })
+    if (file === null) {
+      file = await File({
+        filename: xss(body.fname.trim()),
+        owner: body.userId,
+        entity: entity._id
+      }).save(opts)
+    }
+    const folderId = body.folder
+    await Folder.updateOne({
+      _id: folderId
+    }, {
+      $push: {
+        file: file._id 
+      }
+    })
+    await session.commitTransaction();
+    session.endSession();
     ctx.body = {
       success: true
     }

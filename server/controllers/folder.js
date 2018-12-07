@@ -56,3 +56,28 @@ exports.createFolder = async (ctx, next) => {
     ctx.throw(500)
   }
 }
+
+var filesize = require('filesize')
+exports.listFolder = async (ctx, next) => {
+  const folderId = ctx.params.folderId
+  let folder = await Folder.findById(folderId, {
+    _id: 1,
+    folder: 1,
+    file: 1
+  })
+  .populate({
+    path: 'folder', 
+    select: ['_id', 'foldername', 'meta.updateAt']
+  })
+  .populate({
+    path: 'file',
+    select: ['_id', 'filename', 'meta.updateAt', 'entity'],
+    populate: {
+      path: 'entity',
+      select: ['size']
+    }
+  })
+  console.log(filesize(500))
+  console.log(folder)
+  ctx.body = folder
+}
