@@ -10,30 +10,45 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var userSchema = new Schema({
-  username: {
-    unique: true,
+var domainSchema = new Schema({
+  avatar: {
+    type: String,
+  },
+  type: {
+    type: Number
+  },
+  name: {
+    type: String,
+    unique: true
+  },
+  intro: {
     type: String
   },
-  password: {
-    type: String
+  father: {
+    type: Schema.Types.ObjectId,
+    ref: 'Domain',
+    default: null
   },
-  verifyCode: String,
-  verified: {
-    type: Boolean,
-    default: false
+  folder: {
+    type: Schema.Types.ObjectId,
+    ref: 'Folder'
   },
-  token: String,
-  nickname: String,
-  avatar: String,
-  msgs: [
+  notice: [
     {
-      source: {
-        type: String,
-      },
-      content: {
-        type: String
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'Notice'
+    }
+  ],
+  event: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Event'
+    }
+  ],
+  user: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
   meta: {
@@ -49,7 +64,7 @@ var userSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-userSchema.pre('save', function(next) {
+domainSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -64,10 +79,6 @@ userSchema.pre('save', function(next) {
  * @type {[type]}
  */
 // 参数User 数据库中的集合名称, 不存在会创建.
-var User = mongoose.model('User', userSchema)
+var Domain = mongoose.model('Domain', domainSchema)
 
-module.exports = User
-
-/**
- * nodejs中文社区这篇帖子对mongoose的用法总结的不错：https://cnodejs.org/topic/548e54d157fd3ae46b233502
- */
+module.exports = Domain

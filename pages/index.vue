@@ -48,7 +48,7 @@
             color="primary"
             flat
             nuxt
-            to="/inspire">Continue</v-btn>
+            to="/domain">Continue</v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>

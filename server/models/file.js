@@ -10,32 +10,22 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var userSchema = new Schema({
-  username: {
-    unique: true,
+var fileSchema = new Schema({
+  filename: {
     type: String
   },
-  password: {
-    type: String
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
-  verifyCode: String,
-  verified: {
-    type: Boolean,
-    default: false
+  entity: {
+    type: Schema.Types.ObjectId,
+    ref: 'Entity'
   },
-  token: String,
-  nickname: String,
-  avatar: String,
-  msgs: [
-    {
-      source: {
-        type: String,
-      },
-      content: {
-        type: String
-      }
-    }
-  ],
+  belong: {
+    type: Schema.Types.ObjectId,
+    ref: 'Folder'
+  },
   meta: {
     createAt: {
       type: Date,
@@ -49,7 +39,7 @@ var userSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-userSchema.pre('save', function(next) {
+fileSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -64,10 +54,6 @@ userSchema.pre('save', function(next) {
  * @type {[type]}
  */
 // 参数User 数据库中的集合名称, 不存在会创建.
-var User = mongoose.model('User', userSchema)
+var File = mongoose.model('File', fileSchema)
 
-module.exports = User
-
-/**
- * nodejs中文社区这篇帖子对mongoose的用法总结的不错：https://cnodejs.org/topic/548e54d157fd3ae46b233502
- */
+module.exports = File

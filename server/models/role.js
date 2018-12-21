@@ -1,3 +1,4 @@
+
 'use strict'
 
 var mongoose = require('mongoose')
@@ -10,32 +11,22 @@ var Schema = mongoose.Schema
  * 除了定义结构外，还定义文档的实例方法，静态模型方法，复合索引，中间件等
  * @type {mongoose}
  */
-var userSchema = new Schema({
-  username: {
-    unique: true,
-    type: String
+var roleSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
-  password: {
-    type: String
+  name: {
+    type: String,
   },
-  verifyCode: String,
-  verified: {
-    type: Boolean,
-    default: false
+  system: {
+    type: String,
+    default: 'domain'
   },
-  token: String,
-  nickname: String,
-  avatar: String,
-  msgs: [
-    {
-      source: {
-        type: String,
-      },
-      content: {
-        type: String
-      }
-    }
-  ],
+  domain: {
+    type: Schema.Types.ObjectId,
+    ref: 'Domain'
+  },
   meta: {
     createAt: {
       type: Date,
@@ -49,7 +40,7 @@ var userSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-userSchema.pre('save', function(next) {
+roleSchema.pre('save', function(next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
@@ -59,15 +50,11 @@ userSchema.pre('save', function(next) {
 })
 
 /**
- * 定义模型User
+ * 定义模型Notice
  * 模型用来实现我们定义的模式，调用mongoose.model来编译Schema得到Model
  * @type {[type]}
  */
-// 参数User 数据库中的集合名称, 不存在会创建.
-var User = mongoose.model('User', userSchema)
+// 参数Notice 数据库中的集合名称, 不存在会创建.
+var Role = mongoose.model('Role', roleSchema)
 
-module.exports = User
-
-/**
- * nodejs中文社区这篇帖子对mongoose的用法总结的不错：https://cnodejs.org/topic/548e54d157fd3ae46b233502
- */
+module.exports = Role
