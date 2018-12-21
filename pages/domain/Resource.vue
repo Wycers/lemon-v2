@@ -141,7 +141,7 @@ export default {
     },
     progress: 0,
     query: false,
-    show: true,
+    show: false,
     interval: 0
   }),
 
@@ -257,17 +257,18 @@ export default {
         data: data,
         // 超时时间，因为图片上传有可能需要很久
         onUploadProgress: progressEvent => {
-          //imgLoadPercent 是上传进度，可以用来添加进度条
           let imgLoadPercent = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           )
           this.progress = imgLoadPercent
-          console.log(imgLoadPercent)
+          if (this.progress == 100) {
+            this.show = false
+            this.query = true
+          }
         }
       })
         .then(res => {
           this.dialog = false
-          this.show = false
           this.initialize()
         })
         .catch(err => {
