@@ -54,7 +54,6 @@ const handler = async (ctx, next) => {
     // console.log(ctx.response)
   } catch (err) {
     ctx.response.status = err.statusCode || err.status || 500
-    console.log(err.status)
     ctx.response.body = {
       message: err.message
     }
