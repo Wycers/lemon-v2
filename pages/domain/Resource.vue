@@ -1,7 +1,7 @@
 <template lang="pug">
-div(color="white")
-  v-toolbar(flat color="white")
-    v-toolbar-title Resouces
+v-card
+  v-card-title(flat color="white")
+    div.title Resouces
     v-breadcrumbs(
       :items="paths"
     )

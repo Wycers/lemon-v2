@@ -1,7 +1,7 @@
 <template lang="pug">
-div
-  v-toolbar(flat color="white")
-    v-toolbar-title Users
+v-card
+  v-card-title
+    div.title Users
     v-spacer
     v-dialog(v-model="dialog" v-if="isAdmin" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) Add User
