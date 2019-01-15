@@ -89,7 +89,7 @@ v-card
     ) Close
 </template>
 <script>
-import http from '../../utils/http'
+import http from '~/utils/http'
 export default {
   props: {
     id: {

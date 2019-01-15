@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   div {{ domain }} {{ active }}
-  div.headline {{ domain.name }}
+  div.headline {{ domain.domain.name }}
   v-tabs(
     v-model="active"
     color="cyan"
@@ -32,27 +32,28 @@ div
     v-tab-item
       User(:id="id" :users="users" :isAdmin="domain.isAdmin")
 
-
-
-
+    //- Setting tab
     v-tab(v-if="domain.isAdmin") Settings
     v-tab-item(v-if="domain.isAdmin")
-      v-card
-        v-card-text
-          v-form(ref="form")
-            v-text-field(
-              label="name"
-            )
+      Settings(
+        :id="id" 
+        :type="domain.domain.type"
+        :isAdmin="domain.isAdmin"
+      )
+
+
 </template>
 
 <script>
-import http from '../../utils/http'
-import User from './User'
-import Resource from './Resource'
+import http from '~/utils/http'
+import User from '~/components/User'
+import Resource from '~/components/Resource'
+import Settings from '~/components/Settings'
 export default {
   components: {
     User,
-    Resource
+    Resource,
+    Settings
   },
   async asyncData({ params }) {
     const res = await http.get(`/domain/${params.id}`)
@@ -71,11 +72,6 @@ export default {
     fetchUsers() {
       http.get(`/domain/${this.id}/users`).then(res => {
         this.users = res.data.data
-      })
-    },
-    createFolder() {
-      http.put(`/domain/${this.id}/folder`).then(res => {
-        console.log(res)
       })
     }
   }
