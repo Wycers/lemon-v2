@@ -5,12 +5,22 @@ var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
 var Role = mongoose.model('Role')
+var Activity = mongoose.model('Activity')
 var util = require('../utils/authenticate')
 
 exports.createDomain = async (ctx, next) => {
   const username = ctx.session.username
   const name = ctx.request.body.name
+  
   const radio = ctx.request.body.radio
+  if (radio < 0 || radio > 3)
+  {
+    ctx.body = {
+      success: false
+    }
+    return next
+  }
+
   const user = await User.findOne({
     username: username
   })
@@ -28,13 +38,17 @@ exports.createDomain = async (ctx, next) => {
     const opts = { session };
     const domain = await Domain({
       name: name,
-      type: radio,
       user: [{ _id: user._id }]
     }).save(opts)
     const role = await Role({
       user: { _id: user._id },
       domain: { _id: domain._id }
     }).save(opts)
+    if (radio === 3) {
+      const activity = await Activity({
+        domain: { _id: domain._id }
+      }).save(opts)
+    }
     await session.commitTransaction();
     session.endSession();
     ctx.body = {
@@ -53,14 +67,24 @@ exports.createDomain = async (ctx, next) => {
 }
 
 exports.queryDomain = async (ctx, next) => {
+  const type = ctx.query.type || null
   const username = ctx.session.username
   const user = await User.findOne({
     username: username
   })
-  let res = await Domain.find(
-    {user: {$elemMatch: { $eq: user._id }}},
-    {_id: 1, name: 1}
-  )
+  let res = null
+  console.log(type)
+  if (type === null) {
+    res = await Domain.find(
+      {user: {$elemMatch: { $eq: user._id }}},
+      {_id: 1, name: 1}
+    )
+  } else {
+    res = await Domain.find(
+      {user: {$elemMatch: { $eq: user._id }}, type: type},
+      {_id: 1, name: 1}
+    )
+  }
   ctx.body = res
 }
 
