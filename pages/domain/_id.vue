@@ -15,16 +15,7 @@ div
 
     v-tab(ripple) Resources
     v-tab-item
-      Resource(v-if="domain.domain.folder !== undefined" :id="id" :isAdmin="domain.isAdmin" :rootId="domain.domain.folder")
-      v-card(v-else flat)
-        v-flex.my-3(
-          class="text-xs-center text-sm-center text-md-center text-lg-center"
-        ) 
-          div.headline There is no folder for this domain
-        v-flex.my-3(
-          class="text-xs-center text-sm-center text-md-center text-lg-center"
-        )
-          v-btn(@click="createFolder") Create One
+      Resource(:id="id" :isAdmin="domain.isAdmin" :rootId="domain.domain.folder")
 
     v-tab(ripple) Announcements
     v-tab-item
