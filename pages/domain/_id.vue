@@ -22,11 +22,11 @@ div
       v-card(flat)
         v-card-title announcements
 
-    v-tab(ripple) Assignments
+    v-tab(ripple) Work flow
     v-tab-item
       v-card(flat)
-        v-card-title assignments
 
+        v-card-title work flow
 
     v-tab(ripple @click="fetchUsers") Users
     v-tab-item
