@@ -36,19 +36,35 @@ exports.createDomain = async (ctx, next) => {
   session.startTransaction()
   try {
     const opts = { session };
+
+    let eventType = null
+    let event = null
+    if (radio === 0) {
+      throw Error('qwq')
+    }
+    else if (radio === 1) {
+      throw Error('qwq')
+    }
+    else if (radio === 2) {
+      throw Error('qwq')
+    }
+    else {
+      eventType = 'activity'
+      event = await Activity().save(opts)
+    }
+
     const domain = await Domain({
       name: name,
+      eventType: eventType,
+      eventID: event._id,
       user: [{ _id: user._id }]
     }).save(opts)
+
     const role = await Role({
       user: { _id: user._id },
       domain: { _id: domain._id }
     }).save(opts)
-    if (radio === 3) {
-      const activity = await Activity({
-        domain: { _id: domain._id }
-      }).save(opts)
-    }
+
     await session.commitTransaction();
     session.endSession();
     ctx.body = {

@@ -34,11 +34,6 @@ var activitySchema = new Schema({
     type: Number,
     default: 0
   },
-  domain: {
-    type: Schema.Types.ObjectId,
-    ref: 'Domain',
-    default: null
-  },
   meta: {
     createAt: {
       type: Date,
