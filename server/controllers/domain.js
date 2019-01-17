@@ -56,7 +56,7 @@ exports.createDomain = async (ctx, next) => {
     const domain = await Domain({
       name: name,
       eventType: eventType,
-      eventID: event._id,
+      eventId: event._id,
       user: [{ _id: user._id }]
     }).save(opts)
 
