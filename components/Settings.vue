@@ -140,35 +140,30 @@ export default {
     async fetch() {
       const res = await http.get(`/domain/${this.domainId}/settings`)
       if (res.data.code === 0) {
-        const res = await http.get(`/domain/${this.domainId}/settings`)
-        if (res.data.code === 0) {
-          const data = res.data.data
-          console.log('xd')
-          this.commonFields = {
-            name: {
-              value: data.common.name,
-              type: 'string',
-              required: true
-            },
-            avatar: {
-              value: data.common.avatar,
-              type: 'string'
-            },
-            intro: {
-              value: data.common.intro,
-              type: 'string',
-              required: true
-            },
-            status: {
-              value: data.common.status,
-              type: 'string'
-            }
+        const data = res.data.data
+        this.commonFields = {
+          name: {
+            value: data.common.name,
+            type: 'string',
+            required: true
+          },
+          avatar: {
+            value: data.common.avatar,
+            type: 'string'
+          },
+          intro: {
+            value: data.common.intro,
+            type: 'string',
+            required: true
+          },
+          status: {
+            value: data.common.status,
+            type: 'string'
           }
-          if (data.common.status == 'private') this.public = false
-          else this.public = true
-
-          this.eventFields = data.event
         }
+        if (data.common.status == 'private') this.public = false
+        else this.public = true
+        this.eventFields = data.event
       }
     },
     async save() {
