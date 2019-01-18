@@ -40,6 +40,7 @@ module.exports = () => {
   router.get('/domain/:domainId/folder/:folderId', Folder.listFolder)
 
   router.get('/domain/:domainId/settings', Settings.getSettings)
+  router.post('/domain/:domainId/settings', Settings.setSettings)
 
   //folder
   router.post('/folder/:folderId/upload', Qiniu.folderUpload)

@@ -68,3 +68,38 @@ exports.getSettings = async (ctx, next) => {
     }
   }
 }
+
+exports.setSettings = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  let domain = null
+  try {
+    domain = await Domain.findById(domainId) 
+  } catch (error) {
+    if (error.name === 'CastError')
+      ctx.throw(400, 'domain required')
+    ctx.throw(500)
+  }
+  if (domain.eventType === 'activity') {
+
+
+    let activity = await Activity.findById(domain.eventId, {
+      acceptStart: 1,
+      acceptEnd: 1,
+      cancelStart: 1,
+      cancelEnd: 1,
+      activityStart: 1,
+      activityEnd: 1,
+      limit: 1
+    })
+    const body = ctx.request.body
+    console.log(body)
+    activity.acceptStart = body.acceptStart
+    activity.acceptEnd = body.acceptEnd
+    activity.cancelStart = body.cancelStart
+    activity.cancelEnd = body.cancelEnd
+    activity.activityStart = body.activityStart
+    activity.activityEnd = body.activityEnd
+    activity.limit = body.limit
+    activity = await activity.save()
+  }
+}

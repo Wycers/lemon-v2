@@ -171,12 +171,14 @@ export default {
       }
     },
     async save() {
-      let res = {}
+      let tmp = {}
       for (var field in this.commonFields)
-        res[field] = this.commonFields[field].value
+        tmp[field] = this.commonFields[field].value
       for (var field in this.eventFields)
-        res[field] = this.eventFields[field].value
-      res.status = this.public == true ? 'public' : 'private'
+        tmp[field] = this.eventFields[field].value
+      tmp.status = this.public == true ? 'public' : 'private'
+      console.log(tmp)
+      const res = await http.post(`/domain/${this.domainId}/settings`, tmp)
       console.log(res)
     }
   }
