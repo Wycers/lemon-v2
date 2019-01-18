@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  div {{ date }} {{ time }} {{ utc }}
+  //- div {{ datetime }} {{ utc }}
   v-menu(
     ref="menu"
     :close-on-content-click="false"

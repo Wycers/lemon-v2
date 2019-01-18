@@ -36,7 +36,7 @@ v-card
             v-model="public"
             color="primary"
           )
-    div {{ commonFields }}
+    //- div {{ commonFields }}
     v-divider
     div.subheading For {{ eventType }} domain
     v-layout(row wrap)
@@ -62,7 +62,7 @@ v-card
           v-model="item.value"
           :label="field"
         )
-      div {{ eventFields }}
+      //- div {{ eventFields }}
       
   v-snackbar(
     v-model="snackbar.model"
