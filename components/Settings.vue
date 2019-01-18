@@ -47,7 +47,8 @@ v-card
       )
         DateTimePicker(
           v-if="item.type == 'time'"
-          :label="field"
+          :field="field"
+          @change="change"
           :datetime="item.value"
         )
         v-text-field(
@@ -136,6 +137,9 @@ export default {
         text: text,
         color: color
       }
+    },
+    change(kv) {
+      this.$set(this.eventFields[kv.key], 'value', kv.value)
     },
     async fetch() {
       const res = await http.get(`/domain/${this.domainId}/settings`)

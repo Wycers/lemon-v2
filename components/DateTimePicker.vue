@@ -17,7 +17,7 @@ div
     v-text-field(
       slot="activator"
       v-model="display"
-      :label="label"
+      :label="field"
       prepend-icon="event"
       @click="now = true, menu = true"
     )
@@ -42,7 +42,7 @@ import Vue from 'vue'
 import moment from 'moment'
 export default Vue.extend({
   props: {
-    label: {
+    field: {
       type: String,
       required: true
     },
@@ -64,6 +64,13 @@ export default Vue.extend({
       return moment(this.date + ' ' + this.time).format('YYYY年MMMDo, HH:mm')
     },
     utc() {
+      const kv = {
+        key: this.field,
+        value: moment(this.date + ' ' + this.time)
+          .utc()
+          .format()
+      }
+      this.$emit('change', kv)
       return moment(this.date + ' ' + this.time)
         .utc()
         .format()
