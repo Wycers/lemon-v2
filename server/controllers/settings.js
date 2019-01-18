@@ -29,7 +29,10 @@ exports.getSettings = async (ctx, next) => {
       code: 0,
       data: {
         common: {
-
+          name: domain.name,
+          avatar: domain.avatar,
+          intro: domain.intro,
+          status: domain.status
         },
         event: {
           acceptStart: {

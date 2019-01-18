@@ -17,13 +17,15 @@ var domainSchema = new Schema({
   },
   avatar: {
     type: String,
+    default: ''
   },
   name: {
     type: String,
     unique: true
   },
   intro: {
-    type: String
+    type: String,
+    default: ''
   },
   eventType: {
     type: String,

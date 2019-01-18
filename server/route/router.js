@@ -7,6 +7,7 @@ const Qiniu = require('../controllers/qiniu')
 const Domain = require('../controllers/domain')
 const Limiter = require('../middleware/ratelimit')
 const Folder = require('../controllers/folder')
+const Settings = require('../controllers/settings')
 
 module.exports = () => {
   var router = new Router({
@@ -37,6 +38,8 @@ module.exports = () => {
   router.put('/domain/:domainId/folder', Folder.createFolder)
   router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
   router.get('/domain/:domainId/folder/:folderId', Folder.listFolder)
+
+  router.get('/domain/:domainId/settings', Settings.getSettings)
 
   //folder
   router.post('/folder/:folderId/upload', Qiniu.folderUpload)
