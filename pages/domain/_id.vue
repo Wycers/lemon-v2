@@ -36,23 +36,23 @@ div
     v-tab(v-if="domain.isAdmin") Settings
     v-tab-item(v-if="domain.isAdmin")
       Settings(
-        :id="id" 
-        :type="domain.domain.type"
-        :isAdmin="domain.isAdmin"
+        :eventId="domain.domain.eventId"
+        :eventType="domain.domain.eventType"
+        :domainId="id"
       )
-
-
 </template>
 
 <script>
 import http from '~/utils/http'
 import User from '~/components/User'
 import Resource from '~/components/Resource'
+import Workflow from '~/components/Workflow'
 import Settings from '~/components/Settings'
 export default {
   components: {
     User,
     Resource,
+    Workflow,
     Settings
   },
   async asyncData({ params }) {

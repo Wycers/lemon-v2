@@ -10,34 +10,58 @@ v-card
     v-btn(
       color="red lighten-2"
       dark
+      @click="fetch"
     ) Reset
   v-card-text
-    div {{ type }}
-    v-form(ref="form" color="white")
+    div.subheading Common
+    v-form(ref="common_setting" color="white")
       v-text-field(
         label="Domain Name"
         required
       )
-      v-switch(
-        label="Questionary"
-        :color="primary"
+      v-text-field(
+        label="Avatar"
       )
-      v-switch(
-        label="Work flow"
-        :color="primary"
+      v-text-field(
+        label="Introduction"
       )
-      v-switch(
-        label="Publish"
-        :color="primary"
+      v-layout
+        v-flex.xs-6
+          v-switch(
+            label="Publish"
+            color="primary"
+          )
+        v-flex.xs-6
+          v-switch(
+            label="Questionary"
+            color="primary"
+          )
+        v-flex.xs-6
+          v-switch(
+            label="Work flow"
+            color="primary"
+          )
+        
+        v-flex.xs-6
+          v-switch(
+            label="Resources"
+            color="primary"
+          )
+        v-flex.xs-6
+          v-switch(
+            label="Announcements"
+            color="primary"
+          )
+    v-divider
+    div.subheading For {{ eventType }} domain
+    template(v-for="(item, field) in eventFields")
+      DateTimePicker(
+        v-if="item.type == 'time'"
+        :label="field"
+        :datetime="item.value"
+        :key="field"
       )
-      v-switch(
-        label="Resources"
-        :color="primary"
-      )
-      v-switch(
-        label="Announcements"
-        :color="primary"
-      )
+      
   v-snackbar(
     v-model="snackbar.model"
     :color="snackbar.color"
@@ -48,18 +72,22 @@ v-card
 </template>
 <script>
 import http from '~/utils/http'
+import DateTimePicker from '~/components/DateTimePicker'
 export default {
+  components: {
+    DateTimePicker
+  },
   props: {
-    id: {
+    domainId: {
       type: String,
       required: true
     },
-    isAdmin: {
-      type: Boolean,
+    eventType: {
+      type: String,
       required: true
     },
-    type: {
-      type: Number,
+    eventId: {
+      type: String,
       required: true
     }
   },
@@ -69,38 +97,13 @@ export default {
       loading: false,
       model: null,
       search: null,
-      entries: [],
-      form: {
-        name: ''
-      },
       snackbar: {
         model: false,
         text: '',
         color: 'info'
-      }
-    }
-  },
-  computed: {
-    items() {
-      return this.entries.map(entry => {
-        const Description = `${entry.nickname}||${entry.studentId}`
-        return Object.assign({}, entry, { Description })
-      })
-    }
-  },
-  watch: {
-    search(val) {
-      if (this.loading === true) return
-      this.loading = true
-      http
-        .post('/user/query', { key: val })
-        .then(res => {
-          this.entries = res.data
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => (this.loading = false))
+      },
+      commonFields: {},
+      eventFields: {}
     }
   },
   methods: {
@@ -109,6 +112,13 @@ export default {
         model: true,
         text: text,
         color: color
+      }
+    },
+    async fetch() {
+      const res = await http.get(`/domain/${this.domainId}/settings`)
+      if (res.data.code === 0) {
+        this.commonFields = res.data.data.common
+        this.eventFields = res.data.data.event
       }
     },
     async save() {

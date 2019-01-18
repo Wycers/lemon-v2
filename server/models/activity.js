@@ -16,19 +16,24 @@ var activitySchema = new Schema({
     default: Date.now()
   },
   acceptEnd: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   cancelStart: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   cancelEnd: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   activityStart: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   activityEnd: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   limit: {
     type: Number,
@@ -53,6 +58,7 @@ activitySchema.pre('save', function(next) {
   } else {
     this.meta.updateAt = Date.now()
   }
+  // TODO: 约束开始结束时间
   next()
 })
 

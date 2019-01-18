@@ -28,7 +28,7 @@ var domainSchema = new Schema({
   eventType: {
     type: String,
   },
-  eventID: {
+  eventId: {
     type: String,
   },
   father: {
