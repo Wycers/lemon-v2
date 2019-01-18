@@ -55,8 +55,8 @@ export default Vue.extend({
     return {
       now: false,
       menu: false,
-      date: moment(this.datetime).format('YYYY-MM-DD'),
-      time: moment(this.datetime).format('HH:mm')
+      date: null,
+      time: null
     }
   },
   computed: {
@@ -76,7 +76,16 @@ export default Vue.extend({
         .format()
     }
   },
+  // TODO: 这里似乎有一种更优雅的.sync写法
+  watch: {
+    datetime() {
+      this.date = moment(this.datetime).format('YYYY-MM-DD')
+      this.time = moment(this.datetime).format('HH:mm')
+    }
+  },
   created() {
+    this.date = moment(this.datetime).format('YYYY-MM-DD')
+    this.time = moment(this.datetime).format('HH:mm')
     moment.locale('zh-cn')
   }
 })
