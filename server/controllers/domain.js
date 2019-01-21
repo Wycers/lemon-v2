@@ -106,20 +106,38 @@ exports.queryDomain = async (ctx, next) => {
 
 exports.getDomain = async (ctx, next) => {
   const _id = ctx.params.id
-  const domain = await Domain.findById(_id)
-  const userId = ctx.session.userId
-  console.log(domain)
+  const domain = await Domain.findById(_id, {
+    "meta": 1,
+    "status": 1,
+    "avatar": 1,
+    "intro": 1,
+    "father": 1,
+    "name": 1,
+    "eventType": 1,
+    "eventId": 1,
+    "_id": 1
+  })
   if (domain === null) {
     ctx.body = {
-      success: false
+      code: -1
     }
     return next
   }
   ctx.body = {
-    domain,
-    isAdmin: await util.isAdministrator(userId, domain) !== null
+    code: 0,
+    domain 
   }
   console.log(ctx.body)
+}
+
+exports.getRole = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  const userId = ctx.session.userId
+  const domain = await Domain.findById(domainId)
+  ctx.body = {
+    code: 0,
+    isAdmin: await util.isAdministrator(userId, domain) !== null
+  }
 }
 
 exports.getUsers = async (ctx, next) => {

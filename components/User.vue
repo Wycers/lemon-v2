@@ -3,13 +3,16 @@ v-card
   v-card-title
     div.title Users
     v-spacer
+    v-btn(
+       color="red lighten-2"
+       dark
+       @click="fetchUsers"
+    ) Refresh
     v-dialog(v-model="dialog" v-if="isAdmin" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) Add User
       v-card
         v-card-title.headline.blue(primary-title) Add user!
         v-card-text
-          //- div {{ items }}
-          //- div {{ model }}
           v-autocomplete(
             v-model="model"
             :items="items"
@@ -65,7 +68,7 @@ v-card
       v-list-tile(v-else :key="item._id")
         v-list-tile-avatar
           img(:src="item.avatar")
-        v-list-tile-content(@click="test")
+        v-list-tile-content
           v-list-tile-title {{ item.username }} {{ item._id }}
         v-list-tile-action
           v-btn(icon ripple @click="viewUser(item._id)")
@@ -92,12 +95,8 @@ v-card
 import http from '~/utils/http'
 export default {
   props: {
-    id: {
+    domainId: {
       type: String,
-      required: true
-    },
-    users: {
-      type: Array,
       required: true
     },
     isAdmin: {
@@ -116,7 +115,8 @@ export default {
         model: false,
         text: '',
         color: 'info'
-      }
+      },
+      users: []
     }
   },
   computed: {
@@ -142,11 +142,17 @@ export default {
         .finally(() => (this.loading = false))
     }
   },
+  created() {
+    this.fetchUsers()
+  },
   methods: {
-    test() {
-      alert('click')
+    fetchUsers() {
+      http.get(`/domain/${this.domainId}/users`).then(res => {
+        this.users = res.data.data
+      })
     },
     viewUser(id) {
+      console.log(id)
       this.$router.push(`/user/${id}`)
     },
     showSnackbar(text, color) {
@@ -159,7 +165,7 @@ export default {
     async addUser() {
       const id = this.model
       try {
-        const res = await http.put(`/domain/${this.id}/user`, { id: id })
+        const res = await http.put(`/domain/${this.domainId}/user`, { id: id })
         this.dialog = false
         this.showSnackbar('success', 'success')
       } catch (err) {
@@ -170,7 +176,7 @@ export default {
     async removeUser(id) {
       console.log(id)
       try {
-        const res = await http.delete(`/domain/${this.id}/user/`, {
+        const res = await http.delete(`/domain/${this.domainId}/user/`, {
           data: { id }
         })
         if (res.data.success === true) {
