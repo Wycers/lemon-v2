@@ -20,14 +20,16 @@ v-card
         label="Domain Name"
         v-model="commonFields.name.value"
         required
-      )
-      v-text-field(
-        label="Avatar"
-        v-model="commonFields.avatar.value"
+        box
       )
       v-text-field(
         label="Introduction"
         v-model="commonFields.intro.value"
+        box
+      )
+      v-text-field(
+        label="Avatar"
+        v-model="commonFields.avatar.value"
       )
       v-layout
         v-flex.xs-6
