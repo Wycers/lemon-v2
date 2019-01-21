@@ -36,7 +36,7 @@ module.exports = () => {
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
-  router.get('/domain/:domainId/overview', Domain.getOverview)
+  // router.get('/domain/:domainId/overview', Domain.getOverview)
 
   router.put('/domain/:domainId/folder', Folder.createFolder)
   router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
