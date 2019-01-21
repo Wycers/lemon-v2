@@ -12,6 +12,7 @@ v-card
     div {{ eventType }}
 </template>
 <script>
+import http from '~/utils/http'
 export default {
   props: {
     eventType: {
@@ -21,6 +22,18 @@ export default {
     eventId: {
       type: String,
       required: true
+    }
+  },
+  data() {
+    return {}
+  },
+  created() {
+    this.fetch()
+  },
+  methods: {
+    async fetch() {
+      const res = await http.get(`/${this.eventType}/${this.eventId}`)
+      console.log(res.data)
     }
   }
 }
