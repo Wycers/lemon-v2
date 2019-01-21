@@ -53,12 +53,23 @@ var activitySchema = new Schema({
 
 // Defines a pre hook for the document.
 activitySchema.pre('save', function(next) {
+  if (this.activityStart > this.activityEnd) {
+    throw new Error('endtime of activity is before starttime')
+  }
+  if (this.acceptStart > this.acceptEnd) {
+    throw new Error('endtime of accept is before starttime')
+  }
+  if (this.cancelStart > this.cancelEnd) {
+    throw new Error('endtime of cancel is before starttime')
+  }
+  if (this.limit < 0) {
+    throw new Error('invalid limit')
+  }
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {
     this.meta.updateAt = Date.now()
   }
-  // TODO: 约束开始结束时间
   next()
 })
 
