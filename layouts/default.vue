@@ -111,7 +111,11 @@
           </v-list>
         </v-menu>
       </div>
-      <div v-else>
+
+      <v-toolbar-items
+        v-else
+        class="hidden-sm-and-down"
+      >
         <v-btn 
           flat 
           large 
@@ -122,7 +126,7 @@
           large 
           color="primary"
           to="/signup">Sign up</v-btn>
-      </div>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container>
