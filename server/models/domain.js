@@ -13,7 +13,8 @@ var Schema = mongoose.Schema
 var domainSchema = new Schema({
   status: {
     type: String,
-    default: 'private'
+    default: 'private',
+    enum: ['private', 'public']
   },
   avatar: {
     type: String,

@@ -175,24 +175,25 @@ export default {
         {
           icon: 'bubble_chart',
           title: 'Domain',
-          items: [
-            {
-              title: '课程域',
-              to: '/domain'
-            },
-            {
-              title: '部门域',
-              to: '/domain'
-            },
-            {
-              title: '项目域',
-              to: '/domain'
-            },
-            {
-              title: '活动域',
-              to: '/domain'
-            }
-          ]
+          to: '/domain'
+          // items: [
+          //   {
+          //     title: '课程域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '部门域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '项目域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '活动域',
+          //     to: '/domain'
+          //   }
+          // ]
         }
       ],
       miniVariant: false,

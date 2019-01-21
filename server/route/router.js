@@ -31,6 +31,7 @@ module.exports = () => {
   router.put('/domain', Domain.createDomain)
   router.get('/domain', Domain.queryDomain)
   router.get('/domain/:id', Domain.getDomain)
+  router.get('/domain/:domainId/role', Domain.getRole)
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)

@@ -80,8 +80,6 @@ exports.setSettings = async (ctx, next) => {
     ctx.throw(500)
   }
   if (domain.eventType === 'activity') {
-
-
     let activity = await Activity.findById(domain.eventId, {
       acceptStart: 1,
       acceptEnd: 1,
@@ -101,5 +99,8 @@ exports.setSettings = async (ctx, next) => {
     activity.activityEnd = body.activityEnd
     activity.limit = body.limit
     activity = await activity.save()
+    ctx.body = {
+      code: 0
+    }
   }
 }
