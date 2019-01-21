@@ -61,6 +61,12 @@ export default Vue.extend({
   },
   computed: {
     display() {
+      this.$emit('change', {
+        key: this.field,
+        value: moment(this.date + ' ' + this.time)
+          .utc()
+          .format()
+      })
       return moment(this.date + ' ' + this.time).format('YYYY年MMMDo, HH:mm')
     }
   },
@@ -69,12 +75,6 @@ export default Vue.extend({
     datetime() {
       this.date = moment(this.datetime).format('YYYY-MM-DD')
       this.time = moment(this.datetime).format('HH:mm')
-      this.$emit('change', {
-        key: this.field,
-        value: moment(this.date + ' ' + this.time)
-          .utc()
-          .format()
-      })
     }
   },
   created() {
