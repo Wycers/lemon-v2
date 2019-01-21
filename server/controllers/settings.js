@@ -79,6 +79,12 @@ exports.setSettings = async (ctx, next) => {
       ctx.throw(400, 'domain required')
     ctx.throw(500)
   }
+  const body = ctx.request.body
+  domain.name = body.name
+  domain.intro = body.intro
+  domain.avatar = body.avatar
+  domain.status = body.status
+  domain = await domain.save()
   if (domain.eventType === 'activity') {
     let activity = await Activity.findById(domain.eventId, {
       acceptStart: 1,
@@ -89,7 +95,6 @@ exports.setSettings = async (ctx, next) => {
       activityEnd: 1,
       limit: 1
     })
-    const body = ctx.request.body
     console.log(body)
     activity.acceptStart = body.acceptStart
     activity.acceptEnd = body.acceptEnd
