@@ -10,10 +10,10 @@ div
     v-tab(ripple) Overview {{ domain.name }}
     v-tab-item 
       Overview(
-        :eventId="domain.eventId"
-        :eventType="domain.eventType"
+        :eventId="eventId"
+        :eventType="eventType"
       )
-        div hhh {{ domain.intro }}
+        div {{ domain.intro }}
 
     //- v-tab(ripple) Resources
     //- v-tab-item
@@ -31,7 +31,7 @@ div
     v-tab Users
     v-tab-item
       User(
-        :domainId="id"
+        :domainId="domainId"
         :isAdmin="isAdmin"
       )
 
@@ -39,9 +39,9 @@ div
     v-tab(v-if="isAdmin") Settings
     v-tab-item(v-if="isAdmin")
       Settings(
-        :eventId="domain.eventId"
-        :eventType="domain.eventType"
-        :domainId="id"
+        :eventId="eventId"
+        :eventType="eventType"
+        :domainId="domainId"
       )
 </template>
 
@@ -61,13 +61,15 @@ export default {
     Settings
   },
   async asyncData({ params }) {
-    const res1 = await http.get(`/domain/${params.id}`)
-    const res2 = await http.get(`/domain/${params.id}/role`)
+    const res1 = await http.get(`/domain/${params.domainId}`)
+    const res2 = await http.get(`/domain/${params.domainId}/role`)
     // TODO: network error
     return {
-      id: params.id,
-      domain: res1.data.domain,
-      isAdmin: res2.data.isAdmin
+      domainId: params.domainId,
+      domain: res1.data.data,
+      eventId: res1.data.data.eventId,
+      eventType: res1.data.data.eventType,
+      isAdmin: res2.data.data.isAdmin
     }
   },
   data() {

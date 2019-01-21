@@ -106,7 +106,7 @@ exports.queryDomain = async (ctx, next) => {
 
 exports.getDomain = async (ctx, next) => {
   const _id = ctx.params.id
-  const domain = await Domain.findById(_id, {
+  const domain = await Domain.findById(_id,  {
     "meta": 1,
     "status": 1,
     "avatar": 1,
@@ -125,7 +125,7 @@ exports.getDomain = async (ctx, next) => {
   }
   ctx.body = {
     code: 0,
-    domain 
+    data: domain
   }
   console.log(ctx.body)
 }
@@ -136,7 +136,9 @@ exports.getRole = async (ctx, next) => {
   const domain = await Domain.findById(domainId)
   ctx.body = {
     code: 0,
-    isAdmin: await util.isAdministrator(userId, domain) !== null
+    data: {
+      isAdmin: await util.isAdministrator(userId, domain) !== null
+    } 
   }
 }
 
@@ -217,5 +219,22 @@ exports.removeUser = async (ctx, next) => {
   }
   ctx.body = {
     success: true
+  }
+}
+
+exports.getOverview = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  const domain = await Domain.findById(domainId,)
+  console.log(domain)
+  if (domain.eventType === 'activity') {
+    const activity = await Activity.findById(domain.eventId)
+    console.log(activity)
+    ctx.body = {
+      code: 0,
+      data: {
+        common: domain,
+        event: activity
+      }
+    }
   }
 }
