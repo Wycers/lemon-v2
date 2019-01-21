@@ -7,13 +7,19 @@ div
     dark
     slider-color="yellow"
   )
-    v-tab(ripple) Overview {{ domain.name }}
+    v-tab(ripple) Overview
     v-tab-item 
       Overview(
+        :title="domain.name"
         :eventId="eventId"
         :eventType="eventType"
       )
-        div {{ domain.intro }}
+        v-avatar(
+          v-if="domain.avatar"
+          :size="avatarSize || 32"
+        )
+          img(:src="domain.avatar" alt="avatar")
+        div XD
 
     //- v-tab(ripple) Resources
     //- v-tab-item
