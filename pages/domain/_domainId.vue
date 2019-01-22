@@ -14,12 +14,16 @@ div
         :eventId="eventId"
         :eventType="eventType"
       )
-        v-avatar(
-          v-if="domain.avatar"
-          :size="avatarSize || 32"
-        )
-          img(:src="domain.avatar" alt="avatar")
-        div XD
+        template(slot="avatar")
+          v-avatar(
+            size="128"
+          )
+            img(
+              src="https://vuetifyjs.com/apple-touch-icon-180x180.png"
+              alt="avatar"
+            ) 
+        template(slot="main")
+          p {{ domain.intro }}
 
     //- v-tab(ripple) Resources
     //- v-tab-item

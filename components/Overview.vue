@@ -8,22 +8,25 @@ v-card
       dark
     ) Save
   v-card-text
-    slot
-    v-list(v-if="eventType === 'activity'")
-      v-subheader Activity
-      v-list-tile
-        v-list-tile-content
-          v-list-tile-title The activity will be held during {{ data.activityStart }} to {{ data.activityEnd }}.
-      v-list-tile
-        v-list-tile-content
-          v-list-tile-title You can join the activity between {{ data.acceptStart }} and {{ data.acceptEnd }}.
-      v-list-tile
-        v-list-tile-content
-          v-list-tile-title You can quit the activity between {{ data.cancelStart }} and {{ data.cancelEnd }}.
-      v-list-tile
-        v-list-tile-content
-          v-list-tile-title(v-if="data.limit == 0") There is no limit on the number of people.
-          v-list-tile-title(v-else) Limit {{ data.limit }} people to participate.
+    v-layout(row wrap :reverse="$vuetify.breakpoint.name === 'xs'")
+      v-flex(d-flex xs12 sm8 md9)
+        v-layout(row wrap)
+          v-flex(xs12)
+            slot(name="main")
+          v-flex(xs12 v-if="eventType === 'activity'")
+            v-list(dense)
+              v-subheader Activity
+              template(v-for="(value, key) in data")
+                v-list-tile(:key="key")
+                  v-list-tile-content {{ key }}
+                  v-list-tile-content.align-end {{ value }}
+      v-flex(d-flex xs12 sm4 md3
+        align-center
+        justify-center
+        layout
+        text-xs-center
+      )
+        slot(name="avatar")
 </template>
 <script>
 import http from '~/utils/http'
@@ -57,7 +60,7 @@ export default {
       if (res.data.code === 0) {
         let tmp = {}
         for (var item in res.data.data) {
-          if (item === 'meta') continue
+          if (item === 'meta' || item === '_id' || item == '__v') continue
           if (item === 'limit') tmp[item] = res.data.data[item]
           else
             tmp[item] = moment(res.data.data[item]).format('YYYY年MMMDo, HH:mm')
