@@ -130,8 +130,10 @@
     </v-toolbar>
     <v-content>
       <v-container>
+      <v-container v-if="$vuetify.breakpoint.name !== 'xs'">
         <nuxt />
       </v-container>
+      <nuxt v-else/>
     </v-content>
     <v-navigation-drawer
       :right="right"
