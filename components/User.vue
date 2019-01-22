@@ -1,7 +1,7 @@
 <template lang="pug">
 v-card
   v-card-title
-    div.title Users
+    div.title Users({{ users.length }})
     v-spacer
     v-btn(
        color="red lighten-2"
