@@ -1,7 +1,7 @@
 <template lang="pug">
 cuavatar(
   :src="avatar"
-  size=128
+  :size="128"
   @crop-success="cropSuccess"
   @crop-upload-success="cropUploadSuccess"
   @crop-upload-fail="cropUploadFail"
@@ -21,7 +21,9 @@ export default {
       return redirect('/')
     }
   },
-  data() {},
+  data() {
+    return {}
+  },
   computed: {
     ...mapState({
       nickname: state => state.auth.nickname,
