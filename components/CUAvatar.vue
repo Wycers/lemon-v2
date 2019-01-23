@@ -2,11 +2,18 @@
 div
   v-avatar(
     :size="size"
+    @mouseenter="enter"
+    @mouseleave="leave"
   )
+    transition(name="bounce")
+      v-btn(
+        v-if="mask"
+        class="mask"
+        flat
+        dark
+        @click="toggleShow"
+      ) set
     img(:src="src")
-  v-btn(
-    @click="toggleShow"
-  ) set avatar
   vicu(
     v-model="show"
     :width="300"
@@ -19,7 +26,6 @@ div
     @crop-upload-success="cropUploadSuccess"
     @crop-upload-fail="cropUploadFail"
   )
-    img(:src="imgDataUrl")
 </template>
 <script>
 import vicu from 'vue-image-crop-upload'
@@ -48,6 +54,7 @@ export default {
         token: '',
         key: ''
       },
+      mask: false,
       imgDataUrl: '' // the datebase64 url of created image
     }
   },
@@ -89,7 +96,48 @@ export default {
      */
     cropUploadFail(status, field) {
       this.$emit('crop-upload-failed', status, field)
+    },
+    enter() {
+      this.mask = true
+    },
+    leave() {
+      this.mask = false
     }
   }
 }
 </script>
+<style lang="stylus" scoped>
+.mask {
+  background-color: black;
+  position: absolute;
+  opacity: 0.6;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  margin: auto;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+}
+</style>
