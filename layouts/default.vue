@@ -129,7 +129,6 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <v-container>
       <v-container v-if="$vuetify.breakpoint.name !== 'xs'">
         <nuxt />
       </v-container>
