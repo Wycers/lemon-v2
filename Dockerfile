@@ -1,9 +1,8 @@
-FROM node
+FROM kkarczmarczyk/node-yarn
 ENV NODE_ENV=production
-ENV HOST 0.0.0.0
-RUN mkdir -p /app
-COPY . /app
 WORKDIR /app
-RUN npm run build
+COPY package.json /app
+RUN yarn --registry https://registry.npm.taobao.org && yarn cache clean
+COPY . /app
 EXPOSE 3000
-CMD [ "npm", "start" ]
+CMD ["yarn", "start"]
