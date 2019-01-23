@@ -1,4 +1,4 @@
-import http from '../../utils/http'
+import http from '~/utils/http'
 import md5 from 'md5'
 
 export default {

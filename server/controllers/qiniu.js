@@ -11,6 +11,7 @@ const accessKey = config.qiniu.accessKey
 const secretKey = config.qiniu.secretKey
 var mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 
+const cdnUrl = config.cdn.url
 const cdnCallback = config.cdn.callback
 const cdnBucket = config.cdn.bucket
 exports.upload = async (ctx, next) => {
@@ -44,6 +45,7 @@ exports.upload = async (ctx, next) => {
 exports.callback = async (ctx, next) => {
   const body = ctx.request.body || {}
   const auth = ctx.request.headers.authorization
+  console.log(body)
   if (qiniu.util.isQiniuCallback(mac, cdnCallback, null, auth) === false) {
     ctx.body = {
       success: false
@@ -51,7 +53,8 @@ exports.callback = async (ctx, next) => {
     return
   }
   ctx.body = {
-    success: true
+    success: true,
+    url: `${cdnUrl}/${body.key}`
   }
 }
 

@@ -7,6 +7,8 @@ const Qiniu = require('../controllers/qiniu')
 const Domain = require('../controllers/domain')
 const Limiter = require('../middleware/ratelimit')
 const Folder = require('../controllers/folder')
+const Settings = require('../controllers/settings')
+const Activity = require('../controllers/activity')
 
 module.exports = () => {
   var router = new Router({
@@ -30,13 +32,21 @@ module.exports = () => {
   router.put('/domain', Domain.createDomain)
   router.get('/domain', Domain.queryDomain)
   router.get('/domain/:id', Domain.getDomain)
+  router.get('/domain/:domainId/role', Domain.getRole)
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
+  // router.get('/domain/:domainId/overview', Domain.getOverview)
 
   router.put('/domain/:domainId/folder', Folder.createFolder)
   router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
   router.get('/domain/:domainId/folder/:folderId', Folder.listFolder)
+
+  router.get('/domain/:domainId/settings', Settings.getSettings)
+  router.post('/domain/:domainId/settings', Settings.setSettings)
+
+  // activity
+  router.get('/activity/:activityId', Activity.queryActivity)
 
   //folder
   router.post('/folder/:folderId/upload', Qiniu.folderUpload)

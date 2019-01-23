@@ -11,18 +11,28 @@ var Schema = mongoose.Schema
  * @type {mongoose}
  */
 var domainSchema = new Schema({
+  status: {
+    type: String,
+    default: 'private',
+    enum: ['private', 'public']
+  },
   avatar: {
     type: String,
-  },
-  type: {
-    type: Number
+    default: ''
   },
   name: {
     type: String,
     unique: true
   },
   intro: {
-    type: String
+    type: String,
+    default: ''
+  },
+  eventType: {
+    type: String,
+  },
+  eventId: {
+    type: String,
   },
   father: {
     type: Schema.Types.ObjectId,
@@ -33,18 +43,6 @@ var domainSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Folder'
   },
-  notice: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Notice'
-    }
-  ],
-  event: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Event'
-    }
-  ],
   user: [
     {
       type: Schema.Types.ObjectId,

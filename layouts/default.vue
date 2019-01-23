@@ -8,20 +8,48 @@
       app
     >
       <v-list>
-        <v-list-tile
-          v-for="(item, i) in items"
-          :to="item.to"
-          :key="i"
-          router
-          exact
-        >
-          <v-list-tile-action>
-            <v-icon v-html="item.icon" />
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title" />
-          </v-list-tile-content>
-        </v-list-tile>
+        <template v-for="(item, i) in items">
+          <v-list-tile
+            v-if="item.to"
+            :to="item.to"
+            :key="i"
+            router
+            exact
+          >
+            <v-list-tile-action>
+              <v-icon v-html="item.icon" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title v-text="item.title" />
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-group
+            v-else
+            :key="i"
+            :prepend-icon="item.icon"
+            no-action
+          >
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile
+              v-for="subItem in item.items"
+              :key="subItem.title"
+              :to="subItem.to"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+              </v-list-tile-content>
+
+              <v-list-tile-action>
+                <v-icon>{{ subItem.icon }}</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list-group>
+        </template>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -83,7 +111,11 @@
           </v-list>
         </v-menu>
       </div>
-      <div v-else>
+
+      <v-toolbar-items
+        v-else
+        class="hidden-sm-and-down"
+      >
         <v-btn 
           flat 
           large 
@@ -94,12 +126,14 @@
           large 
           color="primary"
           to="/signup">Sign up</v-btn>
-      </div>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container>
+      <v-container v-if="$vuetify.breakpoint.name !== 'xs'">
         <nuxt />
       </v-container>
+      <nuxt v-else/>
     </v-content>
     <v-navigation-drawer
       :right="right"
@@ -121,7 +155,7 @@
       app
     >
       <v-spacer />
-      <span> Wycer &copy; 2017</span>
+      <span> Wycer &copy; 2019</span>
       <span>
         <v-icon small>build</v-icon>
         {{ commit }}
@@ -139,8 +173,34 @@ export default {
       drawer: true,
       fixed: false,
       items: [
-        { icon: 'apps', title: 'Welcome', to: '/' },
-        { icon: 'bubble_chart', title: 'Domain', to: '/domain' }
+        {
+          icon: 'apps',
+          title: 'Welcome',
+          to: '/'
+        },
+        {
+          icon: 'bubble_chart',
+          title: 'Domain',
+          to: '/domain'
+          // items: [
+          //   {
+          //     title: '课程域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '部门域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '项目域',
+          //     to: '/domain'
+          //   },
+          //   {
+          //     title: '活动域',
+          //     to: '/domain'
+          //   }
+          // ]
+        }
       ],
       miniVariant: false,
       right: true,

@@ -1,7 +1,7 @@
 <template lang="pug">
-div(color="white")
-  v-toolbar(flat color="white")
-    v-toolbar-title Resouces
+v-card
+  v-card-title(flat color="white")
+    div.title Resouces
     v-breadcrumbs(
       :items="paths"
     )
@@ -57,6 +57,7 @@ div(color="white")
               @change="onFilePicked"
             )
   v-data-table(
+    v-if="rootId !== undefined"
     :headers="headers"
     :items="files"
   )
@@ -75,12 +76,21 @@ div(color="white")
         color="info"
         icon="info"
       ) Sorry, nothing to display here :(
+  div(v-else)
+    v-flex.my-3(
+      class="text-xs-center text-sm-center text-md-center text-lg-center"
+    ) 
+      div.headline There is no folder for this domain
+    v-flex.my-3(
+      class="text-xs-center text-sm-center text-md-center text-lg-center"
+    )
+      v-btn(@click="createFolder") Create One
   //- TODO: Upload progress
 </template>
 
 <script>
 import axios from 'axios'
-import http from '../../utils/http'
+import http from '~/utils/http'
 import filesize from 'filesize'
 
 export default {
@@ -295,6 +305,11 @@ export default {
         this.imageFile = ''
         this.imageUrl = ''
       }
+    },
+    async createFolder() {
+      http.put(`/domain/${this.id}/folder`).then(res => {
+        console.log(res)
+      })
     },
     async newFolder() {
       if (this.$refs.folder.validate()) {
