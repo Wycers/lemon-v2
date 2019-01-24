@@ -25,19 +25,6 @@ div
         template(slot="main")
           p {{ domain.intro }}
 
-    //- v-tab(ripple) Resources
-    //- v-tab-item
-    //-   Resource(:id="id" :isAdmin="isAdmin" :rootId="domain.folder")
-
-    //- v-tab(ripple) Announcements
-    //- v-tab-item
-    //-   v-card(flat)
-    //-     v-card-title announcements
-
-    //- v-tab(ripple) Work flow
-    //- v-tab-item
-    //-   Workflow
-
     v-tab Users
     v-tab-item
       User(
@@ -60,14 +47,12 @@ import http from '~/utils/http'
 import User from '~/components/User'
 import Overview from '~/components/Overview'
 import Resource from '~/components/Resource'
-import Workflow from '~/components/Workflow'
 import Settings from '~/components/Settings'
 export default {
   components: {
     User,
     Overview,
     Resource,
-    Workflow,
     Settings
   },
   async asyncData({ params }) {
