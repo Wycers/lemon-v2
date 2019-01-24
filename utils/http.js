@@ -3,14 +3,14 @@ import config from '../config'
 
 var http = axios.create({
   baseURL: config.api,
-  timeout: 1000,
-  headers: {
-    Authorization: localStorage.getItem('token')
-  }
+  timeout: 1000
 })
 
 http.interceptors.request.use(
   req => {
+    req.headers = {
+      Authorization: localStorage.getItem('token')
+    }
     return req
   },
   error => {

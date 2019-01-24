@@ -12,12 +12,20 @@ export default {
   // Mutations
   mutations: {
     SET_USER(state, user) {
-      var fields = 'nickname,avatar,token'.split(',')
-      fields.forEach(field => {
-        if (user[field]) {
-          state[field] = user[field]
-        }
-      })
+      const fields = 'nickname,avatar,token'.split(',')
+      if (user) {
+        fields.forEach(field => {
+          if (user[field]) {
+            state[field] = user[field]
+          }
+        })
+        localStorage.setItem('token', state['token'])
+      } else {
+        fields.forEach(field => {
+          state[field] = null
+        })
+        localStorage.removeItem('token')
+      }
     }
   },
   // Actions
