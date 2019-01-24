@@ -28,7 +28,7 @@ v-card()
         )
         v-text-field(
           label="Email"
-          v-model="nickname"
+          v-model="email"
           required
           box
         )
@@ -49,7 +49,7 @@ v-card()
 </template>
 
 <script>
-import axios from 'axios'
+import http from '~/utils/http'
 import { mapState } from 'vuex'
 import CUAvatar from '~/components/CUAvatar'
 export default {
@@ -57,15 +57,17 @@ export default {
   components: {
     cuavatar: CUAvatar
   },
+  async asyncData() {
+    try {
+      const res = await http.get('/profile')
+      if (res.data.code === 0) return res.data.data
+      throw new Error(res.data.msg)
+    } catch (err) {
+      console.log(err)
+    }
+  },
   data() {
     return {}
-  },
-  computed: {
-    ...mapState({
-      nickname: state => state.auth.nickname,
-      avatar: state => state.auth.avatar,
-      token: state => state.auth.token
-    })
   },
   methods: {
     cropSuccess(imgDataUrl, field) {
@@ -78,7 +80,7 @@ export default {
       console.log('field: ' + field)
       if (data.success === true) {
         try {
-          this.$store.commit('auth/SET_USER', {
+          this.$store.commit('user/SET_USER', {
             avatar: data.url
           })
         } catch (error) {
