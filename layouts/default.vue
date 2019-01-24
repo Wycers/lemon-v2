@@ -101,7 +101,7 @@
             {{ nickname }} 
           </v-btn>
           <v-list>
-            <v-list-tile to="/settings">
+            <v-list-tile to="/profile">
               <v-list-tile-title> 账号设置 </v-list-tile-title>
             </v-list-tile>
             <v-divider />
