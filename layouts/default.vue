@@ -209,9 +209,9 @@ export default {
   },
   computed: {
     ...mapState({
-      nickname: state => state.auth.nickname,
-      avatar: state => state.auth.avatar,
-      token: state => state.auth.token
+      nickname: state => state.user.nickname,
+      avatar: state => state.user.avatar,
+      token: state => state.user.token
     }),
     commit() {
       let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')

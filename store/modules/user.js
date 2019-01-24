@@ -5,39 +5,51 @@ export default {
   namespaced: true,
   // State
   state: {
+    token: null,
+
+    name: null,
     nickname: null,
     avatar: null,
-    token: null
+    email: null,
+    lang: null
   },
   // Mutations
   mutations: {
-    SET_USER(state, user) {
-      const fields = 'nickname,avatar,token'.split(',')
-      if (user) {
-        fields.forEach(field => {
-          if (user[field]) {
-            state[field] = user[field]
-          }
-        })
-        localStorage.setItem('token', state['token'])
+    SET_USER(state, { token }) {
+      console.log(token)
+      if (token) {
+        state.token = token
+        localStorage.setItem('token', state.token)
       } else {
+        const fields = 'nickname,avatar,email,name,token'.split(',')
         fields.forEach(field => {
           state[field] = null
         })
         localStorage.removeItem('token')
       }
+    },
+    SET_STATUS(state, data) {
+      const fields = 'nickname,avatar,email,name,lang'.split(',')
+      if (data) {
+        fields.forEach(field => {
+          if (data[field]) {
+            state[field] = data[field]
+          }
+        })
+      }
     }
   },
   // Actions
   actions: {
-    async signin({ commit }, { username, password }) {
+    async signin({ commit, dispatch }, { username, password }) {
       try {
         const res = await http.post('/u/signin', {
           username: username,
           password: md5(password)
         })
         if (res.data.success === true) {
-          commit('SET_USER', res.data.user)
+          await commit('SET_USER', res.data.user)
+          await dispatch('fetchProfile')
         } else {
           throw new Error(res.data.data)
         }
@@ -64,13 +76,27 @@ export default {
     },
     async signout({ state, commit }) {
       try {
-        const res = await http.post('/u/signout', { token: state.token })
+        const res = await http.post('/u/signout')
         if (res.data.success === true) {
-          commit('SET_USER', null)
+          commit('SET_USER', {})
         } else {
           throw new Error(res.data.data)
         }
       } catch (error) {
+        throw error
+      }
+    },
+    async fetchProfile({ commit }) {
+      try {
+        const res = await http.get('/profile')
+        if (res.data.code === 0) {
+          commit('SET_STATUS', res.data.data)
+        } else {
+          throw new Error(res.data.data)
+        }
+      } catch (error) {
+        commit('SET_USER', {})
+        console.log(error)
         throw error
       }
     }
