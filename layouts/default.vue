@@ -217,6 +217,13 @@ export default {
       let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')
       return `Build:${XD.substring(0, 8)}`
     }
+  },
+  async created() {
+    const token = localStorage.getItem('token')
+    if (token) {
+      await this.$store.commit('user/SET_USER', { token })
+      await this.$store.dispatch('user/fetchProfile')
+    }
   }
 }
 </script>
