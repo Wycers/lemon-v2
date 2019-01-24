@@ -233,3 +233,46 @@ exports.queryUser = async (ctx, next) => {
   }).limit(8)
   ctx.body = user
 }
+
+/**
+ * @description 用户获取其信息
+ */
+exports.getProfile = async (ctx, next) => {
+  ctx.body = {
+    code: 0,
+    data: {
+      nickname: ctx.user.nickname,
+      avatar: ctx.user.avatar,
+      email: ctx.user.email
+    }
+  }
+  console.log(ctx.user)
+}
+
+/**
+ * @description 将用户信息挂载进ctx
+ */
+exports.MountUser = async (ctx, next) => {
+  const token = ctx.request.headers.authorization || null
+
+  if (!token) {
+    ctx.body = {
+      code: -1, 
+      err: 'invalid token'
+    }
+    return
+  }
+
+  let user = await User.findOne({
+    token: token
+  })
+  if (!user) {
+    ctx.body = {
+      code: -1,
+      err: 'invalid token'
+    }
+  }
+  
+  ctx.user = user
+  await next()
+}

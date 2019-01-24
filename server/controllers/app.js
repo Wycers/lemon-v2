@@ -25,38 +25,14 @@ exports.hasBody = async (ctx, next) => {
 
 // 检验token
 exports.hasToken = async (ctx, next) => {
-  var token = ctx.query.token || ctx.request.body.token
+  const token = ctx.request.headers.authorization || null
 
-  if (ctx.session === null || token === null) {
+  if (!token || !ctx.session || token !== ctx.session.token) {
     ctx.body = {
-      success: false
-    }
-  }
-
-  if (!token) {
-    ctx.body = {
-      success: false,
+      code: -1,
       err: 'invalid token'
     }
-
-    return next
+    return
   }
-
-  var user = await User.findOne({
-    token: token
-  }).exec()
-
-  if (!user) {
-    ctx.body = {
-      success: false,
-      err: '用户没登陆'
-    }
-
-    return next
-  }
-
-  ctx.session = ctx.session || {}
-  ctx.session.user = user
-
   await next()
 }
