@@ -129,14 +129,10 @@ exports.signin = async (ctx, next) => {
 }
 
 exports.signout = async (ctx, next) => {
-  const token = ctx.request.body.token
-  console.log(token)
-  console.log(ctx.session)
-  if (ctx.session.token === token) {
-    ctx.session = {}
-    ctx.body = {
-      success: true
-    }
+  console.log(ctx.user)
+  ctx.session = {}
+  ctx.body = {
+    success: true
   }
 }
 

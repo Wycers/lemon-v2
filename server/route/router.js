@@ -18,7 +18,7 @@ module.exports = () => {
   // user
   router.post('/u/signin', Limiter, App.hasBody, User.signin)
   router.post('/u/signup', Limiter, App.hasBody, User.signup)
-  router.post('/u/signout', App.hasBody, App.hasToken, User.signout)
+  router.post('/u/signout', App.hasToken, User.signout)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
   router.post('/user/query', User.queryUser)
 
