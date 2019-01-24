@@ -105,7 +105,7 @@
               <v-list-tile-title> 账号设置 </v-list-tile-title>
             </v-list-tile>
             <v-divider />
-            <v-list-tile @click="signout">
+            <v-list-tile to="/signout">
               <v-list-tile-title> 登出 </v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -216,15 +216,6 @@ export default {
     commit() {
       let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')
       return `Build:${XD.substring(0, 8)}`
-    }
-  },
-  methods: {
-    async signout() {
-      try {
-        await this.$store.dispatch('auth/signout')
-      } catch (error) {
-        console.log(error)
-      }
     }
   }
 }
