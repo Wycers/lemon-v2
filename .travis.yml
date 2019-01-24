@@ -5,8 +5,8 @@ node_js: stable
 # 设置只监听哪个分支
 branches:
   only:
-  - \bfix .*\b
-  - \bfeature .*\b
+  - \bfix-.*\b
+  - \bfeature-.*\b
   - dev
 # 缓存，可以节省集成的时间
 cache:
