@@ -230,6 +230,26 @@ exports.queryUser = async (ctx, next) => {
   ctx.body = user
 }
 
+
+/**
+ * @description 用户设置其信息
+ */
+exports.setProfile = async (ctx, next) => {
+  try {
+    await User.updateOne({
+      _id: ctx.user._id
+    }, ctx.request.body)
+    ctx.body = {
+      code: 0
+    }
+  } catch (err) {
+    ctx.body = {
+      code: -2
+    }
+  }
+}
+
+
 /**
  * @description 用户获取其信息
  */

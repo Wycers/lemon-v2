@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card()
+v-card
   v-card-title.title Edit profile
   v-card-text
     v-layout(row wrap text-xs-center)
@@ -44,13 +44,16 @@ v-card()
         //- )
 
       v-flex.my-3(xs12 lg9)
-        v-btn(color="primary") Update profile
+        v-btn(
+          color="primary"
+          @click="submit"
+        ) Update profile
         v-btn cancel
 </template>
 
 <script>
 import http from '~/utils/http'
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 import CUAvatar from '~/components/CUAvatar'
 export default {
   middleware: 'auth',
@@ -66,9 +69,6 @@ export default {
       console.log(err)
     }
   },
-  data() {
-    return {}
-  },
   methods: {
     cropSuccess(imgDataUrl, field) {
       console.log('-------- crop success --------')
@@ -80,7 +80,7 @@ export default {
       console.log('field: ' + field)
       if (data.success === true) {
         try {
-          this.$store.commit('user/SET_USER', {
+          this.$store.commit('user/SET_STATUS', {
             avatar: data.url
           })
         } catch (error) {
@@ -94,6 +94,20 @@ export default {
       console.log('-------- upload fail --------')
       console.log(status)
       console.log('field: ' + field)
+    },
+    async submit() {
+      try {
+        const res = await http.post('/profile', {
+          nickname: this.nickname,
+          email: this.email,
+          avatar: this.avatar
+        })
+        if (res.data.code === 0) {
+          console.log('ok')
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 }
