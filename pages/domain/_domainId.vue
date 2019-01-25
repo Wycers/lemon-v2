@@ -49,6 +49,7 @@ import Overview from '~/components/Overview'
 import Resource from '~/components/Resource'
 import Settings from '~/components/Settings'
 export default {
+  middleware: 'auth',
   components: {
     User,
     Overview,
