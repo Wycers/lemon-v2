@@ -83,7 +83,7 @@ export default {
         const password = this.password
         const inviteCode = this.inviteCode
         try {
-          await this.$store.dispatch('auth/signup', {
+          await this.$store.dispatch('user/signup', {
             username,
             password,
             inviteCode

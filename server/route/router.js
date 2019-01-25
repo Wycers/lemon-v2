@@ -18,13 +18,17 @@ module.exports = () => {
   // user
   router.post('/u/signin', Limiter, App.hasBody, User.signin)
   router.post('/u/signup', Limiter, App.hasBody, User.signup)
-  router.post('/u/signout', App.hasBody, App.hasToken, User.signout)
+  router.post('/u/signout', App.hasToken, User.signout)
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
   router.post('/user/query', User.queryUser)
 
+  // user profile
+  router.get('/profile', App.hasToken, User.MountUser, User.getProfile)
+  router.post('/profile', App.hasToken, User.MountUser, User.setProfile)
+
   // qiniu
   router.post('/qiniu/upload', Qiniu.upload)
-  router.post('/qiniu/callback', Qiniu.callback, User.setAvatar)
+  router.post('/qiniu/callback', Qiniu.callback)
   router.post('/resource/upload', Qiniu.resourceUpload)
   router.post('/resource/callback', Qiniu.resourceCallback)
 

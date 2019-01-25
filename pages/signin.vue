@@ -66,7 +66,7 @@ export default {
         const username = this.username
         const password = this.password
         try {
-          await this.$store.dispatch('auth/signin', { username, password })
+          await this.$store.dispatch('user/signin', { username, password })
           this.color = 'success'
           this.icon = 'check_circle'
           this.message = 'success'

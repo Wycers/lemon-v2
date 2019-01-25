@@ -18,7 +18,15 @@ var userSchema = new Schema({
   password: {
     type: String
   },
-  verifyCode: String,
+  studentId: {
+    type: String,
+  },
+  email: {
+    type: String,
+    default: '',
+    unique: true,
+    required: true
+  },
   verified: {
     type: Boolean,
     default: false
@@ -26,16 +34,6 @@ var userSchema = new Schema({
   token: String,
   nickname: String,
   avatar: String,
-  msgs: [
-    {
-      source: {
-        type: String,
-      },
-      content: {
-        type: String
-      }
-    }
-  ],
   meta: {
     createAt: {
       type: Date,

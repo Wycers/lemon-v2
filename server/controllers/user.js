@@ -129,14 +129,10 @@ exports.signin = async (ctx, next) => {
 }
 
 exports.signout = async (ctx, next) => {
-  const token = ctx.request.body.token
-  console.log(token)
-  console.log(ctx.session)
-  if (ctx.session.token === token) {
-    ctx.session = {}
-    ctx.body = {
-      success: true
-    }
+  console.log(ctx.user)
+  ctx.session = {}
+  ctx.body = {
+    success: true
   }
 }
 
@@ -232,4 +228,67 @@ exports.queryUser = async (ctx, next) => {
     avatar: 1
   }).limit(8)
   ctx.body = user
+}
+
+
+/**
+ * @description 用户设置其信息
+ */
+exports.setProfile = async (ctx, next) => {
+  try {
+    await User.updateOne({
+      _id: ctx.user._id
+    }, ctx.request.body)
+    ctx.body = {
+      code: 0
+    }
+  } catch (err) {
+    ctx.body = {
+      code: -2
+    }
+  }
+}
+
+
+/**
+ * @description 用户获取其信息
+ */
+exports.getProfile = async (ctx, next) => {
+  ctx.body = {
+    code: 0,
+    data: {
+      nickname: ctx.user.nickname,
+      avatar: ctx.user.avatar,
+      email: ctx.user.email
+    }
+  }
+  console.log(ctx.user)
+}
+
+/**
+ * @description 将用户信息挂载进ctx
+ */
+exports.MountUser = async (ctx, next) => {
+  const token = ctx.request.headers.authorization || null
+
+  if (!token) {
+    ctx.body = {
+      code: -1, 
+      err: 'invalid token'
+    }
+    return
+  }
+
+  let user = await User.findOne({
+    token: token
+  })
+  if (!user) {
+    ctx.body = {
+      code: -1,
+      err: 'invalid token'
+    }
+  }
+  
+  ctx.user = user
+  await next()
 }

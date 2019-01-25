@@ -1,10 +1,10 @@
 import Vuex from 'vuex'
 
-import auth from './modules/authenticate'
+import user from '~/store/modules/user'
 const createStore = () => {
   return new Vuex.Store({
     modules: {
-      auth
+      user
     }
   })
 }

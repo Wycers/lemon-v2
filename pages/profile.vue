@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card()
+v-card
   v-card-title.title Edit profile
   v-card-text
     v-layout(row wrap text-xs-center)
@@ -28,13 +28,14 @@ v-card()
         )
         v-text-field(
           label="Email"
-          v-model="nickname"
+          v-model="email"
           required
           box
         )
         v-select(
           :items="['SUSTech English', 'Simplified Chinese']"
           box
+          disabled
           label="Preferred language"
         )
         //- v-text-field(
@@ -44,28 +45,32 @@ v-card()
         //- )
 
       v-flex.my-3(xs12 lg9)
-        v-btn(color="primary") Update profile
-        v-btn cancel
+        v-btn(
+          color="primary"
+          @click="submit"
+        ) Update profile
+        v-btn(
+          @click="reset"
+        ) cancel
 </template>
 
 <script>
-import axios from 'axios'
-import { mapState } from 'vuex'
+import http from '~/utils/http'
+// import { mapState } from 'vuex'
 import CUAvatar from '~/components/CUAvatar'
 export default {
   middleware: 'auth',
   components: {
     cuavatar: CUAvatar
   },
-  data() {
-    return {}
-  },
-  computed: {
-    ...mapState({
-      nickname: state => state.auth.nickname,
-      avatar: state => state.auth.avatar,
-      token: state => state.auth.token
-    })
+  async asyncData() {
+    try {
+      const res = await http.get('/profile')
+      if (res.data.code === 0) return res.data.data
+      throw new Error(res.data.msg)
+    } catch (err) {
+      console.log(err)
+    }
   },
   methods: {
     cropSuccess(imgDataUrl, field) {
@@ -78,7 +83,8 @@ export default {
       console.log('field: ' + field)
       if (data.success === true) {
         try {
-          this.$store.commit('auth/SET_USER', {
+          this.avatar = data.url
+          this.$store.commit('user/SET_STATUS', {
             avatar: data.url
           })
         } catch (error) {
@@ -92,6 +98,34 @@ export default {
       console.log('-------- upload fail --------')
       console.log(status)
       console.log('field: ' + field)
+    },
+    async submit() {
+      try {
+        const data = {
+          nickname: this.nickname,
+          email: this.email,
+          avatar: this.avatar
+        }
+        const res = await http.post('/profile', data)
+        if (res.data.code === 0) {
+          this.$store.commit('user/SET_STATUS', data)
+          console.log('ok')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async reset() {
+      try {
+        const res = await http.get('/profile')
+        if (res.data.code === 0) {
+          this.avatar = res.data.data.avatar
+          this.email = res.data.data.email
+          this.nickname = res.data.data.nickname
+        } else throw new Error(res.data.msg)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 }
