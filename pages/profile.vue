@@ -49,7 +49,9 @@ v-card
           color="primary"
           @click="submit"
         ) Update profile
-        v-btn cancel
+        v-btn(
+          @click="reset"
+        ) cancel
 </template>
 
 <script>
@@ -109,6 +111,18 @@ export default {
           this.$store.commit('user/SET_STATUS', data)
           console.log('ok')
         }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async reset() {
+      try {
+        const res = await http.get('/profile')
+        if (res.data.code === 0) {
+          this.avatar = res.data.data.avatar
+          this.email = res.data.data.email
+          this.nickname = res.data.data.nickname
+        } else throw new Error(res.data.msg)
       } catch (err) {
         console.log(err)
       }
