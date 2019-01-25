@@ -35,6 +35,7 @@ v-card
         v-select(
           :items="['SUSTech English', 'Simplified Chinese']"
           box
+          disabled
           label="Preferred language"
         )
         //- v-text-field(
@@ -80,6 +81,7 @@ export default {
       console.log('field: ' + field)
       if (data.success === true) {
         try {
+          this.avatar = data.url
           this.$store.commit('user/SET_STATUS', {
             avatar: data.url
           })
@@ -97,12 +99,14 @@ export default {
     },
     async submit() {
       try {
-        const res = await http.post('/profile', {
+        const data = {
           nickname: this.nickname,
           email: this.email,
           avatar: this.avatar
-        })
+        }
+        const res = await http.post('/profile', data)
         if (res.data.code === 0) {
+          this.$store.commit('user/SET_STATUS', data)
           console.log('ok')
         }
       } catch (err) {
