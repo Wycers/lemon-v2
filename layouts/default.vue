@@ -154,7 +154,7 @@
       app
     >
       <v-spacer />
-      <span> Wycer &copy; 2019</span>
+      <span>&copy; Wycer 2019</span>
       <span>
         <v-icon small>build</v-icon>
         {{ commit }}
