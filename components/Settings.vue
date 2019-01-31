@@ -14,58 +14,66 @@ v-card
       @click="fetch"
     ) Reset
   v-card-text
-    div.subheading Common
-    v-form(ref="common_setting" color="white")
-      v-text-field(
-        label="Domain Name"
-        v-model="commonFields.name.value"
-        required
-        box
-      )
-      v-text-field(
-        label="Introduction"
-        v-model="commonFields.intro.value"
-        box
-      )
-      v-text-field(
-        label="Avatar"
-        v-model="commonFields.avatar.value"
-      )
-      v-layout
-        v-flex.xs-6
-          v-switch(
-            label="Publish"
-            v-model="public"
-            color="primary"
+    v-layout(row wrap text-xs-center)
+      v-flex.my-3(xs12 lg3)
+        div.title.font-weight-light Public Avatar
+      v-flex.my-3(xs12 lg3)
+        CUAvatar(
+          :src="commonFields.avatar.value"
+          :size="128"
+          @crop-success="cropSuccess"
+          @crop-upload-success="cropUploadSuccess"
+          @crop-upload-fail="cropUploadFail"
+        )
+    v-divider.my-3
+
+    v-layout(row wrap text-xs-center)
+      v-flex.my-3(xs12 lg3)
+        div.title.font-weight-light Main Settings
+      v-flex.my-3(xs12 lg9)
+        v-form(ref="common_setting" color="white")
+          v-text-field(
+            label="Domain name"
+            v-model="commonFields.name.value"
+            required
+            box
           )
-    //- div {{ commonFields }}
-    v-divider
-    div.subheading For {{ eventType }} domain
-    v-layout(row wrap)
-      v-flex(
-        xs12 md6
-        v-for="(item, field) in eventFields"
-        :key="field"
-      )
-        DateTimePicker(
-          v-if="item.type == 'time'"
-          :field="field"
-          @change="change"
-          :datetime="item.value"
-        )
-        v-text-field(
-          v-else-if="item.type == 'number'"
-          v-model="item.value"
-          :label="field"
-          type="number"
-        )
-        v-text-field(
-          v-else-if="item.type == 'string'"
-          v-model="item.value"
-          :label="field"
-        )
-      //- div {{ eventFields }}
-      
+          v-text-field(
+            label="Domain introduction"
+            v-model="commonFields.intro.value"
+            required
+            box
+          )
+    v-divider.my-3
+
+    v-layout(row wrap text-xs-center)
+      v-flex.my-3(xs12 lg3)
+        div.title.font-weight-light Event Settings
+        div.subheading.font-weight-light {{ eventType }}
+      v-flex.my-3(xs12 lg9)
+        v-form(ref="common_setting" color="white")
+          v-flex(
+            xs12 md6
+            v-for="(item, field) in eventFields"
+            :key="field"
+          )
+            DateTimePicker(
+              v-if="item.type == 'time'"
+              :field="field"
+              @change="change"
+              :datetime="item.value"
+            )
+            v-text-field(
+              v-else-if="item.type == 'number'"
+              v-model="item.value"
+              :label="field"
+              type="number"
+            )
+            v-text-field(
+              v-else-if="item.type == 'string'"
+              v-model="item.value"
+              :label="field"
+            )
   v-snackbar(
     v-model="snackbar.model"
     :color="snackbar.color"
@@ -77,9 +85,11 @@ v-card
 <script>
 import http from '~/utils/http'
 import DateTimePicker from '~/components/DateTimePicker'
+import CUAvatar from '~/components/CUAvatar'
 export default {
   components: {
-    DateTimePicker
+    DateTimePicker,
+    CUAvatar
   },
   props: {
     domainId: {
