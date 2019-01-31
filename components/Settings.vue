@@ -19,6 +19,7 @@ v-card
         div.title.font-weight-light Public Avatar
       v-flex.my-3(xs12 lg3)
         CUAvatar(
+          :uploadUrl="`/domain/${domainId}/avatar`",
           :src="commonFields.avatar.value"
           :size="128"
           @crop-success="cropSuccess"
@@ -192,6 +193,28 @@ export default {
       console.log(tmp)
       const res = await http.post(`/domain/${this.domainId}/settings`, tmp)
       console.log(res)
+    },
+    cropSuccess(imgDataUrl, field) {
+      this.imgDataUrl = imgDataUrl
+    },
+    cropUploadSuccess(data, field) {
+      console.log('-------- upload success --------')
+      console.log(data)
+      console.log('field: ' + field)
+      if (data.success === true) {
+        try {
+          this.commonFields.avatar.value = data.url
+        } catch (error) {
+          alert('failed')
+        }
+      } else {
+        alert('failed')
+      }
+    },
+    cropUploadFail(status, field) {
+      console.log('-------- upload fail --------')
+      console.log(status)
+      console.log('field: ' + field)
     }
   }
 }

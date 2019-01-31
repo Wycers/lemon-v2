@@ -7,6 +7,7 @@ v-card
         div.title.font-weight-light Public Avatar
       v-flex.my-3(xs12 lg3)
         cuavatar(
+          :uploadUrl="'/user/avatar'"
           :src="avatar"
           :size="128"
           @crop-success="cropSuccess"
@@ -14,7 +15,7 @@ v-card
           @crop-upload-fail="cropUploadFail"
         )
     v-divider.my-3
-
+ 
     v-layout(row wrap text-xs-center)
       v-flex.my-3(xs12 lg3)
         div.title.font-weight-light Main Settings
