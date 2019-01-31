@@ -221,20 +221,3 @@ exports.removeUser = async (ctx, next) => {
     success: true
   }
 }
-
-// exports.getOverview = async (ctx, next) => {
-//   const domainId = ctx.params.domainId
-//   const domain = await Domain.findById(domainId,)
-//   console.log(domain)
-//   if (domain.eventType === 'activity') {
-//     const activity = await Activity.findById(domain.eventId)
-//     console.log(activity)
-//     ctx.body = {
-//       code: 0,
-//       data: {
-//         common: domain,
-//         event: activity
-//       }
-//     }
-//   }
-// }
