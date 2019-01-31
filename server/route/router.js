@@ -24,12 +24,12 @@ module.exports = () => {
 
   router.post('/user/avatar', App.hasToken, User.MountUser, Qiniu.uploadUserAvatar)
   router.post('/user/:userId/avatar/callback', Qiniu.validate, User.setAvatar)
+
   // user profile
   router.get('/profile', App.hasToken, User.MountUser, User.getProfile)
   router.post('/profile', App.hasToken, User.MountUser, User.setProfile)
 
   // qiniu
-  router.post('/qiniu/upload', Qiniu.upload)
   router.post('/qiniu/callback', Qiniu.callback)
   router.post('/resource/upload', Qiniu.resourceUpload)
   router.post('/resource/callback', Qiniu.resourceCallback)
@@ -42,6 +42,9 @@ module.exports = () => {
   router.get('/domain/:id/users', Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
+
+  router.post('/domain/:domainId/avatar', App.hasToken, Qiniu.uploadDomainAvatar)
+  router.post('/domain/:domainId/avatar/callback', Qiniu.validate, Domain.setAvatar)
   // router.get('/domain/:domainId/overview', Domain.getOverview)
 
   router.put('/domain/:domainId/folder', Folder.createFolder)

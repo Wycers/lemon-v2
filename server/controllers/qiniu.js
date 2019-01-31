@@ -12,6 +12,8 @@ const secretKey = config.qiniu.secretKey
 var mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 
 const cdnUrl = config.cdn.url
+const address = config.address
+
 const cdnCallback = config.cdn.callback
 const cdnBucket = config.cdn.bucket
 exports.upload = async (ctx, next) => {
