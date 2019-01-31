@@ -246,6 +246,29 @@ exports.uploadUserAvatar = async (ctx, next) => {
     token: uploadToken
   }
 }
+
+exports.uploadDomainAvatar = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  const filename = `avatar/${uuid()}`
+  const key = `${cdnBucket}:${filename}`
+  const options = {
+    scope: key,
+    callbackUrl: `${address}/api/domain/${domainId}/avatar/callback`,
+    callbackBody: `
+      {
+        "key": "$(key)"
+      }
+    `,
+    callbackBodyType: 'application/json'
+  }
+  var putPolicy = new qiniu.rs.PutPolicy(options)
+  var uploadToken = putPolicy.uploadToken(mac)
+  ctx.body = {
+    key: filename,
+    token: uploadToken
+  }
+}
+
 exports.validate = async (ctx, next) => {
   const auth = ctx.request.headers.authorization
   if (qiniu.util.isQiniuCallback(mac, `${address}${ctx.request.url}`, null, auth) === false) {

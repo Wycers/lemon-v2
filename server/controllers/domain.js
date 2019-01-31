@@ -221,3 +221,22 @@ exports.removeUser = async (ctx, next) => {
     success: true
   }
 }
+var { config } = require('../config')
+const cdnUrl = config.cdn.url
+exports.setAvatar = async (ctx, next) => {
+  const body = ctx.request.body || {}
+  const domainId = ctx.params.domainId
+  console.log(body)
+  await Domain.updateOne({
+    _id: domainId
+  }, {
+    $set: {
+      avatar: `${cdnUrl}/${body.key}`
+    }
+  })
+  console.log(domainId)
+  ctx.body = {
+    success: true,
+    url: `${cdnUrl}/${body.key}`
+  }
+}
