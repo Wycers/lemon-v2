@@ -93,7 +93,11 @@ exports.queryDomain = async (ctx, next) => {
   if (type === null) {
     res = await Domain.find(
       {user: {$elemMatch: { $eq: user._id }}},
-      {_id: 1, name: 1}
+      {
+        _id: 1,
+        name: 1,
+        avatar: 1
+      }
     )
   } else {
     res = await Domain.find(

@@ -19,7 +19,7 @@ div
             size="128"
           )
             img(
-              src="https://vuetifyjs.com/apple-touch-icon-180x180.png"
+              :src="domain.avatar"
               alt="avatar"
             ) 
         template(slot="main")
