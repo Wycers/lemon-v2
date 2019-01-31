@@ -1,7 +1,7 @@
 <template lang="pug">
 v-flex(xs12 sm6 md4 lg3 mt-4 my-3)
   v-card(v-if="profile")
-    v-card-media(
+    v-img(
       :src="profile.avatar_url"
       height="200px"
     )

@@ -16,33 +16,6 @@ const address = config.address
 
 const cdnCallback = config.cdn.callback
 const cdnBucket = config.cdn.bucket
-exports.upload = async (ctx, next) => {
-  var body = ctx.request.body || {}
-  const filename = uuid()
-  const key = cdnBucket + ':' + filename
-  var options = { 
-    scope: key,
-    callbackUrl: cdnCallback,
-    callbackBody: `
-      {
-        "username": "${ctx.session.username}",
-        "key": "$(key)",
-        "hash":"$(etag)",
-        "fsize":"$(fsize)",
-        "fname":"$(fname)"
-      }
-    `,
-    callbackBodyType: 'application/json'
-  }
-  var putPolicy = new qiniu.rs.PutPolicy(options)
-  var uploadToken = putPolicy.uploadToken(mac)
-  if (Object.keys(body).length === 0) {
-    ctx.body = {
-      key: filename,
-      token: uploadToken
-    }
-  }
-}
 
 exports.callback = async (ctx, next) => {
   const body = ctx.request.body || {}
