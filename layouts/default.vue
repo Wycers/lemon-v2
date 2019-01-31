@@ -201,7 +201,7 @@ export default {
           // ]
         },
         {
-          icon: '',
+          icon: 'info',
           title: 'About',
           to: '/about'
         }
