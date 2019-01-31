@@ -46,10 +46,10 @@ div
           v-subheader(v-if="item.header" :key="item.header") {{ item.header }}
           v-divider(v-else-if="item.divider" :inset="item.inset" :key="index") 
           v-list-tile(v-else :key="item.id" :to="`/domain/${item._id}`")
-            //- v-list-tile-avatar
-            //-   img(:src="item.avatar")
+            v-list-tile-avatar
+              img(:src="item.avatar")
             v-list-tile-content
-              v-list-tile-title(v-html="item.name")
+              v-list-tile-title {{ item.name }}
               //- v-list-tile-sub-title(v-html="item.subtitle")
 </template>
 <script>
@@ -62,32 +62,7 @@ export default {
         v => !!v || 'Name is required',
         v => (v && /[&<>"']/im.test(v) === false) || 'Invalid character'
       ],
-      domains: [
-        { header: 'Today' },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-          title: 'Brunch this weekend?',
-          url: '/domain/1',
-          subtitle:
-            "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-          url: '/domain/2',
-          subtitle:
-            "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: 'Oui oui',
-          url: '/domain/3',
-          subtitle:
-            "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
-        }
-      ],
+      domains: [],
       types: [
         {
           label: '课程域',

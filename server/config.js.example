@@ -3,14 +3,13 @@ exports.config = {
     accessKey: '',
     secretKey: ''
   },
+  address: process.env.NODE_ENV === 'development' ? '<dev address>' : '<produce address>',
   cdn: {
     bucket: '<bucket name of cdn>',
     url: '<url of cdn>',
-    callback: '<call back of cdn>'
   },
   pan: {
     bucket: '<bucket name of pan>',
     url: '<url of pan>',
-    callback: '<call back of pan>'
-  },
+  }
 }

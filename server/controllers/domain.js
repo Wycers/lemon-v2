@@ -93,7 +93,11 @@ exports.queryDomain = async (ctx, next) => {
   if (type === null) {
     res = await Domain.find(
       {user: {$elemMatch: { $eq: user._id }}},
-      {_id: 1, name: 1}
+      {
+        _id: 1,
+        name: 1,
+        avatar: 1
+      }
     )
   } else {
     res = await Domain.find(
@@ -221,20 +225,22 @@ exports.removeUser = async (ctx, next) => {
     success: true
   }
 }
-
-// exports.getOverview = async (ctx, next) => {
-//   const domainId = ctx.params.domainId
-//   const domain = await Domain.findById(domainId,)
-//   console.log(domain)
-//   if (domain.eventType === 'activity') {
-//     const activity = await Activity.findById(domain.eventId)
-//     console.log(activity)
-//     ctx.body = {
-//       code: 0,
-//       data: {
-//         common: domain,
-//         event: activity
-//       }
-//     }
-//   }
-// }
+var { config } = require('../config')
+const cdnUrl = config.cdn.url
+exports.setAvatar = async (ctx, next) => {
+  const body = ctx.request.body || {}
+  const domainId = ctx.params.domainId
+  console.log(body)
+  await Domain.updateOne({
+    _id: domainId
+  }, {
+    $set: {
+      avatar: `${cdnUrl}/${body.key}`
+    }
+  })
+  console.log(domainId)
+  ctx.body = {
+    success: true,
+    url: `${cdnUrl}/${body.key}`
+  }
+}

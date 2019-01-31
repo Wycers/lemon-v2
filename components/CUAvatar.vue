@@ -36,6 +36,11 @@ export default {
     vicu
   },
   props: {
+    uploadUrl: {
+      type: String,
+      default: '',
+      requried: true
+    },
     src: {
       type: String,
       default: '',
@@ -61,9 +66,7 @@ export default {
   },
   methods: {
     async toggleShow() {
-      const res = await http.post('/qiniu/upload', {
-        token: this.$store.state.token
-      })
+      const res = await http.post(this.uploadUrl)
       console.log(res)
       this.params = {
         token: res.data.token,
@@ -87,6 +90,8 @@ export default {
      * [param] field
      */
     cropUploadSuccess(data, field) {
+      console.log(data)
+      this.src = data.url
       this.$emit('crop-upload-success', data, field)
     },
     /**

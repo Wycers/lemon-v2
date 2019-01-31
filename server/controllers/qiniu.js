@@ -12,35 +12,10 @@ const secretKey = config.qiniu.secretKey
 var mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 
 const cdnUrl = config.cdn.url
+const address = config.address
+
 const cdnCallback = config.cdn.callback
 const cdnBucket = config.cdn.bucket
-exports.upload = async (ctx, next) => {
-  var body = ctx.request.body || {}
-  const filename = uuid()
-  const key = cdnBucket + ':' + filename
-  var options = { 
-    scope: key,
-    callbackUrl: cdnCallback,
-    callbackBody: `
-      {
-        "username": "${ctx.session.username}",
-        "key": "$(key)",
-        "hash":"$(etag)",
-        "fsize":"$(fsize)",
-        "fname":"$(fname)"
-      }
-    `,
-    callbackBodyType: 'application/json'
-  }
-  var putPolicy = new qiniu.rs.PutPolicy(options)
-  var uploadToken = putPolicy.uploadToken(mac)
-  if (Object.keys(body).length === 0) {
-    ctx.body = {
-      key: filename,
-      token: uploadToken
-    }
-  }
-}
 
 exports.callback = async (ctx, next) => {
   const body = ctx.request.body || {}
@@ -222,4 +197,60 @@ exports.folderCallback = async (ctx, next) => {
     }
     throw error;
   }
+}
+
+exports.uploadUserAvatar = async (ctx, next) => {
+  const userId = ctx.user._id
+  console.log(userId)
+  const filename = `avatar/${uuid()}`
+  const key = `${cdnBucket}:${filename}`
+  const options = {
+    scope: key,
+    callbackUrl: `${address}/api/user/${userId}/avatar/callback`,
+    callbackBody: `
+      {
+        "key": "$(key)"
+      }
+    `,
+    callbackBodyType: 'application/json'
+  }
+  var putPolicy = new qiniu.rs.PutPolicy(options)
+  var uploadToken = putPolicy.uploadToken(mac)
+  ctx.body = {
+    key: filename,
+    token: uploadToken
+  }
+}
+
+exports.uploadDomainAvatar = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  const filename = `avatar/${uuid()}`
+  const key = `${cdnBucket}:${filename}`
+  const options = {
+    scope: key,
+    callbackUrl: `${address}/api/domain/${domainId}/avatar/callback`,
+    callbackBody: `
+      {
+        "key": "$(key)"
+      }
+    `,
+    callbackBodyType: 'application/json'
+  }
+  var putPolicy = new qiniu.rs.PutPolicy(options)
+  var uploadToken = putPolicy.uploadToken(mac)
+  ctx.body = {
+    key: filename,
+    token: uploadToken
+  }
+}
+
+exports.validate = async (ctx, next) => {
+  const auth = ctx.request.headers.authorization
+  if (qiniu.util.isQiniuCallback(mac, `${address}${ctx.request.url}`, null, auth) === false) {
+    ctx.body = {
+      success: false
+    }
+    return
+  }
+  await next()
 }
