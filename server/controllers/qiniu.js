@@ -223,3 +223,36 @@ exports.folderCallback = async (ctx, next) => {
     throw error;
   }
 }
+
+exports.uploadUserAvatar = async (ctx, next) => {
+  const userId = ctx.user._id
+  console.log(userId)
+  const filename = `avatar/${uuid()}`
+  const key = `${cdnBucket}:${filename}`
+  const options = {
+    scope: key,
+    callbackUrl: `${address}/api/user/${userId}/avatar/callback`,
+    callbackBody: `
+      {
+        "key": "$(key)"
+      }
+    `,
+    callbackBodyType: 'application/json'
+  }
+  var putPolicy = new qiniu.rs.PutPolicy(options)
+  var uploadToken = putPolicy.uploadToken(mac)
+  ctx.body = {
+    key: filename,
+    token: uploadToken
+  }
+}
+exports.validate = async (ctx, next) => {
+  const auth = ctx.request.headers.authorization
+  if (qiniu.util.isQiniuCallback(mac, `${address}${ctx.request.url}`, null, auth) === false) {
+    ctx.body = {
+      success: false
+    }
+    return
+  }
+  await next()
+}

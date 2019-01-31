@@ -292,3 +292,21 @@ exports.MountUser = async (ctx, next) => {
   ctx.user = user
   await next()
 }
+
+var { config } = require('../config')
+const cdnUrl = config.cdn.url
+exports.setAvatar = async (ctx, next) => {
+  const body = ctx.request.body || {}
+  const userId = ctx.params.userId
+  await User.updateOne({
+    _id: userId
+  }, {
+    $set: {
+      avatar: `${cdnUrl}/${body.key}`
+    }
+  })
+  ctx.body = {
+    success: true,
+    url: `${cdnUrl}/${body.key}`
+  }
+}

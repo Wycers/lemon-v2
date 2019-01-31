@@ -22,6 +22,8 @@ module.exports = () => {
   router.post('/u/update', App.hasBody, App.hasToken, User.update)
   router.post('/user/query', User.queryUser)
 
+  router.post('/user/avatar', App.hasToken, User.MountUser, Qiniu.uploadUserAvatar)
+  router.post('/user/:userId/avatar/callback', Qiniu.validate, User.setAvatar)
   // user profile
   router.get('/profile', App.hasToken, User.MountUser, User.getProfile)
   router.post('/profile', App.hasToken, User.MountUser, User.setProfile)
