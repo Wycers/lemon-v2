@@ -55,6 +55,7 @@ div
 <script>
 import http from '~/utils/http'
 export default {
+  middleware: 'auth',
   data() {
     return {
       nameRules: [
