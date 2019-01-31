@@ -199,6 +199,11 @@ export default {
           //     to: '/domain'
           //   }
           // ]
+        },
+        {
+          icon: '',
+          title: 'About',
+          to: '/about'
         }
       ],
       miniVariant: false,
