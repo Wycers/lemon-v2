@@ -8416,6 +8416,11 @@ void-elements@^2.0.1:
   resolved "http://registry.npm.taobao.org/void-elements/download/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
+vue-content-placeholders@^0.2.1:
+  version "0.2.1"
+  resolved "http://registry.npm.taobao.org/vue-content-placeholders/download/vue-content-placeholders-0.2.1.tgz#5876bda4577c80ff6d396fb33b2dbbf8b8cc140f"
+  integrity sha1-WHa9pFd8gP9tOW+zOy27+LjMFA8=
+
 vue-cropper@^0.4.5:
   version "0.4.7"
   resolved "http://registry.npm.taobao.org/vue-cropper/download/vue-cropper-0.4.7.tgz#42c71efceee67107c5daa88ec3e648a80c744c6e"
