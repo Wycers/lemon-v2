@@ -14,6 +14,17 @@ div
         :eventId="eventId"
         :eventType="eventType"
       )
+        template(slot="action")
+          v-btn(
+            color="red lighten-2"
+            dark
+            @click="join"
+          ) Join
+          v-btn(
+            color="red lighten-2"
+            dark
+            @click="quit"
+          ) Quit
         template(slot="avatar")
           v-avatar(
             size="128"
@@ -68,9 +79,28 @@ export default {
       isAdmin: res2.data.data.isAdmin
     }
   },
+  inject: ['reload'],
   data() {
     return {
       active: null
+    }
+  },
+  methods: {
+    async join() {
+      try {
+        const res = await http.post(`/domain/${this.domainId}/join`)
+        this.reload()
+      } catch (err) {
+        console.err(err)
+      }
+    },
+    async quit() {
+      try {
+        const res = await http.post(`/domain/${this.domainId}/quit`)
+        this.reload()
+      } catch (err) {
+        console.err(err)
+      }
     }
   }
 }

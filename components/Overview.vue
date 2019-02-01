@@ -3,10 +3,7 @@ v-card
   v-card-title
     div.title Domain: {{ title }}
     v-spacer
-    v-btn(
-      color="red lighten-2"
-      dark
-    ) Save
+    slot(name="action")
   v-card-text
     v-layout(row wrap :reverse="$vuetify.breakpoint.name === 'xs'")
       v-flex(d-flex xs12 sm8 md9)

@@ -128,7 +128,7 @@
           to="/signup">Sign up</v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-content>
+    <v-content v-if="isRouterAlive">
       <v-container v-if="$vuetify.breakpoint.name !== 'xs'">
         <nuxt />
       </v-container>
@@ -166,6 +166,11 @@
 <script>
 import { mapState } from 'vuex'
 export default {
+  provide() {
+    return {
+      reload: this.reload
+    }
+  },
   data() {
     return {
       clipped: false,
@@ -209,7 +214,8 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Lemon-v2'
+      title: 'Lemon-v2',
+      isRouterAlive: true
     }
   },
   computed: {
@@ -228,6 +234,14 @@ export default {
     if (token) {
       await this.$store.commit('user/SET_USER', { token })
       await this.$store.dispatch('user/fetchProfile')
+    }
+  },
+  methods: {
+    reload() {
+      this.isRouterAlive = false
+      this.$nextTick(function() {
+        this.isRouterAlive = true
+      })
     }
   }
 }
