@@ -270,3 +270,32 @@ exports.searchDomain = async (ctx, next) => {
     data: domains
   }
 }
+
+exports.joinDomain = async (ctx, next) => {
+  const domainId = ctx.params.domainId
+  try {
+    const res = await Domain.findOne(
+      {
+        _id: domainId,
+        user: {
+          $elemMatch: { $eq: ctx.user._id }
+        }
+      },
+      {_id: 1, name: 1}
+    )
+    if (res) {
+      ctx.body = {
+        code: -2,
+        msg: "already in"
+      }
+      return
+    }
+    await Domain.updateOne({ _id: domainId }, { $push: { user: ctx.user._id }})
+  } catch (error) {
+    console.log(error)
+    ctx.throw(500)
+  }
+  ctx.body = {
+    code: 0
+  }
+}

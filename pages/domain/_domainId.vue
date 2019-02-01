@@ -14,6 +14,12 @@ div
         :eventId="eventId"
         :eventType="eventType"
       )
+        template(slot="action")
+          v-btn(
+            color="red lighten-2"
+            dark
+            @click="join"
+          ) Join
         template(slot="avatar")
           v-avatar(
             size="128"
@@ -71,6 +77,16 @@ export default {
   data() {
     return {
       active: null
+    }
+  },
+  methods: {
+    async join() {
+      try {
+        const res = await http.post(`/domain/${this.domainId}/join`)
+        console.log(res)
+      } catch (err) {
+        console.err(err)
+      }
     }
   }
 }

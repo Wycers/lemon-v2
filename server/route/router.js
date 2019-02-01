@@ -38,6 +38,7 @@ module.exports = () => {
   router.put('/domain', Domain.createDomain)
   router.get('/domain', Domain.queryDomain)
   router.post('/domain/search', Domain.searchDomain)
+  router.post('/domain/:domainId/join', App.hasToken, User.MountUser, Domain.joinDomain)
   router.get('/domain/:id', Domain.getDomain)
   router.get('/domain/:domainId/role', Domain.getRole)
   router.get('/domain/:id/users', Domain.getUsers)
