@@ -22,16 +22,7 @@ exports.createDomain = async (ctx, next) => {
     return next
   }
 
-  const user = await User.findOne({
-    username: username
-  })
-  if (user === null)
-  {
-    ctx.body = {
-      success: false
-    } 
-    return next
-  }
+  const user = ctx.user
   
   const session = await Domain.startSession()
   session.startTransaction()
