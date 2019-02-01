@@ -4,8 +4,10 @@ div
     v-toolbar-title Domains
     v-spacer
     v-autocomplete(
-      v-model="keyword"
+      v-model="model"
+      label="OwO..."
       :loading="loading"
+      :search-input.sync="keyword"
       flat
       hide-no-data
       hide-details
@@ -97,7 +99,27 @@ export default {
       dialog: false,
       name: '',
       radio: 2,
-      valid: true
+      valid: true,
+      loading: true,
+      keyword: '',
+      items: [],
+      model: ''
+    }
+  },
+  watch: {
+    async keyword(val) {
+      if (this.items.length > 0) return
+      this.loading = true
+      try {
+        const data = {
+          keyword: this.keyword
+        }
+        const res = await http.post('/domain/search', data)
+        console.log(res)
+      } catch (err) {
+        console.err(err)
+      }
+      this.loading = false
     }
   },
   created() {

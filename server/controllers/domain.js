@@ -244,3 +244,29 @@ exports.setAvatar = async (ctx, next) => {
     url: `${cdnUrl}/${body.key}`
   }
 }
+
+exports.searchDomain = async (ctx, next) => {
+  console.log(ctx.request.body)
+  const key = ctx.request.body.keyword
+  if (!key) {
+    ctx.body = {
+      code: 0,
+      data: []
+    }
+    return
+  }
+  const domains = await Domain.find({
+    $or: [
+      { name: { $regex: key, $options: 'i' }},
+      { intro: { $regex: key, $options: 'i' }}
+    ]
+  }, {
+    name: 1,
+    intro: 1,
+    avatar: 1
+  }).limit(5)
+  ctx.body = {
+    code: 0,
+    data: domains
+  }
+}
