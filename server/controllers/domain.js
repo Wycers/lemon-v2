@@ -60,18 +60,16 @@ exports.createDomain = async (ctx, next) => {
     }).save(opts)
 
     await session.commitTransaction();
-    session.endSession();
     ctx.body = {
       success: true
     }
   } catch(error) {
     await session.abortTransaction();
-    session.endSession();
     ctx.body = {
       success: false
     }
-    console.log(error)
-    throw error;
+  } finally {
+    session.endSession();
   }
   return next 
 }
