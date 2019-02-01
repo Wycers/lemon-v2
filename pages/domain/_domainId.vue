@@ -74,6 +74,7 @@ export default {
       isAdmin: res2.data.data.isAdmin
     }
   },
+  inject: ['reload'],
   data() {
     return {
       active: null
@@ -83,7 +84,7 @@ export default {
     async join() {
       try {
         const res = await http.post(`/domain/${this.domainId}/join`)
-        console.log(res)
+        this.reload()
       } catch (err) {
         console.err(err)
       }
