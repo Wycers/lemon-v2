@@ -24,7 +24,7 @@ v-card
             hide-selected
             item-text="Description"
             item-value="_id"
-            label="Search for a coin..."
+            label="Search for a user..."
             solo
             persistent-hint
             prepend-icon="mdi-city"
