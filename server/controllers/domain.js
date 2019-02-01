@@ -76,27 +76,52 @@ exports.createDomain = async (ctx, next) => {
 
 exports.queryDomain = async (ctx, next) => {
   const type = ctx.query.type || null
-  const username = ctx.session.username
-  const user = await User.findOne({
-    username: username
-  })
-  let res = null
-  console.log(type)
-  if (type === null) {
-    res = await Domain.find(
-      {user: {$elemMatch: { $eq: user._id }}},
-      {
-        _id: 1,
-        name: 1,
-        avatar: 1
+  const user = ctx.user
+  let actions = [{
+      $match: {
+        user: user._id
       }
-    )
-  } else {
-    res = await Domain.find(
-      {user: {$elemMatch: { $eq: user._id }}, type: type},
-      {_id: 1, name: 1}
-    )
+    },
+    {
+      $project: {
+        domain: 1
+      }
+    },
+    {
+      $lookup: {
+        from: 'domains',
+        foreignField: '_id',
+        localField: 'domain',
+        as: 'domain'
+      }
+    },
+    {
+      $project: {
+        domain: {
+          _id: 1,
+          name: 1,
+          avatar: 1,
+          eventType: 1
+        }
+      }
+    },
+    {
+      $unwind: '$domain'
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$domain"
+      }
+    }
+  ]
+  if (type) {
+    actions.push({
+      $match: {
+        eventType: type
+      }
+    })
   }
+  const res = await Correlation.aggregate(actions)
   ctx.body = res
 }
 

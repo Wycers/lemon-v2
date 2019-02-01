@@ -35,8 +35,8 @@ module.exports = () => {
   router.post('/resource/callback', Qiniu.resourceCallback)
 
   //domain
-  router.get('/domain', Domain.queryDomain)
   router.put('/domain', App.hasToken, User.MountUser, Domain.createDomain)
+  router.get('/domain', App.hasToken, User.MountUser, Domain.queryDomain)
   router.post('/domain/search', Domain.searchDomain)
   router.post('/domain/:domainId/join', App.hasToken, User.MountUser, Domain.joinDomain)
   router.post('/domain/:domainId/quit', App.hasToken, User.MountUser, Domain.quitDomain)
