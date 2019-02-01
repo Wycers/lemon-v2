@@ -5,14 +5,39 @@ div
     v-spacer
     v-autocomplete(
       v-model="model"
+      :items="items"
       label="OwO..."
       :loading="loading"
       :search-input.sync="keyword"
       flat
-      hide-no-data
+      clearable
       hide-details
+      hide-selected
+      hide-no-data
       solo-inverted
+      item-text="name"
+      item-value="_id"
     )
+      template(slot="no-data")
+        v-list-tile
+          v-list-tile-title No match
+
+      template(slot="selection" slot-scope="{ item, selected }")
+        v-chip(
+          :selected="selected"
+          col
+        )
+          v-avatar
+            img(:src="item.avatar")
+          span {{ item.name }}
+      template(slot="item" slot-scope="{ item, tile }")
+        v-list-tile-avatar
+          img(:src="item.avatar")
+        v-list-tile-content
+          v-list-tile-title {{ item.name }}
+          v-list-tile-title {{ item.intro }}
+        v-list-tile-action
+          v-icon mdi-coin
     v-spacer
     v-dialog(v-model="dialog" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) New domain
@@ -108,18 +133,22 @@ export default {
   },
   watch: {
     async keyword(val) {
-      if (this.items.length > 0) return
       this.loading = true
       try {
         const data = {
           keyword: this.keyword
         }
         const res = await http.post('/domain/search', data)
-        console.log(res)
+        if (res.data.code === 0) {
+          this.items = res.data.data
+        }
       } catch (err) {
         console.err(err)
       }
       this.loading = false
+    },
+    model(val) {
+      this.$router.push(`/domain/${val}`)
     }
   },
   created() {
