@@ -12,20 +12,62 @@ var Schema = mongoose.Schema
  * @type {mongoose}
  */
 var roleSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  },
   name: {
     type: String,
   },
-  system: {
-    type: String,
-    default: 'domain'
-  },
-  domain: {
-    type: Schema.Types.ObjectId,
-    ref: 'Domain'
+  permissions: {
+    base: {
+      join: {
+        type: Boolean,
+        default: true
+      },
+      quit: {
+        type: Boolean,
+        default: true
+      }
+    },
+    // in user tab
+    users: {
+      enter: {
+        type: Boolean,
+        default: true
+      },
+      retrieve: {
+        type: Boolean,
+        default: true
+      },
+      create: {
+        type: Boolean,
+        default: true
+      },
+      delete: {
+        type: Boolean,
+        default: false
+      }
+    },
+    // in settings tab
+    settings: {
+      enter: {
+        type: Boolean,
+        default: false
+      },
+      name: {
+        update: {
+          type: Boolean,
+          default: false
+        }
+      },
+      avatar: {
+        update: {
+          type: Boolean,
+          default: false
+        }
+      },
+      event: {
+        update: Boolean,
+        default: false
+      }
+    }
   },
   meta: {
     createAt: {
