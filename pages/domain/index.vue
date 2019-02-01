@@ -1,7 +1,16 @@
 <template lang="pug">
 div
-  v-toolbar(flat color="white")
+  v-toolbar(flat dark color="primary")
     v-toolbar-title Domains
+    v-spacer
+    v-autocomplete(
+      v-model="keyword"
+      :loading="loading"
+      flat
+      hide-no-data
+      hide-details
+      solo-inverted
+    )
     v-spacer
     v-dialog(v-model="dialog" width="30%")
       v-btn(slot="activator" color="red lighten-2" dark) New domain
