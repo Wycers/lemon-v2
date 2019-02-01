@@ -3,8 +3,10 @@
 var mongoose = require('mongoose')
 var Role = mongoose.model('Role')
 
+var guest, admin
+
 exports.initRole = async () => {
-  var guest = await Role.findOne({
+  guest = await Role.findOne({
     name: 'guest'
   })
   if (guest === null) {
@@ -18,12 +20,12 @@ exports.initRole = async () => {
     }
   }
 
-  var admin = await Role.findOne({
+  admin = await Role.findOne({
     name: 'admin'
   })
   if (admin === null) {
     try {
-      await Role({
+      admin = await Role({
         name: 'admin',
         permissions: {
           base: {
@@ -51,7 +53,9 @@ exports.initRole = async () => {
       }).save()
     } catch (err) {
       console.log(err)
-      console.log('[Init] create role [guest] failed')
+      console.log('[Init] create role [admin] failed')
     }
   }
+  exports.guest = guest
+  exports.admin = admin
 }

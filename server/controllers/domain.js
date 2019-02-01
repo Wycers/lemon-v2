@@ -5,6 +5,7 @@ var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
 var Role = mongoose.model('Role')
+var Correlation = mongoose.model('Correlation')
 var Activity = mongoose.model('Activity')
 var util = require('../utils/authenticate')
 
@@ -53,16 +54,18 @@ exports.createDomain = async (ctx, next) => {
       event = await Activity().save(opts)
     }
 
+    const { guest, admin } = require('../dbhelper/roleHelper')
     const domain = await Domain({
       name: name,
       eventType: eventType,
       eventId: event._id,
-      user: [{ _id: user._id }]
+      role: [ guest, admin ]
     }).save(opts)
 
-    const role = await Role({
-      user: { _id: user._id },
-      domain: { _id: domain._id }
+    const correlation = await Correlation({
+      user: user,
+      domain: domain,
+      role: admin
     }).save(opts)
 
     await session.commitTransaction();
