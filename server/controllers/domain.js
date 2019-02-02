@@ -391,6 +391,13 @@ exports.joinDomain = async (ctx, next) => {
     // TODO: 加入条件检查
 
     // 添加的用户不在本域内
+    const res = await Correlation.findOne({
+      user: user,
+      domain: domain
+    })
+    if (res) {
+      ctx.throw(400)
+    }
     try {
       await Correlation({
         user: user,
