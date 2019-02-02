@@ -65,16 +65,16 @@ v-card
   v-list(two-line)
     template(v-for="(item, index) in users")
       v-subheader(v-if="item.header" :key="item.header") {{ item.header }} 
-      v-list-tile(v-else :key="item._id")
+      v-list-tile(v-else :key="item.user._id")
         v-list-tile-avatar
-          img(:src="item.avatar")
+          img(:src="item.user.avatar")
         v-list-tile-content
-          v-list-tile-title {{ item.username }} {{ item._id }}
+          v-list-tile-title {{ item.user.username }} {{ item.user._id }}
         v-list-tile-action
-          v-btn(icon ripple @click="viewUser(item._id)")
+          v-btn(icon ripple @click="viewUser(item.user._id)")
             v-icon(color="info") info
         v-list-tile-action(v-if="isAdmin")
-          v-btn(icon ripple @click="removeUser(item._id)")
+          v-btn(icon ripple @click="removeUser(item.user._id)")
             v-icon(color="red lighen-2") delete
           //- v-list-tile-sub-title(v-html="item.subtitle")
       v-divider(v-else-if="item.divider" :inset="item.inset" :key="index")

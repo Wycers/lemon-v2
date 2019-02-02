@@ -4,12 +4,26 @@ var mongoose = require('mongoose')
 var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
-var Role = mongoose.model('Role')
+var Correlation = mongoose.model('Correlation')
 var Activity = mongoose.model('Activity')
-var util = require('../utils/authenticate')
+var { pick } = require('../utils/select')
+
+exports.MountDomain = async (ctx, next) => {
+  const domainId = ctx.params.domainId || null
+  if (domainId) {
+    const res = await Domain.findById(domainId)
+    if (res) {
+      ctx.domain = res
+      await next()
+    } else {
+      ctx.throw(404)
+    }
+  } else {
+    ctx.throw(401)
+  }
+}
 
 exports.createDomain = async (ctx, next) => {
-  const username = ctx.session.username
   const name = ctx.request.body.name
   
   const radio = ctx.request.body.radio
@@ -21,16 +35,7 @@ exports.createDomain = async (ctx, next) => {
     return next
   }
 
-  const user = await User.findOne({
-    username: username
-  })
-  if (user === null)
-  {
-    ctx.body = {
-      success: false
-    } 
-    return next
-  }
+  const user = ctx.user
   
   const session = await Domain.startSession()
   session.startTransaction()
@@ -53,142 +58,216 @@ exports.createDomain = async (ctx, next) => {
       event = await Activity().save(opts)
     }
 
+    const { guest, admin, partner } = require('../dbhelper/roleHelper')
     const domain = await Domain({
       name: name,
       eventType: eventType,
       eventId: event._id,
-      user: [{ _id: user._id }]
+      role: {
+        guest: guest,
+        admin: admin,
+        default: partner,
+        others: []
+      }
     }).save(opts)
 
-    const role = await Role({
-      user: { _id: user._id },
-      domain: { _id: domain._id }
+    const correlation = await Correlation({
+      user: user,
+      domain: domain,
+      role: admin
     }).save(opts)
 
     await session.commitTransaction();
-    session.endSession();
     ctx.body = {
       success: true
     }
   } catch(error) {
     await session.abortTransaction();
-    session.endSession();
     ctx.body = {
       success: false
     }
-    console.log(error)
-    throw error;
+  } finally {
+    session.endSession();
   }
   return next 
 }
 
 exports.queryDomain = async (ctx, next) => {
   const type = ctx.query.type || null
-  const username = ctx.session.username
-  const user = await User.findOne({
-    username: username
-  })
-  let res = null
-  console.log(type)
-  if (type === null) {
-    res = await Domain.find(
-      {user: {$elemMatch: { $eq: user._id }}},
-      {
-        _id: 1,
-        name: 1,
-        avatar: 1
+  const userId = ctx.user._id
+  let actions = [{
+      $match: {
+        user: userId
       }
-    )
-  } else {
-    res = await Domain.find(
-      {user: {$elemMatch: { $eq: user._id }}, type: type},
-      {_id: 1, name: 1}
-    )
+    },
+    {
+      $project: {
+        domain: 1
+      }
+    },
+    {
+      $lookup: {
+        from: 'domains',
+        foreignField: '_id',
+        localField: 'domain',
+        as: 'domain'
+      }
+    },
+    {
+      $project: {
+        domain: {
+          _id: 1,
+          name: 1,
+          avatar: 1,
+          eventType: 1
+        }
+      }
+    },
+    {
+      $unwind: '$domain'
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$domain"
+      }
+    }
+  ]
+  if (type) {
+    actions.push({
+      $match: {
+        eventType: type
+      }
+    })
   }
+  const res = await Correlation.aggregate(actions)
   ctx.body = res
 }
 
 exports.getDomain = async (ctx, next) => {
-  const _id = ctx.params.id
-  const domain = await Domain.findById(_id,  {
-    "meta": 1,
-    "status": 1,
-    "avatar": 1,
-    "intro": 1,
-    "father": 1,
-    "name": 1,
-    "eventType": 1,
-    "eventId": 1,
-    "_id": 1
-  })
-  if (domain === null) {
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.base.view) {
+    const fieldsDomain = 'name,avatar,intro,eventType,eventId'.split(',')
+    const domain = pick(ctx.domain, fieldsDomain)
+    const fieldsRole = 'name,permissions'.split(',')
+    const role = pick(ctx.role, fieldsRole)
     ctx.body = {
-      code: -1
+      code: 0,
+      data: {
+        domain: domain,
+        role: role
+      }
     }
-    return next
-  }
-  ctx.body = {
-    code: 0,
-    data: domain
-  }
-  console.log(ctx.body)
-}
-
-exports.getRole = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  const userId = ctx.session.userId
-  const domain = await Domain.findById(domainId)
-  ctx.body = {
-    code: 0,
-    data: {
-      isAdmin: await util.isAdministrator(userId, domain) !== null
-    } 
+  } else {
+    ctx.throw(403)
   }
 }
 
 exports.getUsers = async (ctx, next) => {
-  const _id = ctx.params.id
-  const domain = await Domain.findById(_id).populate({
-    path: 'user', 
-    select: ['username', '_id', 'avatar']
-  })
-  if (domain === null) {
-    ctx.throw(400, 'domain required')
+  if (!ctx.domain) {
+    ctx.throw(500)
   }
-  ctx.body = {
-    code: 0,
-    data: domain.user
+  if (!ctx.user) {
+    ctx.throw(500)
   }
-  return next
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.retrieve) {
+    const domainId = ctx.domain._id
+    let actions = [{
+      $match: {
+        domain: domainId
+      }
+    }, {
+      $lookup: {
+        from: 'users',
+        foreignField: '_id',
+        localField: 'user',
+        as: 'user'
+      }
+    }, {
+      $lookup: {
+        from: 'roles',
+        foreignField: '_id',
+        localField: 'role',
+        as: 'role'
+      }
+    }, {
+      $project: {
+        _id: 0,
+        user: {
+          _id: 1,
+          username: 1,
+          avatar: 1
+        },
+        role: {
+          _id: 1,
+          name: 1
+        }
+      }
+    }, {
+      $unwind: '$user'
+    }, {
+      $unwind: '$role'
+    }]
+    const res = await Correlation.aggregate(actions)
+    console.log(res)
+    ctx.body = {
+      code: 0,
+      data: res
+    }
+  } else {
+    ctx.throw(403)
+  }
 }
 
 exports.addUser = async (ctx, next) => {
-  const domainId = ctx.params.id
-  const userId = ctx.request.body.id
-  try {
-    await User.findById(userId)
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'user required')
+  if (!ctx.domain) {
     ctx.throw(500)
   }
-  try {
-    const res = await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
-    if (res != null) {
-      ctx.body = {
-        success: true
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.user) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.create) {
+    // 有添加用户的权限
+    const userId = ctx.request.body.id
+    const user = await User.findById(userId)
+    const domain = ctx.domain
+    if (user) {
+      // 添加的用户存在
+      const res = await Correlation.findOne({
+        user: user,
+        domain: domain
+      })
+      if (res) {
+        ctx.throw(400)
       }
-      return next
+      // 添加的用户不在本域内
+      try {
+        await Correlation({
+          user: user,
+          domain: domain,
+          role: domain.role.default
+        }).save()
+      } catch (err) {
+        ctx.body = {
+          success: false
+        }
+        return
+      }
+    } else {
+      ctx.throw(400)
     }
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'domain required')
-    ctx.throw(500)
-  }
-  try {
-    await Domain.updateOne({ _id: domainId }, { $push: { user: userId }})
-  } catch (error) {
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
     success: true
@@ -196,41 +275,64 @@ exports.addUser = async (ctx, next) => {
 }
 
 exports.removeUser = async (ctx, next) => {
-  const domainId = ctx.params.id
-  const userId = ctx.request.body.id
-  console.log(userId)
-  if (userId === null || userId === undefined || userId === '') 
-    ctx.throw(400, 'user required')
-
-  const domain = await Domain.findById(domainId)
-  if (await util.isAdministrator(userId, domain) !== null) {
-    ctx.body = {
-      success: false
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.user) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.delete) {
+    // 有移除用户的权限
+    const userId = ctx.request.body.id
+    const user = await User.findById(userId)
+    const domain = ctx.domain
+    if (user) {
+      // 移除的用户存在
+      const res = await Correlation.findOne({
+        user: user,
+        domain: domain
+      }).populate({
+        path: 'role',
+        select: 'permissions.base.deletable'
+      })
+      // 移除的用户在本域内
+      if (!res) {
+        ctx.throw(400)
+      }
+      if (res.role.permissions.base.deletable) {
+        // 移除的用户可以被移除
+        try {
+          await Correlation.deleteOne({
+            _id: res._id
+          })
+        } catch (err) {
+          ctx.body = {
+            success: false
+          }
+          return
+        }
+      } else {
+        ctx.throw(400)
+      }
+    } else {
+      ctx.throw(400)
     }
-    return next
-  }
-  try {
-    await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'domain required')
-    ctx.throw(500)
-  }
-  try {
-    await Domain.updateOne({ _id: domainId}, { $pull: { user: userId }})
-  } catch (error) {
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
     success: true
   }
 }
+
 var { config } = require('../config')
 const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}
   const domainId = ctx.params.domainId
-  console.log(body)
   await Domain.updateOne({
     _id: domainId
   }, {
@@ -238,7 +340,6 @@ exports.setAvatar = async (ctx, next) => {
       avatar: `${cdnUrl}/${body.key}`
     }
   })
-  console.log(domainId)
   ctx.body = {
     success: true,
     url: `${cdnUrl}/${body.key}`
@@ -246,7 +347,6 @@ exports.setAvatar = async (ctx, next) => {
 }
 
 exports.searchDomain = async (ctx, next) => {
-  console.log(ctx.request.body)
   const key = ctx.request.body.keyword
   if (!key) {
     ctx.body = {
@@ -271,60 +371,85 @@ exports.searchDomain = async (ctx, next) => {
   }
 }
 
+/**
+ * @requires ctx.domain
+ * @requires ctx.role
+ * @requires ctx.user
+ * @returns ctx.body
+ */
 exports.joinDomain = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  try {
-    const res = await Domain.findOne(
-      {
-        _id: domainId,
-        user: {
-          $elemMatch: { $eq: ctx.user._id }
-        }
-      },
-      {_id: 1, name: 1}
-    )
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.base.join) {
+    // 有加入的权限
+    const user = ctx.user
+    const domain = ctx.domain
+    // TODO: 加入条件检查
+
+    // 添加的用户不在本域内
+    const res = await Correlation.findOne({
+      user: user,
+      domain: domain
+    })
     if (res) {
+      ctx.throw(400)
+    }
+    try {
+      await Correlation({
+        user: user,
+        domain: domain,
+        role: domain.role.default
+      }).save()
+    } catch (err) {
       ctx.body = {
-        code: -2,
-        msg: "already in"
+        success: false
       }
       return
     }
-    await Domain.updateOne({ _id: domainId }, { $push: { user: ctx.user._id }})
-  } catch (error) {
-    console.log(error)
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
-    code: 0
+    success: true
   }
 }
 
+/**
+ * @requires ctx.domain
+ * @requires ctx.role
+ * @requires ctx.user
+ * @returns ctx.body
+ */
 exports.quitDomain = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  try {
-    const res = await Domain.findOne(
-      {
-        _id: domainId,
-        user: {
-          $elemMatch: { $eq: ctx.user._id }
-        }
-      },
-      {_id: 1, name: 1}
-    )
-    if (!res) {
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  console.log(ctx.role)
+  if (ctx.role.permissions.base.quit) {
+    // 有退出的权限
+    // TODO: 退出条件检查
+    try {
+      await Correlation.deleteOne({
+        domain: ctx.domain,
+        user: ctx.user
+      })
+    } catch (err) {
       ctx.body = {
-        code: -2,
-        msg: "not in"
+        success: false
       }
       return
     }
-    await Domain.updateOne({ _id: domainId}, { $pull: { user: ctx.user._id }})
-  } catch (error) {
-    console.log(error)
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
-    code: 0
+    success: true
   }
 }

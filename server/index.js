@@ -38,6 +38,8 @@ var walk = function(modelPath) {
   })
 }
 walk(models_path)
+var { initRole } = require('./dbhelper/roleHelper')
+initRole()
 
 require('babel-register')
 const Koa = require('koa')

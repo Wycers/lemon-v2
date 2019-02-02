@@ -9,6 +9,7 @@ const Limiter = require('../middleware/ratelimit')
 const Folder = require('../controllers/folder')
 const Settings = require('../controllers/settings')
 const Activity = require('../controllers/activity')
+const Role = require('../controllers/role')
 
 module.exports = () => {
   var router = new Router({
@@ -35,27 +36,25 @@ module.exports = () => {
   router.post('/resource/callback', Qiniu.resourceCallback)
 
   //domain
-  router.put('/domain', Domain.createDomain)
-  router.get('/domain', Domain.queryDomain)
+  router.put('/domain', App.hasToken, User.MountUser, Domain.createDomain)
+  router.get('/domain', App.hasToken, User.MountUser, Domain.queryDomain)
   router.post('/domain/search', Domain.searchDomain)
-  router.post('/domain/:domainId/join', App.hasToken, User.MountUser, Domain.joinDomain)
-  router.post('/domain/:domainId/quit', App.hasToken, User.MountUser, Domain.quitDomain)
-  router.get('/domain/:id', Domain.getDomain)
-  router.get('/domain/:domainId/role', Domain.getRole)
-  router.get('/domain/:id/users', Domain.getUsers)
-  router.put('/domain/:id/user', Domain.addUser)
-  router.delete('/domain/:id/user', Domain.removeUser)
+  router.post('/domain/:domainId/join', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.joinDomain)
+  router.post('/domain/:domainId/quit', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.quitDomain)
+  router.get('/domain/:domainId', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getDomain)
+  router.get('/domain/:domainId/users', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getUsers)
+  router.put('/domain/:domainId/user', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.addUser)
+  router.delete('/domain/:domainId/user', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.removeUser)
 
-  router.post('/domain/:domainId/avatar', App.hasToken, Qiniu.uploadDomainAvatar)
+  router.post('/domain/:domainId/avatar', App.hasToken, User.MountUser, Role.MountRole, Qiniu.uploadDomainAvatar)
   router.post('/domain/:domainId/avatar/callback', Qiniu.validate, Domain.setAvatar)
-  // router.get('/domain/:domainId/overview', Domain.getOverview)
 
   router.put('/domain/:domainId/folder', Folder.createFolder)
   router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
   router.get('/domain/:domainId/folder/:folderId', Folder.listFolder)
 
-  router.get('/domain/:domainId/settings', Settings.getSettings)
-  router.post('/domain/:domainId/settings', Settings.setSettings)
+  router.get('/domain/:domainId/settings', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Settings.getSettings)
+  router.post('/domain/:domainId/settings', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Settings.setSettings)
 
   // activity
   router.get('/activity/:activityId', Activity.queryActivity)
