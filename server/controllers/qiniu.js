@@ -223,24 +223,31 @@ exports.uploadUserAvatar = async (ctx, next) => {
 }
 
 exports.uploadDomainAvatar = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  const filename = `avatar/${uuid()}`
-  const key = `${cdnBucket}:${filename}`
-  const options = {
-    scope: key,
-    callbackUrl: `${address}/api/domain/${domainId}/avatar/callback`,
-    callbackBody: `
-      {
-        "key": "$(key)"
-      }
-    `,
-    callbackBodyType: 'application/json'
+  if (!ctx.role) {
+    ctx.throw(500)
   }
-  var putPolicy = new qiniu.rs.PutPolicy(options)
-  var uploadToken = putPolicy.uploadToken(mac)
-  ctx.body = {
-    key: filename,
-    token: uploadToken
+  if (ctx.role.permissions.settings.avatar.update) {
+    const domainId = ctx.params.domainId
+    const filename = `avatar/${uuid()}`
+    const key = `${cdnBucket}:${filename}`
+    const options = {
+      scope: key,
+      callbackUrl: `${address}/api/domain/${domainId}/avatar/callback`,
+      callbackBody: `
+        {
+          "key": "$(key)"
+        }
+      `,
+      callbackBodyType: 'application/json'
+    }
+    var putPolicy = new qiniu.rs.PutPolicy(options)
+    var uploadToken = putPolicy.uploadToken(mac)
+    ctx.body = {
+      key: filename,
+      token: uploadToken
+    }
+  } else {
+    ctx.throw(403)
   }
 }
 
