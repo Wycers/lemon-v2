@@ -30,7 +30,7 @@ exports.initRole = async () => {
         permissions: {
           base: {
             quit: false,
-            deletabel: false
+            deletable: false
           },
           // in user tab
           users: {
