@@ -6,7 +6,7 @@ var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
 var Correlation = mongoose.model('Correlation')
 var Activity = mongoose.model('Activity')
-var util = require('../utils/authenticate')
+var { pick } = require('../utils/select')
 
 exports.MountDomain = async (ctx, next) => {
   const domainId = ctx.params.domainId || null
@@ -151,26 +151,10 @@ exports.getDomain = async (ctx, next) => {
     ctx.throw(500)
   }
   if (ctx.role.permissions.base.view) {
-    const domain = (({
-      name,
-      avatar,
-      intro,
-      eventType,
-      eventId
-    }) => ({
-      name,
-      avatar,
-      intro,
-      eventType,
-      eventId
-    }))(ctx.domain)
-    const role = (({
-      name,
-      permissions
-    }) => ({
-      name,
-      permissions
-    }))(ctx.role)
+    const fieldsDomain = 'name,avatar,intro,eventType,eventId'.split(',')
+    const domain = pick(ctx.domain, fieldsDomain)
+    const fieldsRole = 'name,permissions'.split(',')
+    const role = pick(ctx.role, fieldsRole)
     ctx.body = {
       code: 0,
       data: {
