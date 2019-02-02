@@ -387,60 +387,78 @@ exports.searchDomain = async (ctx, next) => {
   }
 }
 
+/**
+ * @requires ctx.domain
+ * @requires ctx.role
+ * @requires ctx.user
+ * @returns ctx.body
+ */
 exports.joinDomain = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  try {
-    const res = await Domain.findOne(
-      {
-        _id: domainId,
-        user: {
-          $elemMatch: { $eq: ctx.user._id }
-        }
-      },
-      {_id: 1, name: 1}
-    )
-    if (res) {
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.base.join) {
+    // 有加入的权限
+    const user = ctx.user
+    const domain = ctx.domain
+    // TODO: 加入条件检查
+
+    // 添加的用户不在本域内
+    try {
+      await Correlation({
+        user: user,
+        domain: domain,
+        role: domain.role.default
+      }).save()
+    } catch (err) {
       ctx.body = {
-        code: -2,
-        msg: "already in"
+        success: false
       }
       return
     }
-    await Domain.updateOne({ _id: domainId }, { $push: { user: ctx.user._id }})
-  } catch (error) {
-    console.log(error)
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
-    code: 0
+    success: true
   }
 }
 
+/**
+ * @requires ctx.domain
+ * @requires ctx.role
+ * @requires ctx.user
+ * @returns ctx.body
+ */
 exports.quitDomain = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  try {
-    const res = await Domain.findOne(
-      {
-        _id: domainId,
-        user: {
-          $elemMatch: { $eq: ctx.user._id }
-        }
-      },
-      {_id: 1, name: 1}
-    )
-    if (!res) {
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  console.log(ctx.role)
+  if (ctx.role.permissions.base.quit) {
+    // 有退出的权限
+    // TODO: 退出条件检查
+    try {
+      await Correlation.deleteOne({
+        domain: ctx.domain,
+        user: ctx.user
+      })
+    } catch (err) {
       ctx.body = {
-        code: -2,
-        msg: "not in"
+        success: false
       }
       return
     }
-    await Domain.updateOne({ _id: domainId}, { $pull: { user: ctx.user._id }})
-  } catch (error) {
-    console.log(error)
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
-    code: 0
+    success: true
   }
 }
