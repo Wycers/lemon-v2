@@ -236,32 +236,47 @@ exports.getUsers = async (ctx, next) => {
 }
 
 exports.addUser = async (ctx, next) => {
-  const domainId = ctx.params.id
-  const userId = ctx.request.body.id
-  try {
-    await User.findById(userId)
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'user required')
+  if (!ctx.domain) {
     ctx.throw(500)
   }
-  try {
-    const res = await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
-    if (res != null) {
-      ctx.body = {
-        success: true
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.user) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.create) {
+    // 有添加用户的权限
+    const userId = ctx.request.body.id
+    const user = await User.findById(userId)
+    const domain = ctx.domain
+    if (user) {
+      // 添加的用户存在
+      const res = await Correlation.findOne({
+        user: user,
+        domain: domain
+      })
+      if (res) {
+        ctx.throw(400)
       }
-      return next
+      // 添加的用户不在本域内
+      try {
+        await Correlation({
+          user: user,
+          domain: domain,
+          role: domain.role.default
+        }).save()
+      } catch (err) {
+        ctx.body = {
+          success: false
+        }
+        return
+      }
+    } else {
+      ctx.throw(400)
     }
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'domain required')
-    ctx.throw(500)
-  }
-  try {
-    await Domain.updateOne({ _id: domainId }, { $push: { user: userId }})
-  } catch (error) {
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
     success: true
@@ -269,35 +284,59 @@ exports.addUser = async (ctx, next) => {
 }
 
 exports.removeUser = async (ctx, next) => {
-  const domainId = ctx.params.id
-  const userId = ctx.request.body.id
-  console.log(userId)
-  if (userId === null || userId === undefined || userId === '') 
-    ctx.throw(400, 'user required')
-
-  const domain = await Domain.findById(domainId)
-  if (await util.isAdministrator(userId, domain) !== null) {
-    ctx.body = {
-      success: false
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.user) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.delete) {
+    // 有移除用户的权限
+    const userId = ctx.request.body.id
+    const user = await User.findById(userId)
+    const domain = ctx.domain
+    if (user) {
+      // 移除的用户存在
+      const res = await Correlation.findOne({
+        user: user,
+        domain: domain
+      }).populate({
+        path: 'role',
+        select: 'permissions.base.deletable'
+      })
+      // 移除的用户在本域内
+      if (!res) {
+        ctx.throw(400)
+      }
+      if (res.role.permissions.base.deletable) {
+        // 移除的用户可以被移除
+        try {
+          await Correlation.deleteOne({
+            _id: res._id
+          })
+        } catch (err) {
+          ctx.body = {
+            success: false
+          }
+          return
+        }
+      } else {
+        ctx.throw(400)
+      }
+    } else {
+      ctx.throw(400)
     }
-    return next
-  }
-  try {
-    await Domain.findOne({_id: domainId, user: {$elemMatch: { $eq: userId }}})
-  } catch (error) {
-    if (error.name === 'CastError')
-      ctx.throw(400, 'domain required')
-    ctx.throw(500)
-  }
-  try {
-    await Domain.updateOne({ _id: domainId}, { $pull: { user: userId }})
-  } catch (error) {
-    ctx.throw(500)
+  } else {
+    ctx.throw(403)
   }
   ctx.body = {
     success: true
   }
 }
+
 var { config } = require('../config')
 const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {

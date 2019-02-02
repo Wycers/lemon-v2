@@ -43,8 +43,8 @@ module.exports = () => {
   router.post('/domain/:domainId/quit', App.hasToken, User.MountUser, Domain.quitDomain)
   router.get('/domain/:domainId', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getDomain)
   router.get('/domain/:domainId/users', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getUsers)
-  router.put('/domain/:id/user', Domain.addUser)
-  router.delete('/domain/:id/user', Domain.removeUser)
+  router.put('/domain/:domainId/user', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.addUser)
+  router.delete('/domain/:domainId/user', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.removeUser)
 
   router.post('/domain/:domainId/avatar', App.hasToken, Qiniu.uploadDomainAvatar)
   router.post('/domain/:domainId/avatar/callback', Qiniu.validate, Domain.setAvatar)

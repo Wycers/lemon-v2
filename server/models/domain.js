@@ -52,6 +52,10 @@ var domainSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Role'
     },
+    default: {
+      type: Schema.Types.ObjectId,
+      ref: 'Role'
+    },
     others: [{
       type: Schema.Types.ObjectId,
       ref: 'Role'

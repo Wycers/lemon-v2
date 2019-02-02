@@ -27,6 +27,10 @@ var roleSchema = new Schema({
       quit: {
         type: Boolean,
         default: true
+      },
+      deletable: {
+        type: Boolean,
+        default: true
       }
     },
     // in user tab
