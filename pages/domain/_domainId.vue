@@ -18,11 +18,13 @@ div
           v-btn(
             color="red lighten-2"
             dark
+            :disabled="!role.permissions.base.join"
             @click="join"
           ) Join
           v-btn(
             color="red lighten-2"
             dark
+            :disabled="!role.permissions.base.quit"
             @click="quit"
           ) Quit
         template(slot="avatar")
@@ -40,12 +42,12 @@ div
     v-tab-item
       User(
         :domainId="domainId"
-        :isAdmin="isAdmin"
+        :isAdmin="role.permissions.users.enter"
       )
 
     //- Setting tab
-    v-tab(v-if="isAdmin") Settings
-    v-tab-item(v-if="isAdmin")
+    v-tab(v-if="role.permissions.settings.enter") Settings
+    v-tab-item(v-if="role.permissions.settings.enter")
       Settings(
         :eventId="eventId"
         :eventType="eventType"
@@ -68,15 +70,13 @@ export default {
     Settings
   },
   async asyncData({ params }) {
-    const res1 = await http.get(`/domain/${params.domainId}`)
-    const res2 = await http.get(`/domain/${params.domainId}/role`)
-    // TODO: network error
+    const res = await http.get(`/domain/${params.domainId}`)
     return {
       domainId: params.domainId,
-      domain: res1.data.data,
-      eventId: res1.data.data.eventId,
-      eventType: res1.data.data.eventType,
-      isAdmin: res2.data.data.isAdmin
+      domain: res.data.data.domain,
+      eventId: res.data.data.domain.eventId,
+      eventType: res.data.data.domain.eventType,
+      role: res.data.data.role
     }
   },
   inject: ['reload'],

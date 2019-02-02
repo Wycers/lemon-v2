@@ -4,10 +4,24 @@ var mongoose = require('mongoose')
 var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
-var Role = mongoose.model('Role')
 var Correlation = mongoose.model('Correlation')
 var Activity = mongoose.model('Activity')
 var util = require('../utils/authenticate')
+
+exports.MountDomain = async (ctx, next) => {
+  const domainId = ctx.params.domainId || null
+  if (domainId) {
+    const res = await Domain.findById(domainId)
+    if (res) {
+      ctx.domain = res
+      await next()
+    } else {
+      ctx.throw(404)
+    }
+  } else {
+    ctx.throw(401)
+  }
+}
 
 exports.createDomain = async (ctx, next) => {
   const username = ctx.session.username
@@ -80,10 +94,10 @@ exports.createDomain = async (ctx, next) => {
 
 exports.queryDomain = async (ctx, next) => {
   const type = ctx.query.type || null
-  const user = ctx.user
+  const userId = ctx.user._id
   let actions = [{
       $match: {
-        user: user._id
+        user: userId
       }
     },
     {
@@ -130,40 +144,35 @@ exports.queryDomain = async (ctx, next) => {
 }
 
 exports.getDomain = async (ctx, next) => {
-  const _id = ctx.params.id
-  const domain = await Domain.findById(_id,  {
-    "meta": 1,
-    "status": 1,
-    "avatar": 1,
-    "intro": 1,
-    "father": 1,
-    "name": 1,
-    "eventType": 1,
-    "eventId": 1,
-    "_id": 1
-  })
-  if (domain === null) {
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (!ctx.domain) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.base.view) {
+    const domain = (({
+      name,
+      avatar,
+      intro,
+      eventType,
+      eventId
+    }) => ({
+      name,
+      avatar,
+      intro,
+      eventType,
+      eventId
+    }))(ctx.domain)
     ctx.body = {
-      code: -1
+      code: 0,
+      data: {
+        domain: domain,
+        role: ctx.role
+      }
     }
-    return next
-  }
-  ctx.body = {
-    code: 0,
-    data: domain
-  }
-  console.log(ctx.body)
-}
-
-exports.getRole = async (ctx, next) => {
-  const domainId = ctx.params.domainId
-  const userId = ctx.session.userId
-  const domain = await Domain.findById(domainId)
-  ctx.body = {
-    code: 0,
-    data: {
-      isAdmin: await util.isAdministrator(userId, domain) !== null
-    } 
+  } else {
+    ctx.throw(403)
   }
 }
 
