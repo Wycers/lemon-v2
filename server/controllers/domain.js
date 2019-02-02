@@ -177,19 +177,62 @@ exports.getDomain = async (ctx, next) => {
 }
 
 exports.getUsers = async (ctx, next) => {
-  const _id = ctx.params.id
-  const domain = await Domain.findById(_id).populate({
-    path: 'user', 
-    select: ['username', '_id', 'avatar']
-  })
-  if (domain === null) {
-    ctx.throw(400, 'domain required')
+  if (!ctx.domain) {
+    ctx.throw(500)
   }
-  ctx.body = {
-    code: 0,
-    data: domain.user
+  if (!ctx.user) {
+    ctx.throw(500)
   }
-  return next
+  if (!ctx.role) {
+    ctx.throw(500)
+  }
+  if (ctx.role.permissions.users.retrieve) {
+    const domainId = ctx.domain._id
+    let actions = [{
+      $match: {
+        domain: domainId
+      }
+    }, {
+      $lookup: {
+        from: 'users',
+        foreignField: '_id',
+        localField: 'user',
+        as: 'user'
+      }
+    }, {
+      $lookup: {
+        from: 'roles',
+        foreignField: '_id',
+        localField: 'role',
+        as: 'role'
+      }
+    }, {
+      $project: {
+        _id: 0,
+        user: {
+          _id: 1,
+          username: 1,
+          avatar: 1
+        },
+        role: {
+          _id: 1,
+          name: 1
+        }
+      }
+    }, {
+      $unwind: '$user'
+    }, {
+      $unwind: '$role'
+    }]
+    const res = await Correlation.aggregate(actions)
+    console.log(res)
+    ctx.body = {
+      code: 0,
+      data: res
+    }
+  } else {
+    ctx.throw(403)
+  }
 }
 
 exports.addUser = async (ctx, next) => {
