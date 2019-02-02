@@ -10,34 +10,9 @@ div
     v-tab(ripple) Overview
     v-tab-item 
       Overview(
-        :title="domain.name"
-        :eventId="eventId"
-        :eventType="eventType"
+        :domain="domain"
+        :role="role"
       )
-        template(slot="action")
-          v-btn(
-            color="red lighten-2"
-            dark
-            :disabled="!role.permissions.base.join"
-            @click="join"
-          ) Join
-          v-btn(
-            color="red lighten-2"
-            dark
-            :disabled="!role.permissions.base.quit"
-            @click="quit"
-          ) Quit
-        template(slot="avatar")
-          v-avatar(
-            size="128"
-          )
-            img(
-              :src="domain.avatar"
-              alt="avatar"
-            ) 
-        template(slot="main")
-          p {{ domain.intro }}
-
     v-tab Users
     v-tab-item
       User(
@@ -83,24 +58,6 @@ export default {
   data() {
     return {
       active: null
-    }
-  },
-  methods: {
-    async join() {
-      try {
-        const res = await http.post(`/domain/${this.domainId}/join`)
-        this.reload()
-      } catch (err) {
-        console.err(err)
-      }
-    },
-    async quit() {
-      try {
-        const res = await http.post(`/domain/${this.domainId}/quit`)
-        this.reload()
-      } catch (err) {
-        console.err(err)
-      }
     }
   }
 }

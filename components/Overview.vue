@@ -1,16 +1,27 @@
 <template lang="pug">
 v-card
   v-card-title
-    div.title Domain: {{ title }}
+    div.title Domain: {{ domain.name }}
     v-spacer
-    slot(name="action")
+    v-btn(
+      color="red lighten-2"
+      dark
+      :disabled="!role.permissions.base.join"
+      @click="join"
+    ) Join
+    v-btn(
+      color="red lighten-2"
+      dark
+      :disabled="!role.permissions.base.quit"
+      @click="quit"
+    ) Quit
   v-card-text
     v-layout(row wrap :reverse="$vuetify.breakpoint.name === 'xs'")
       v-flex(d-flex xs12 sm8 md9)
         v-layout(row wrap)
           v-flex(xs12)
-            slot(name="main")
-          v-flex(xs12 v-if="eventType === 'activity'")
+            p {{ domain.intro }}
+          v-flex(xs12 v-if="domain.eventType === 'activity'")
             v-list(dense)
               v-subheader Activity
               template(v-for="(value, key) in data")
@@ -23,24 +34,32 @@ v-card
         layout
         text-xs-center
       )
-        slot(name="avatar")
+        v-avatar(
+          size="128"
+        )
+          img(
+            :src="domain.avatar"
+            alt="avatar"
+          ) 
 </template>
 <script>
 import http from '~/utils/http'
 import moment from 'moment'
 export default {
   props: {
-    title: {
-      type: String,
-      required: true
+    domain: {
+      type: Object,
+      required: true,
+      default: () => {
+        return {}
+      }
     },
-    eventType: {
-      type: String,
-      required: true
-    },
-    eventId: {
-      type: String,
-      required: true
+    role: {
+      type: Object,
+      required: true,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -49,11 +68,15 @@ export default {
     }
   },
   created() {
-    this.fetch()
+    this.$nextTick(() => {
+      this.fetch()
+    })
   },
   methods: {
     async fetch() {
-      const res = await http.get(`/${this.eventType}/${this.eventId}`)
+      const res = await http.get(
+        `/${this.domain.eventType}/${this.domain.eventId}`
+      )
       if (res.data.code === 0) {
         let tmp = {}
         for (var item in res.data.data) {
@@ -63,6 +86,22 @@ export default {
             tmp[item] = moment(res.data.data[item]).format('YYYY年MMMDo, HH:mm')
         }
         this.data = tmp
+      }
+    },
+    async join() {
+      try {
+        const res = await http.post(`/domain/${this.domain.domainId}/join`)
+        this.reload()
+      } catch (err) {
+        console.err(err)
+      }
+    },
+    async quit() {
+      try {
+        const res = await http.post(`/domain/${this.domain.domainId}/quit`)
+        this.reload()
+      } catch (err) {
+        console.err(err)
       }
     }
   }
