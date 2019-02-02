@@ -1,4 +1,3 @@
-
 'use strict'
 
 var mongoose = require('mongoose')
@@ -13,10 +12,14 @@ var Schema = mongoose.Schema
  */
 var roleSchema = new Schema({
   name: {
-    type: String,
+    type: String
   },
   permissions: {
     base: {
+      view: {
+        type: Boolean,
+        default: true
+      },
       join: {
         type: Boolean,
         default: true
@@ -82,7 +85,7 @@ var roleSchema = new Schema({
 })
 
 // Defines a pre hook for the document.
-roleSchema.pre('save', function(next) {
+roleSchema.pre('save', function (next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
   } else {

@@ -9,6 +9,7 @@ const Limiter = require('../middleware/ratelimit')
 const Folder = require('../controllers/folder')
 const Settings = require('../controllers/settings')
 const Activity = require('../controllers/activity')
+const Role = require('../controllers/role')
 
 module.exports = () => {
   var router = new Router({
@@ -40,9 +41,8 @@ module.exports = () => {
   router.post('/domain/search', Domain.searchDomain)
   router.post('/domain/:domainId/join', App.hasToken, User.MountUser, Domain.joinDomain)
   router.post('/domain/:domainId/quit', App.hasToken, User.MountUser, Domain.quitDomain)
-  router.get('/domain/:id', Domain.getDomain)
-  router.get('/domain/:domainId/role', Domain.getRole)
-  router.get('/domain/:id/users', Domain.getUsers)
+  router.get('/domain/:domainId', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getDomain)
+  router.get('/domain/:domainId/users', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Domain.getUsers)
   router.put('/domain/:id/user', Domain.addUser)
   router.delete('/domain/:id/user', Domain.removeUser)
 
