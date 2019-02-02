@@ -50,7 +50,11 @@ exports.createDomain = async (ctx, next) => {
       name: name,
       eventType: eventType,
       eventId: event._id,
-      role: [ guest, admin ]
+      role: {
+        guest: guest,
+        admin: admin,
+        others: []
+      }
     }).save(opts)
 
     const correlation = await Correlation({

@@ -43,12 +43,20 @@ var domainSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Folder'
   },
-  role: [
-    {
+  role: {
+    guest: {
       type: Schema.Types.ObjectId,
       ref: 'Role'
-    }
-  ],
+    },
+    admin: {
+      type: Schema.Types.ObjectId,
+      ref: 'Role'
+    },
+    others: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Role'
+    }]
+  },
   meta: {
     createAt: {
       type: Date,
