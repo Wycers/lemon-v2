@@ -17,16 +17,16 @@ exports.MountRole = async (ctx, next) => {
   }
   const domainId = ctx.params.domainId
   const userId = ctx.user._id
-  let res = await Correlation.findOne({
+  const res = await Correlation.findOne({
     user: userId,
     domain: domainId
   }).populate({
-    path: 'role',
-    select: '-meta -_id'
+    path: 'role'
   })
-  if (!res) {
-    role = ctx.domain.role.guest
+  if (res) {
+    ctx.role = res.role
+  } else {
+    ctx.role = await Role.findById(ctx.domain.role.guest)
   }
-  ctx.role = res.role
   await next()
 }

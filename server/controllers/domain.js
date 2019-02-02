@@ -164,11 +164,18 @@ exports.getDomain = async (ctx, next) => {
       eventType,
       eventId
     }))(ctx.domain)
+    const role = (({
+      name,
+      permissions
+    }) => ({
+      name,
+      permissions
+    }))(ctx.role)
     ctx.body = {
       code: 0,
       data: {
         domain: domain,
-        role: ctx.role
+        role: role
       }
     }
   } else {
@@ -342,7 +349,6 @@ const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}
   const domainId = ctx.params.domainId
-  console.log(body)
   await Domain.updateOne({
     _id: domainId
   }, {
@@ -350,7 +356,6 @@ exports.setAvatar = async (ctx, next) => {
       avatar: `${cdnUrl}/${body.key}`
     }
   })
-  console.log(domainId)
   ctx.body = {
     success: true,
     url: `${cdnUrl}/${body.key}`
@@ -358,7 +363,6 @@ exports.setAvatar = async (ctx, next) => {
 }
 
 exports.searchDomain = async (ctx, next) => {
-  console.log(ctx.request.body)
   const key = ctx.request.body.keyword
   if (!key) {
     ctx.body = {
