@@ -3,7 +3,7 @@
 var mongoose = require('mongoose')
 var Role = mongoose.model('Role')
 
-var guest, admin
+var guest, admin, partner
 
 exports.initRole = async () => {
   guest = await Role.findOne({
@@ -29,7 +29,8 @@ exports.initRole = async () => {
         name: 'admin',
         permissions: {
           base: {
-            quit: false
+            quit: false,
+            deletabel: false
           },
           // in user tab
           users: {
@@ -56,6 +57,42 @@ exports.initRole = async () => {
       console.log('[Init] create role [admin] failed')
     }
   }
+
+  partner = await Role.findOne({
+    name: 'partner'
+  })
+  if (partner === null) {
+    try {
+      partner = await Role({
+        name: 'partner',
+        permissions: {
+          base: {
+            view: true,
+            join: false,
+            quit: true
+          },
+          // in user tab
+          users: {
+            enter: true,
+            retrieve: true,
+            create: false,
+            delete: false
+          },
+          // in settings tab
+          settings: {
+            enter: false,
+            name: false,
+            avatar: false,
+            event: false
+          }
+        },
+      }).save()
+    } catch (err) {
+      console.log(err)
+      console.log('[Init] create role [partner] failed')
+    }
+  }
   exports.guest = guest
   exports.admin = admin
+  exports.partner = partner
 }

@@ -24,7 +24,6 @@ exports.MountDomain = async (ctx, next) => {
 }
 
 exports.createDomain = async (ctx, next) => {
-  const username = ctx.session.username
   const name = ctx.request.body.name
   
   const radio = ctx.request.body.radio
@@ -59,7 +58,7 @@ exports.createDomain = async (ctx, next) => {
       event = await Activity().save(opts)
     }
 
-    const { guest, admin } = require('../dbhelper/roleHelper')
+    const { guest, admin, partner } = require('../dbhelper/roleHelper')
     const domain = await Domain({
       name: name,
       eventType: eventType,
@@ -67,6 +66,7 @@ exports.createDomain = async (ctx, next) => {
       role: {
         guest: guest,
         admin: admin,
+        default: partner,
         others: []
       }
     }).save(opts)

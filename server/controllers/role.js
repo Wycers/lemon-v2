@@ -14,7 +14,6 @@ exports.MountRole = async (ctx, next) => {
     path: 'role',
     select: '-meta -_id'
   })
-  console.log(typeof res)
   if (!res) {
     role = ctx.domain.role.guest
   }
