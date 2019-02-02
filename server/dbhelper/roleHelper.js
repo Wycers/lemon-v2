@@ -48,6 +48,12 @@ exports.initRole = async () => {
             avatar: {
               update: true
             },
+            status: {
+              update: true
+            },
+            intro: {
+              update: true
+            },
             event: true
           }
         },

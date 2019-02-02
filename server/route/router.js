@@ -48,14 +48,13 @@ module.exports = () => {
 
   router.post('/domain/:domainId/avatar', App.hasToken, User.MountUser, Role.MountRole, Qiniu.uploadDomainAvatar)
   router.post('/domain/:domainId/avatar/callback', Qiniu.validate, Domain.setAvatar)
-  // router.get('/domain/:domainId/overview', Domain.getOverview)
 
   router.put('/domain/:domainId/folder', Folder.createFolder)
   router.put('/domain/:domainId/folder/:folderId', Folder.createFolder)
   router.get('/domain/:domainId/folder/:folderId', Folder.listFolder)
 
-  router.get('/domain/:domainId/settings', Settings.getSettings)
-  router.post('/domain/:domainId/settings', Settings.setSettings)
+  router.get('/domain/:domainId/settings', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Settings.getSettings)
+  router.post('/domain/:domainId/settings', App.hasToken, User.MountUser, Domain.MountDomain, Role.MountRole, Settings.setSettings)
 
   // activity
   router.get('/activity/:activityId', Activity.queryActivity)

@@ -64,11 +64,23 @@ var roleSchema = new Schema({
           default: false
         }
       },
+      intro: {
+        update: {
+          type: Boolean,
+          default: false
+        }
+      },
       avatar: {
         update: {
           type: Boolean,
           default: false
         }
+      },
+      status: {
+        update: {
+          type: Boolean,
+          default: false
+        } 
       },
       event: {
         update: Boolean,
