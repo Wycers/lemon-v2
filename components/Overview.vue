@@ -111,8 +111,8 @@ export default {
           if (this.diffInMinutes(moment(), this.event.acceptStart) < 0) {
             // 未开始
             const diffm = this.diffInMinutes(
-              this.event.acceptStart,
-              this.event.acceptEnd
+              this.event.acceptEnd,
+              this.event.acceptStart
             )
             if (diffm <= 2) {
               this.alerts.push({
@@ -123,31 +123,31 @@ export default {
                 type: 'error'
               })
             }
-            const diffh = this.diffInHours(moment(), this.event.acceptStart)
+            const diffh = this.diffInHours(this.event.acceptStart, moment())
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance begins after ${diffm} minute(s).`,
+                content: `Acceptance begins after ${diffm} minute(s)`,
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance begins after ${diffh} hour(s).`,
+                content: `Acceptance begins after ${diffh} hour(s)`,
                 type: 'warning'
               })
             } else {
               this.alerts.push({
                 toggle: true,
-                content: `Waiting acceptance.`,
-                type: 'warning'
+                content: `Waiting acceptance`,
+                type: 'info'
               })
             }
           } else if (this.diffInMinutes(this.event.acceptEnd, moment()) < 0) {
             // 已经结束报名
             this.alerts.push({
               toggle: true,
-              content: `Acceptance has ended.`,
+              content: `Acceptance has ended`,
               type: 'info'
             })
           } else {
@@ -156,13 +156,13 @@ export default {
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance ends after ${diffm} minute(s).`,
+                content: `Acceptance ends after ${diffm} minute(s)`,
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance ends after ${diffh} hour(s).`,
+                content: `Acceptance ends after ${diffh} hour(s)`,
                 type: 'warning'
               })
             } else {
