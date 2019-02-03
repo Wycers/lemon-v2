@@ -169,7 +169,73 @@ export default {
               this.alerts.push({
                 toggle: true,
                 content: `Registering`,
+                type: 'warning'
+              })
+            }
+          }
+
+          if (this.diffInMinutes(moment(), this.event.cancelStart) < 0) {
+            // 未开始
+            const diffm = this.diffInMinutes(
+              this.event.cancelEnd,
+              this.event.cancelStart
+            )
+            if (diffm <= 2) {
+              this.alerts.push({
+                toggle: true,
+                content:
+                  'Please pay attention to the short time of cancelling registration.\n' +
+                  'Maybe you can contact administrator.',
+                type: 'error'
+              })
+            }
+            const diffh = this.diffInHours(this.event.cancelStart, moment())
+            if (diffh == 0) {
+              this.alerts.push({
+                toggle: true,
+                content: `Cancellation will be accepted after ${diffm} minute(s)`,
+                type: 'warning'
+              })
+            } else if (diffh <= 2) {
+              this.alerts.push({
+                toggle: true,
+                content: `Cancellation will be accepted after ${diffh} hour(s)`,
+                type: 'warning'
+              })
+            } else {
+              this.alerts.push({
+                toggle: true,
+                content: `Waiting cancellation`,
                 type: 'info'
+              })
+            }
+          } else if (this.diffInMinutes(this.event.cancelEnd, moment()) < 0) {
+            // 已经结束报名
+            this.alerts.push({
+              toggle: true,
+              content: `Cancellation is no longer accepted`,
+              type: 'info'
+            })
+          } else {
+            const diffm = this.diffInMinutes(this.event.cancelEnd, moment())
+            const diffh = this.diffInHours(this.event.cancelEnd, moment())
+            if (diffh == 0) {
+              this.alerts.push({
+                toggle: true,
+                content: `Cancellation is not accepted ends after ${diffm} minute(s)`,
+                type: 'warning'
+              })
+            } else if (diffh <= 2) {
+              this.alerts.push({
+                toggle: true,
+                content: `Cancellation is not accepted ends after ${diffh} hour(s)`,
+                type: 'warning'
+              })
+            } else {
+              this.alerts.push({
+                toggle: true,
+                content: `Cancellation is accepted now`,
+                type: 'warning'
               })
             }
           }
