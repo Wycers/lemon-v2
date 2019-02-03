@@ -55,6 +55,11 @@ import http from '~/utils/http'
 import moment from 'moment'
 export default {
   props: {
+    domainId: {
+      type: String,
+      required: true,
+      default: ''
+    },
     domain: {
       type: Object,
       required: true,
@@ -244,7 +249,7 @@ export default {
     },
     async join() {
       try {
-        const res = await http.post(`/domain/${this.domain.domainId}/join`)
+        const res = await http.post(`/domain/${this.domainId}/join`)
         this.reload()
       } catch (err) {
         console.err(err)
@@ -252,7 +257,7 @@ export default {
     },
     async quit() {
       try {
-        const res = await http.post(`/domain/${this.domain.domainId}/quit`)
+        const res = await http.post(`/domain/${this.domainId}/quit`)
         this.reload()
       } catch (err) {
         console.err(err)

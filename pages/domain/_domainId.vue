@@ -10,6 +10,7 @@ div
     v-tab(ripple) Overview
     v-tab-item 
       Overview(
+        :domainId="domainId"
         :domain="domain"
         :role="role"
       )
