@@ -34,9 +34,9 @@ v-card
           box
         )
         v-select(
-          :items="['SUSTech English', 'Simplified Chinese']"
+          v-model="locale"
+          :items="locales"
           box
-          disabled
           label="Preferred language"
         )
         //- v-text-field(
@@ -71,6 +71,15 @@ export default {
       throw new Error(res.data.msg)
     } catch (err) {
       console.log(err)
+    }
+  },
+  data() {
+    return {
+      locales: ['en', 'zh-cmn-Hans', 'zh-cmn-Hant'].map(item => ({
+        text: this.$t('name', item),
+        value: item
+      })),
+      locale: ''
     }
   },
   methods: {
