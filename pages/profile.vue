@@ -67,8 +67,7 @@ export default {
   async asyncData() {
     try {
       const res = await http.get('/profile')
-      if (res.data.code === 0) return res.data.data
-      throw new Error(res.data.msg)
+      return res.data
     } catch (err) {
       console.log(err)
     }
@@ -80,6 +79,11 @@ export default {
         value: item
       })),
       locale: ''
+    }
+  },
+  watch: {
+    locale(val) {
+      this.$i18n.locale = val
     }
   },
   methods: {
@@ -114,13 +118,11 @@ export default {
         const data = {
           nickname: this.nickname,
           email: this.email,
-          avatar: this.avatar
+          avatar: this.avatar,
+          locale: this.locale
         }
         const res = await http.post('/profile', data)
-        if (res.data.code === 0) {
-          this.$store.commit('user/SET_STATUS', data)
-          console.log('ok')
-        }
+        this.$store.commit('user/SET_STATUS', data)
       } catch (err) {
         console.log(err)
       }
@@ -128,11 +130,10 @@ export default {
     async reset() {
       try {
         const res = await http.get('/profile')
-        if (res.data.code === 0) {
-          this.avatar = res.data.data.avatar
-          this.email = res.data.data.email
-          this.nickname = res.data.data.nickname
-        } else throw new Error(res.data.msg)
+        this.avatar = res.data.avatar
+        this.email = res.data.email
+        this.nickname = res.data.nickname
+        this.locale = res.data.locale
       } catch (err) {
         console.log(err)
       }

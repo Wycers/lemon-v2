@@ -6,6 +6,7 @@ var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var userHelper = require('../dbhelper/userHelper')
 var { config } = require('../config')
+var { pick } = require('../utils/select')
 // import userHelper from '../dbhelper/userHelper'
 const cdnurl = config.qiniu.url
 /**
@@ -235,17 +236,17 @@ exports.queryUser = async (ctx, next) => {
  * @description 用户设置其信息
  */
 exports.setProfile = async (ctx, next) => {
+  const fields = 'nickname,avatar,email,locale'.split(',')
+  const body = pick(ctx.request.body, fields)
   try {
     await User.updateOne({
       _id: ctx.user._id
-    }, ctx.request.body)
+    }, body)
     ctx.body = {
-      code: 0
+      success: true
     }
   } catch (err) {
-    ctx.body = {
-      code: -2
-    }
+    throw(500)
   }
 }
 
@@ -254,17 +255,10 @@ exports.setProfile = async (ctx, next) => {
  * @description 用户获取其信息
  */
 exports.getProfile = async (ctx, next) => {
-  ctx.body = {
-    code: 0,
-    data: {
-      nickname: ctx.user.nickname,
-      avatar: ctx.user.avatar,
-      email: ctx.user.email
-    }
-  }
-  console.log(ctx.user)
+  const fields = 'nickname,avatar,email,locale'.split(',')
+  const res = pick(ctx.user, fields)
+  ctx.body = res
 }
-
 /**
  * @description 将用户信息挂载进ctx
  */
