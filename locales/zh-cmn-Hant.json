@@ -1,3 +1,10 @@
 {
-    "test": "hhh"
+    "name": "繁體中文",
+    "app": {
+        "sidebar": {
+            "welcome": "主頁",
+            "domain": "域",
+            "about": "關於"
+        }
+    }
 }

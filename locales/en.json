@@ -1,3 +1,10 @@
 {
-    "test": "233"
+    "name": "SUSTech English",
+    "app": {
+        "sidebar": {
+            "welcome": "Welcome",
+            "domain": "Domain",
+            "about": "About"
+        }
+    }
 }
