@@ -7,6 +7,7 @@ var User = mongoose.model('User')
 var Correlation = mongoose.model('Correlation')
 var Activity = mongoose.model('Activity')
 var { pick } = require('../utils/select')
+var moment = require('moment')
 
 exports.MountDomain = async (ctx, next) => {
   const domainId = ctx.params.domainId || null
@@ -388,7 +389,17 @@ exports.joinDomain = async (ctx, next) => {
     // 有加入的权限
     const user = ctx.user
     const domain = ctx.domain
-    // TODO: 加入条件检查
+    if (domain.eventType === 'activity') {
+      const activity = await Activity.findById(
+        domain.eventId
+      )
+      if (moment().diff(moment(activity.acceptStart), 'minutes') < 0) {
+        ctx.throw(403)
+      }
+      if (moment(activity.acceptEnd).diff(moment(), 'minutes') < 0) {
+        ctx.throw(403)
+      }
+    }
 
     // 添加的用户不在本域内
     const res = await Correlation.findOne({
@@ -431,10 +442,19 @@ exports.quitDomain = async (ctx, next) => {
   if (!ctx.role) {
     ctx.throw(500)
   }
-  console.log(ctx.role)
   if (ctx.role.permissions.base.quit) {
     // 有退出的权限
-    // TODO: 退出条件检查
+    if (ctx.domain.eventType === 'activity') {
+      const activity = await Activity.findById(
+        ctx.domain.eventId
+      )
+      if (moment().diff(moment(activity.cancelStart), 'minutes') < 0) {
+        ctx.throw(403)
+      }
+      if (moment(activity.cancelEnd).diff(moment(), 'minutes') < 0) {
+        ctx.throw(403)
+      }
+    }
     try {
       await Correlation.deleteOne({
         domain: ctx.domain,
