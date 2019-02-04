@@ -1,10 +1,10 @@
 <template lang="pug">
 v-card
-  v-card-title.title Edit profile
+  v-card-title.title {{ $t('profile.title') }}
   v-card-text
     v-layout(row wrap text-xs-center)
       v-flex.my-3(xs12 lg3)
-        div.title.font-weight-light Public Avatar
+        div.title.font-weight-light {{ $t('profile.avatar') }}
       v-flex.my-3(xs12 lg3)
         cuavatar(
           :uploadUrl="'/user/avatar'"
@@ -15,30 +15,35 @@ v-card
           @crop-upload-fail="cropUploadFail"
         )
     v-divider.my-3
- 
+    v-menu(offset-y)
+      v-btn(slot="activator" icon)
+        v-icon language
+      v-list
+        v-list-tile(v-for="lang in locales" :key="lang.value" @click="setlocale(lang.value)")
+          v-list-tile-title {{ lang.text }}
     v-layout(row wrap text-xs-center)
       v-flex.my-3(xs12 lg3)
-        div.title.font-weight-light Main Settings
+        div.title.font-weight-light {{ $t('profile.settings') }}
       v-flex.my-3(xs12 lg9)
         v-form(ref="common_setting" color="white")
-        v-text-field(
-          label="Nickname"
-          v-model="nickname"
-          required
-          box
-        )
-        v-text-field(
-          label="Email"
-          v-model="email"
-          required
-          box
-        )
-        v-select(
-          v-model="locale"
-          :items="locales"
-          box
-          label="Preferred language"
-        )
+          v-text-field(
+            v-model="nickname"
+            :label="$t('field.profile.nickname')"
+            required
+            box
+          )
+          v-text-field(
+            v-model="email"
+            :label="$t('field.profile.email')"
+            required
+            box
+          )
+          v-select(
+            v-model="locale"
+            :label="$t('field.profile.locale')"
+            box
+            :items="locales"
+          )
         //- v-text-field(
         //-   label="Introduction"
         //-   v-model=""
@@ -49,10 +54,10 @@ v-card
         v-btn(
           color="primary"
           @click="submit"
-        ) Update profile
+        ) {{ $t('profile.update') }}
         v-btn(
           @click="reset"
-        ) cancel
+        ) {{ $t('profile.reset') }}
 </template>
 
 <script>

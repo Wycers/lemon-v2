@@ -102,11 +102,11 @@
           </v-btn>
           <v-list>
             <v-list-tile to="/profile">
-              <v-list-tile-title> 账号设置 </v-list-tile-title>
+              <v-list-tile-title>{{ $t('app.toolbar.profile') }}</v-list-tile-title>
             </v-list-tile>
             <v-divider />
             <v-list-tile to="/signout">
-              <v-list-tile-title> 登出 </v-list-tile-title>
+              <v-list-tile-title>{{ $t('app.toolbar.logout') }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>

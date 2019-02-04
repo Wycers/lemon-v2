@@ -5,6 +5,19 @@
             "welcome": "Welcome",
             "domain": "Domain",
             "about": "About"
+        },
+        "toolbar": {
+            "profile": "Profile",
+            "logout": "Logout"
+        }
+    },
+    "profile": {
+        "title": "Edit Profile",
+        "avatar": "Public Avatar",
+        "settings": "Main Settings",
+        "update": "Update Profile",
+        "reset": "Reset"
+    },
         }
     }
 }
