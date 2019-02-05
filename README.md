@@ -29,10 +29,10 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 - [ ] 登录验证码
 - [x] 登录态
 - [x] Travis
-- [ ] 用户信息设置
+- [x] 用户信息设置
 - [ ] 绑定CAS账号
 - [ ] 脚注
-- [ ] Docker部署
+- [x] Docker部署
 - [ ] 域 - 问卷功能
 - [ ] 域 - 工作流功能
 - [ ] 域 - 资源功能
