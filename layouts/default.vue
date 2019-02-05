@@ -155,10 +155,6 @@
     >
       <v-spacer />
       <span> Wycer &copy; 2019</span>
-      <span>
-        <v-icon small>build</v-icon>
-        {{ commit }}
-      </span>
     </v-footer>
   </v-app>
 </template>
@@ -224,11 +220,7 @@ export default {
       avatar: state => state.user.avatar,
       token: state => state.user.token,
       locales: state => state.i18n.locales
-    }),
-    commit() {
-      let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')
-      return `Build:${XD.substring(0, 8)}`
-    }
+    })
   },
   async created() {
     const token = localStorage.getItem('token')
