@@ -7,11 +7,11 @@ export default {
     ? 'http://localhost:3000'
     : process.env.LEMON_ADDRESS,
   cdn: {
-    bucket: '<bucket name of cdn>',
-    url: '<url of cdn>',
+    bucket: process.env.LEMON_CDN_BUCKET || 'file',
+    url: process.env.LEMON_CDN_URL || 'http://cdn.wycer.cn'
   },
   pan: {
-    bucket: '<bucket name of pan>',
-    url: '<url of pan>',
+    bucket: process.env.LEMON_PAN_BUCKET || 'disk',
+    url: process.env.LEMON_PAN_URL || 'http://pan.wycer.cn'
   }
 }
