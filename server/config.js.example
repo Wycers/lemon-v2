@@ -1,9 +1,11 @@
-exports.config = {
+export default {
   qiniu: {
-    accessKey: '',
-    secretKey: ''
+    accessKey: process.env.LEMON_QINIU_AK,
+    secretKey: process.env.LEMON_QINIU_SK
   },
-  address: process.env.NODE_ENV === 'development' ? '<dev address>' : '<produce address>',
+  address: process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : process.env.LEMON_ADDRESS,
   cdn: {
     bucket: '<bucket name of cdn>',
     url: '<url of cdn>',

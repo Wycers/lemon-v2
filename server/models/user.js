@@ -24,8 +24,7 @@ var userSchema = new Schema({
   email: {
     type: String,
     default: '',
-    unique: true,
-    required: true
+    unique: true
   },
   locale: {
     type: String,

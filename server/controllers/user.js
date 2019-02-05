@@ -5,10 +5,10 @@ var uuid = require('uuid')
 var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var userHelper = require('../dbhelper/userHelper')
-var { config } = require('../config')
+import config from '../config'
 var { pick } = require('../utils/select')
 // import userHelper from '../dbhelper/userHelper'
-const cdnurl = config.qiniu.url
+const cdnurl = config.cdn.url
 /**
  * 注册新用户
  * @param {Function} next          [description]
@@ -29,8 +29,7 @@ exports.signup = async (ctx, next) => {
       username: username,
       password: password,
       nickname: '测试用户',
-      avatar:
-        'http://upload-images.jianshu.io/upload_images/5307186-eda1b28e54a4d48e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
+      avatar: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905',
       verifyCode: verifyCode,
       token: token
     })
@@ -156,7 +155,7 @@ exports.users = async (ctx, next) => {
 exports.addUser = async (ctx, next) => {
   var user = new User({
     nickname: '测试用户',
-    avatar: 'http://ip.example.com/u/xxx.png',
+    avatar: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905',
     // phoneNumber: xss('13800138000'),
     verifyCode: '5896',
     token: uuid.v4()
@@ -287,8 +286,6 @@ exports.MountUser = async (ctx, next) => {
   await next()
 }
 
-var { config } = require('../config')
-const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}
   const userId = ctx.params.userId

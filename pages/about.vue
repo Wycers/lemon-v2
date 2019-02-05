@@ -8,7 +8,11 @@ div
   //-   content-placeholders-text
   h6.my-3.title Contributer
   v-layout(row wrap align-center justify-space-around)
-    Gitcard(:username="'wycers'")
+    Gitcard(
+      v-for="contributer in contributers"
+      :key="contributer"
+      :username="contributer"
+    )
  
   //- v-divider
 
@@ -39,6 +43,11 @@ import Gitcard from '~/components/Gitcard'
 export default {
   components: {
     Gitcard
+  },
+  data() {
+    return {
+      contributers: ['wycers']
+    }
   },
   computed: {
     size() {

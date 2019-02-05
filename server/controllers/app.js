@@ -28,10 +28,7 @@ exports.hasToken = async (ctx, next) => {
   const token = ctx.request.headers.authorization || null
 
   if (!token || !ctx.session || token !== ctx.session.token) {
-    ctx.body = {
-      code: -1,
-      err: 'invalid token'
-    }
+    ctx.throw(400, 'invalid token')
     return
   }
   await next()
