@@ -7,7 +7,6 @@ export default {
   state: {
     token: null,
 
-    name: null,
     nickname: null,
     avatar: null,
     email: null,
@@ -21,7 +20,7 @@ export default {
         state.token = token
         localStorage.setItem('token', state.token)
       } else {
-        const fields = 'nickname,avatar,email,name,token'.split(',')
+        const fields = 'nickname,avatar,email,locale,token'.split(',')
         fields.forEach(field => {
           state[field] = null
         })
@@ -29,7 +28,7 @@ export default {
       }
     },
     SET_STATUS(state, data) {
-      const fields = 'nickname,avatar,email,name,locale'.split(',')
+      const fields = 'nickname,avatar,email,locale'.split(',')
       if (data) {
         fields.forEach(field => {
           if (data[field]) {
