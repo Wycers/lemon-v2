@@ -1,4 +1,4 @@
-var { config } = require('../config')
+import config from '../config'
 var qiniu = require('qiniu')
 var uuid = require('uuid')
 var xss = require('xss')

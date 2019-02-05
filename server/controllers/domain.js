@@ -1,7 +1,6 @@
 'use strict'
 
 var mongoose = require('mongoose')
-var uuid = require('uuid')
 var Domain = mongoose.model('Domain')
 var User = mongoose.model('User')
 var Correlation = mongoose.model('Correlation')
@@ -329,7 +328,7 @@ exports.removeUser = async (ctx, next) => {
   }
 }
 
-var { config } = require('../config')
+import config from '../config'
 const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}

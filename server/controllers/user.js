@@ -5,10 +5,10 @@ var uuid = require('uuid')
 var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var userHelper = require('../dbhelper/userHelper')
-var { config } = require('../config')
+import config from '../config'
 var { pick } = require('../utils/select')
 // import userHelper from '../dbhelper/userHelper'
-const cdnurl = config.qiniu.url
+const cdnurl = config.cdn.url
 /**
  * 注册新用户
  * @param {Function} next          [description]
@@ -287,8 +287,6 @@ exports.MountUser = async (ctx, next) => {
   await next()
 }
 
-var { config } = require('../config')
-const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}
   const userId = ctx.params.userId
