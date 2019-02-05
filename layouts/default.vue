@@ -20,7 +20,7 @@
               <v-icon v-html="item.icon" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title v-text="item.title" />
+              <v-list-tile-title v-text="$t(item.title)" />
             </v-list-tile-content>
           </v-list-tile>
           <v-list-group
@@ -102,11 +102,11 @@
           </v-btn>
           <v-list>
             <v-list-tile to="/profile">
-              <v-list-tile-title> 账号设置 </v-list-tile-title>
+              <v-list-tile-title>{{ $t('app.toolbar.profile') }}</v-list-tile-title>
             </v-list-tile>
             <v-divider />
             <v-list-tile to="/signout">
-              <v-list-tile-title> 登出 </v-list-tile-title>
+              <v-list-tile-title>{{ $t('app.toolbar.logout') }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
@@ -179,12 +179,12 @@ export default {
       items: [
         {
           icon: 'apps',
-          title: 'Welcome',
+          title: 'app.sidebar.welcome',
           to: '/'
         },
         {
           icon: 'bubble_chart',
-          title: 'Domain',
+          title: 'app.sidebar.domain',
           to: '/domain'
           // items: [
           //   {
@@ -207,7 +207,7 @@ export default {
         },
         {
           icon: 'info',
-          title: 'About',
+          title: 'app.sidebar.about',
           to: '/about'
         }
       ],
@@ -222,7 +222,8 @@ export default {
     ...mapState({
       nickname: state => state.user.nickname,
       avatar: state => state.user.avatar,
-      token: state => state.user.token
+      token: state => state.user.token,
+      locales: state => state.i18n.locales
     }),
     commit() {
       let XD = document.getElementsByTagName('meta')[3].getAttribute('commit')

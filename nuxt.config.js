@@ -37,7 +37,8 @@ module.exports = {
   */
   plugins: [
     '@/plugins/vuetify',
-    '@/plugins/content-placeholder'
+    '@/plugins/content-placeholder',
+    '@/plugins/i18n'
   ],
 
   /*

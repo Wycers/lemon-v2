@@ -1,10 +1,10 @@
 <template lang="pug">
 v-card
-  v-card-title.title Edit profile
+  v-card-title.title {{ $t('profile.title') }}
   v-card-text
     v-layout(row wrap text-xs-center)
       v-flex.my-3(xs12 lg3)
-        div.title.font-weight-light Public Avatar
+        div.title.font-weight-light {{ $t('profile.avatar') }}
       v-flex.my-3(xs12 lg3)
         cuavatar(
           :uploadUrl="'/user/avatar'"
@@ -15,30 +15,35 @@ v-card
           @crop-upload-fail="cropUploadFail"
         )
     v-divider.my-3
- 
+    v-menu(offset-y)
+      v-btn(slot="activator" icon)
+        v-icon language
+      v-list
+        v-list-tile(v-for="lang in locales" :key="lang.value" @click="setlocale(lang.value)")
+          v-list-tile-title {{ lang.text }}
     v-layout(row wrap text-xs-center)
       v-flex.my-3(xs12 lg3)
-        div.title.font-weight-light Main Settings
+        div.title.font-weight-light {{ $t('profile.settings') }}
       v-flex.my-3(xs12 lg9)
         v-form(ref="common_setting" color="white")
-        v-text-field(
-          label="Nickname"
-          v-model="nickname"
-          required
-          box
-        )
-        v-text-field(
-          label="Email"
-          v-model="email"
-          required
-          box
-        )
-        v-select(
-          :items="['SUSTech English', 'Simplified Chinese']"
-          box
-          disabled
-          label="Preferred language"
-        )
+          v-text-field(
+            v-model="nickname"
+            :label="$t('field.profile.nickname')"
+            required
+            box
+          )
+          v-text-field(
+            v-model="email"
+            :label="$t('field.profile.email')"
+            required
+            box
+          )
+          v-select(
+            v-model="locale"
+            :label="$t('field.profile.locale')"
+            box
+            :items="locales"
+          )
         //- v-text-field(
         //-   label="Introduction"
         //-   v-model=""
@@ -49,10 +54,10 @@ v-card
         v-btn(
           color="primary"
           @click="submit"
-        ) Update profile
+        ) {{ $t('profile.update') }}
         v-btn(
           @click="reset"
-        ) cancel
+        ) {{ $t('profile.reset') }}
 </template>
 
 <script>
@@ -67,10 +72,23 @@ export default {
   async asyncData() {
     try {
       const res = await http.get('/profile')
-      if (res.data.code === 0) return res.data.data
-      throw new Error(res.data.msg)
+      return res.data
     } catch (err) {
       console.log(err)
+    }
+  },
+  data() {
+    return {
+      locales: ['en', 'zh-cmn-Hans', 'zh-cmn-Hant'].map(item => ({
+        text: this.$t('name', item),
+        value: item
+      })),
+      locale: ''
+    }
+  },
+  watch: {
+    locale(val) {
+      this.$i18n.locale = val
     }
   },
   methods: {
@@ -105,13 +123,11 @@ export default {
         const data = {
           nickname: this.nickname,
           email: this.email,
-          avatar: this.avatar
+          avatar: this.avatar,
+          locale: this.locale
         }
         const res = await http.post('/profile', data)
-        if (res.data.code === 0) {
-          this.$store.commit('user/SET_STATUS', data)
-          console.log('ok')
-        }
+        this.$store.commit('user/SET_STATUS', data)
       } catch (err) {
         console.log(err)
       }
@@ -119,11 +135,10 @@ export default {
     async reset() {
       try {
         const res = await http.get('/profile')
-        if (res.data.code === 0) {
-          this.avatar = res.data.data.avatar
-          this.email = res.data.data.email
-          this.nickname = res.data.data.nickname
-        } else throw new Error(res.data.msg)
+        this.avatar = res.data.avatar
+        this.email = res.data.email
+        this.nickname = res.data.nickname
+        this.locale = res.data.locale
       } catch (err) {
         console.log(err)
       }

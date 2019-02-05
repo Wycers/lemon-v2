@@ -7,11 +7,10 @@ export default {
   state: {
     token: null,
 
-    name: null,
     nickname: null,
     avatar: null,
     email: null,
-    lang: null
+    locale: null
   },
   // Mutations
   mutations: {
@@ -21,7 +20,7 @@ export default {
         state.token = token
         localStorage.setItem('token', state.token)
       } else {
-        const fields = 'nickname,avatar,email,name,token'.split(',')
+        const fields = 'nickname,avatar,email,locale,token'.split(',')
         fields.forEach(field => {
           state[field] = null
         })
@@ -29,7 +28,7 @@ export default {
       }
     },
     SET_STATUS(state, data) {
-      const fields = 'nickname,avatar,email,name,lang'.split(',')
+      const fields = 'nickname,avatar,email,locale'.split(',')
       if (data) {
         fields.forEach(field => {
           if (data[field]) {
@@ -89,15 +88,10 @@ export default {
     async fetchProfile({ commit }) {
       try {
         const res = await http.get('/profile')
-        if (res.data.code === 0) {
-          commit('SET_STATUS', res.data.data)
-        } else {
-          throw new Error(res.data.data)
-        }
+        commit('SET_STATUS', res.data)
       } catch (error) {
         commit('SET_USER', {})
-        console.log(error)
-        throw error
+        console.log('qwq')
       }
     }
   }

@@ -27,6 +27,10 @@ var userSchema = new Schema({
     unique: true,
     required: true
   },
+  locale: {
+    type: String,
+    default: 'en'
+  },
   verified: {
     type: Boolean,
     default: false
