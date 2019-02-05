@@ -29,8 +29,7 @@ exports.signup = async (ctx, next) => {
       username: username,
       password: password,
       nickname: '测试用户',
-      avatar:
-        'http://upload-images.jianshu.io/upload_images/5307186-eda1b28e54a4d48e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
+      avatar: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905',
       verifyCode: verifyCode,
       token: token
     })
@@ -156,7 +155,7 @@ exports.users = async (ctx, next) => {
 exports.addUser = async (ctx, next) => {
   var user = new User({
     nickname: '测试用户',
-    avatar: 'http://ip.example.com/u/xxx.png',
+    avatar: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905',
     // phoneNumber: xss('13800138000'),
     verifyCode: '5896',
     token: uuid.v4()

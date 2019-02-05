@@ -18,7 +18,7 @@ var domainSchema = new Schema({
   },
   avatar: {
     type: String,
-    default: ''
+    default: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905'
   },
   name: {
     type: String,
