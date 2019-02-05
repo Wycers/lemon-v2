@@ -1,5 +1,4 @@
 const pkg = require('./package')
-const cp = require('child_process')
 module.exports = {
   mode: 'spa',
 
@@ -11,8 +10,7 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description },
-      { commit: cp.execSync('git rev-parse HEAD').toString().trim() }
+      { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
