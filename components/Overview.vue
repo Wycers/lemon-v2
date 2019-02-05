@@ -8,11 +8,11 @@ v-card
       dark
       :disabled="!role.permissions.base.join"
       @click="join"
-    ) Join
+    ) {{ $t('field.domain.join') }}
     v-btn(
       :disabled="!role.permissions.base.quit"
       @click="quit"
-    ) Quit
+    ) {{ $t('field.domain.quit') }}
   v-card-text
     v-layout(row wrap :reverse="$vuetify.breakpoint.name === 'xs'")
       v-flex(xs12)
@@ -23,7 +23,7 @@ v-card
           :type="alert.type"
           :key="i"
           transition="scale-transition"
-        ) {{ alert.content }}
+        ) {{ $t(alert.template, alert.value) }}
       v-flex.my-3(d-flex xs12 sm8 md9)
         v-layout(row wrap)
           v-flex(xs12)
@@ -31,11 +31,10 @@ v-card
           v-flex(xs12 v-if="domain.eventType === 'activity'")
             v-list(dense)
               v-subheader Activity
-              template(v-for="(value, key) in event")
-                v-list-tile(:key="key")
-                  v-list-tile-content {{ key }}
-                  v-list-tile-content.align-end(v-if="key==='limit'") {{ value }}
-                  v-list-tile-content.align-end(v-else) {{ convertTime(value) }}
+              v-list-tile(v-for="(value, key) in event" :key="key")
+                v-list-tile-content {{ $t(`field.activity.${key}`) }}
+                v-list-tile-content.align-end(v-if="key==='limit'") {{ value }}
+                v-list-tile-content.align-end(v-else) {{ convertTime(value) }}
       v-flex(d-flex xs12 sm4 md3
         align-center
         justify-center
@@ -114,37 +113,43 @@ export default {
           this.event = tmp
 
           if (this.diffInMinutes(moment(), this.event.acceptStart) < 0) {
-            // 未开始
-            const diffm = this.diffInMinutes(
-              this.event.acceptEnd,
-              this.event.acceptStart
-            )
-            if (diffm <= 2) {
+            // 未开始报名
+            if (
+              this.diffInMinutes(
+                this.event.acceptEnd,
+                this.event.acceptStart
+              ) <= 2
+            ) {
               this.alerts.push({
                 toggle: true,
-                content:
-                  'Please pay attention to the short time of accepting registration.\n' +
-                  'Maybe you can contact administrator.',
+                template: 'alert.activity.shortAcceptTime',
                 type: 'error'
               })
             }
+            const diffm = this.diffInHours(this.event.acceptStart, moment())
             const diffh = this.diffInHours(this.event.acceptStart, moment())
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance begins after ${diffm} minute(s)`,
+                template: 'alert.activity.minuteToStartAccept',
+                value: {
+                  diffm
+                },
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance begins after ${diffh} hour(s)`,
+                template: 'alert.activity.hourToStartAccept',
+                value: {
+                  diffh
+                },
                 type: 'warning'
               })
             } else {
               this.alerts.push({
                 toggle: true,
-                content: `Waiting acceptance`,
+                template: 'alert.activity.waitingStartAccept',
                 type: 'info'
               })
             }
@@ -152,7 +157,7 @@ export default {
             // 已经结束报名
             this.alerts.push({
               toggle: true,
-              content: `Acceptance has ended`,
+              template: `alert.activity.endAccept`,
               type: 'info'
             })
           } else {
@@ -161,56 +166,68 @@ export default {
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance ends after ${diffm} minute(s)`,
+                template: 'alert.activity.minuteToEndAccept',
+                value: {
+                  diffm
+                },
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Acceptance ends after ${diffh} hour(s)`,
+                template: 'alert.activity.hourToEndAccept',
+                value: {
+                  diffh
+                },
                 type: 'warning'
               })
             } else {
               this.alerts.push({
                 toggle: true,
-                content: `Registering`,
+                template: 'alert.activity.atAccept',
                 type: 'warning'
               })
             }
           }
 
           if (this.diffInMinutes(moment(), this.event.cancelStart) < 0) {
-            // 未开始
-            const diffm = this.diffInMinutes(
-              this.event.cancelEnd,
-              this.event.cancelStart
-            )
-            if (diffm <= 2) {
+            // 未开始报名
+            if (
+              this.diffInMinutes(
+                this.event.cancelEnd,
+                this.event.cancelStart
+              ) <= 2
+            ) {
               this.alerts.push({
                 toggle: true,
-                content:
-                  'Please pay attention to the short time of cancelling registration.\n' +
-                  'Maybe you can contact administrator.',
+                template: 'alert.activity.shortCancelTime',
                 type: 'error'
               })
             }
+            const diffm = this.diffInHours(this.event.cancelStart, moment())
             const diffh = this.diffInHours(this.event.cancelStart, moment())
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Cancellation will be accepted after ${diffm} minute(s)`,
+                template: 'alert.activity.minuteToStartCancel',
+                value: {
+                  diffm
+                },
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Cancellation will be accepted after ${diffh} hour(s)`,
+                template: 'alert.activity.hourToStartCancel',
+                value: {
+                  diffh
+                },
                 type: 'warning'
               })
             } else {
               this.alerts.push({
                 toggle: true,
-                content: `Waiting cancellation`,
+                template: 'alert.activity.waitingStartCancel',
                 type: 'info'
               })
             }
@@ -218,7 +235,7 @@ export default {
             // 已经结束报名
             this.alerts.push({
               toggle: true,
-              content: `Cancellation is no longer accepted`,
+              template: `alert.activity.endCancel`,
               type: 'info'
             })
           } else {
@@ -227,19 +244,25 @@ export default {
             if (diffh == 0) {
               this.alerts.push({
                 toggle: true,
-                content: `Cancellation is not accepted ends after ${diffm} minute(s)`,
+                template: 'alert.activity.minuteToEndCancel',
+                value: {
+                  diffm
+                },
                 type: 'warning'
               })
             } else if (diffh <= 2) {
               this.alerts.push({
                 toggle: true,
-                content: `Cancellation is not accepted ends after ${diffh} hour(s)`,
+                template: 'alert.activity.hourToEndCancel',
+                value: {
+                  diffh
+                },
                 type: 'warning'
               })
             } else {
               this.alerts.push({
                 toggle: true,
-                content: `Cancellation is accepted now`,
+                template: 'alert.activity.atCancel',
                 type: 'warning'
               })
             }

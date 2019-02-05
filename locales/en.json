@@ -25,6 +25,43 @@
         },
         "mine": "My domain"  
     },
+    "alert": {
+        "activity": {
+            "shortAcceptTime": "Please pay attention to the short time of accepting registration.",
+            "minuteToStartAccept": "Acceptance begins after {diffm} minute(s)",
+            "hourToStartAccept": "Acceptance begins after {diffh} hour(s)",
+            "waitingStartAccept": "Waiting acceptance",
+            "minuteToEndAccept": "Acceptance begins after {diffm} minute(s)",
+            "hourToEndAccept": "Acceptance begins after {diffh} hour(s)",
+            "waitingEndAccept": "Waiting acceptance",
+            "endAccept": "Acceptance has ended",
+            "atAccept": "Registering",
+            "shortCancelTime": "Please pay attention to the short time of Cancelling registration.",
+            "minuteToStartCancel": "Cancellation begins after {diffm} minute(s)",
+            "hourToStartCancel": "Cancellation begins after {diffh} hour(s)",
+            "waitingStartCancel": "Waiting Cancellation",
+            "minuteToEndCancel": "Cancellation begins after {diffm} minute(s)",
+            "hourToEndCancel": "Cancellation begins after {diffh} hour(s)",
+            "waitingEndCancel": "Waiting Cancellation",
+            "endCancel": "Cancellation has ended",
+            "atCancel": "Cancelling"
+        }
+    },
+    "field": {
+        "profile": {
+            "nickname": "Nickname",
+            "email": "Email",
+            "locale": "Preferred language"
+        },
+        "activity": {
+            "acceptStart": "Appointment Starts At",
+            "acceptEnd": "Appointment Deadline",
+            "cancelStart": "Cancellation Accepting Starts At",
+            "cancelEnd": "Cancellation Deadline",
+            "activityStart": "Activity Starts At",
+            "activityEnd": "Activity Ends At",
+            "limit": "Enrollment limitation"
+        },
         "domain": {
             "name": "Domain name",
             "type": {
@@ -32,7 +69,9 @@
                 "project": "Project Domain",
                 "department": "Department Domain",
                 "course": "Course Domain"
-            }
+            },
+            "join": "Join",
+            "quit": "Quit"
         }
     }
 }
