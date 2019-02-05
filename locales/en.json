@@ -18,6 +18,21 @@
         "update": "Update Profile",
         "reset": "Reset"
     },
+    "domain": {
+        "create": {
+            "activator": "Create domain",
+            "title": "A new domain!"
+        },
+        "mine": "My domain"  
+    },
+        "domain": {
+            "name": "Domain name",
+            "type": {
+                "activity": "Activity Domain",
+                "project": "Project Domain",
+                "department": "Department Domain",
+                "course": "Course Domain"
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   v-toolbar(flat dark color="primary")
-    v-toolbar-title Domains
+    v-toolbar-title {{ $t('domain.mine') }}
     v-spacer
     v-autocomplete(
       v-model="model"
@@ -40,16 +40,16 @@ div
           v-icon mdi-coin
     v-spacer
     v-dialog(v-model="dialog" width="30%")
-      v-btn(slot="activator" color="red lighten-2" dark) New domain
+      v-btn(slot="activator" color="red lighten-2" dark) {{ $t('domain.create.activator') }}
       v-card
-        v-card-title.headline.blue(primary-title) A new domain!
+        v-card-title.headline.blue(primary-title) {{ $t('domain.create.title') }}
         v-card-text
           v-form(ref="form" v-model="valid")
             v-text-field(
               v-model="name"
               :rules="nameRules"
               :counter="16"
-              label="Name"
+              :label="$t('field.domain.name')"
               required
             )
             v-radio-group(
@@ -58,7 +58,7 @@ div
               v-radio(
                 v-for="item in types"
                 :key="item.value"
-                :label="item.label"
+                :label="$t(item.label)"
                 :value="item.value"
                 :disabled="item.disabled"
               )
@@ -101,29 +101,29 @@ export default {
       domains: [],
       types: [
         {
-          label: '课程域',
+          label: 'field.domain.type.course',
           value: 0,
           disabled: true
         },
         {
-          label: '部门域',
+          label: 'field.domain.type.department',
           value: 1,
           disabled: true
         },
         {
-          label: '项目域',
+          label: 'field.domain.type.project',
           value: 2,
-          disabled: false
+          disabled: true
         },
         {
-          label: '活动域',
+          label: 'field.domain.type.activity',
           value: 3,
           disabled: false
         }
       ],
       dialog: false,
       name: '',
-      radio: 2,
+      radio: 3,
       valid: true,
       loading: true,
       keyword: '',
