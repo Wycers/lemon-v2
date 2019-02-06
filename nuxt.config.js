@@ -57,7 +57,9 @@ module.exports = {
   ** Environment 
   */
   env: {
-    baseUrl: process.env.LEMON_ADDRESS || 'http://localhost:3000'
+    baseUrl: process.env.LEMON_HOST && process.env.LEMON_PORT
+      ? `http://${process.env.LEMON_HOST}:${process.env.LEMON_PORT}`
+      : 'http://localhost:3000'
   },
   /*
   ** Build configuration
