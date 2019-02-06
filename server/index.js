@@ -77,8 +77,8 @@ app.use(router.routes()).use(router.allowedMethods())
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 
-const host = process.env.LEMON_HOST || '127.0.0.1'
-const port = process.env.LEMON_PORT || 3000
+const host = serverConfig.host
+const port = serverConfig.port
 
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js')

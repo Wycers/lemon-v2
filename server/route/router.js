@@ -31,7 +31,6 @@ module.exports = () => {
   router.post('/profile', App.hasToken, User.MountUser, User.setProfile)
 
   // qiniu
-  router.post('/qiniu/callback', Qiniu.callback)
   router.post('/resource/upload', Qiniu.resourceUpload)
   router.post('/resource/callback', Qiniu.resourceCallback)
 
