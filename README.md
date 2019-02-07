@@ -33,7 +33,7 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 - [ ] 绑定CAS账号
 - [ ] 脚注
 - [x] Docker部署
-- [ ] Docker-compose
+- [x] Docker-compose
 - [ ] 域 - 问卷功能
 - [ ] 域 - 工作流功能
 - [ ] 域 - 资源功能
