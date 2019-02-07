@@ -328,7 +328,7 @@ exports.removeUser = async (ctx, next) => {
   }
 }
 
-import config from '../config'
+const config = require('../config')
 const cdnUrl = config.cdn.url
 exports.setAvatar = async (ctx, next) => {
   const body = ctx.request.body || {}

@@ -4,10 +4,8 @@ var xss = require('xss')
 var uuid = require('uuid')
 var mongoose = require('mongoose')
 var User = mongoose.model('User')
-var userHelper = require('../dbhelper/userHelper')
-import config from '../config'
 var { pick } = require('../utils/select')
-// import userHelper from '../dbhelper/userHelper'
+const config = require('../config.js')
 const cdnurl = config.cdn.url
 /**
  * 注册新用户
@@ -142,41 +140,6 @@ exports.signout = async (ctx, next) => {
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
-exports.users = async (ctx, next) => {
-  var data = await userHelper.findAllUsers()
-  // var obj = await userHelper.findByPhoneNumber({phoneNumber : '13525584568'})
-  // console.log('obj=====================================>'+obj)
-
-  ctx.body = {
-    success: true,
-    data
-  }
-}
-exports.addUser = async (ctx, next) => {
-  var user = new User({
-    nickname: '测试用户',
-    avatar: 'http://cdn.wycer.cn/avatar/f6dc2fa4-6e75-4ab0-904b-519983d38905',
-    // phoneNumber: xss('13800138000'),
-    verifyCode: '5896',
-    token: uuid.v4()
-  })
-  var user2 = await userHelper.addUser(user)
-  if (user2) {
-    ctx.body = {
-      success: true,
-      data: user2
-    }
-  }
-}
-exports.deleteUser = async (ctx, next) => {
-  // const phoneNumber = xss(ctx.request.body.phoneNumber.trim())
-  // console.log(phoneNumber)
-  // var data = await userHelper.deleteUser({ phoneNumber })
-  ctx.body = {
-    success: true,
-    data
-  }
-}
 
 exports.setAvatar = async (ctx, next) => {
   const username = ctx.request.body.username
