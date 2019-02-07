@@ -1,6 +1,6 @@
 'use strict'
 
-import config from '../config'
+const config = require('../config')
 const ratelimit = require('koa-ratelimit')
 const Redis = require('ioredis')
 const limiter = ratelimit({

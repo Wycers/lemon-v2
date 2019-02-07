@@ -62,10 +62,5 @@ module.exports = () => {
   router.post('/folder/:folderId/upload', Qiniu.folderUpload)
   router.post('/folder/callback', Qiniu.folderCallback)
 
-  // DB Interface test
-  router.get('/test/user/users', User.users)
-  router.post('/test/user/add', User.addUser)
-  router.post('/test/user/delete', User.deleteUser)
-
   return router
 }

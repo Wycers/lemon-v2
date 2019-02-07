@@ -37,10 +37,10 @@ div
       locale="zh-cn"
     )
 </template>
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import moment from 'moment'
-export default Vue.extend({
+export default {
   props: {
     field: {
       type: String,
@@ -82,5 +82,5 @@ export default Vue.extend({
     this.time = moment(this.datetime).format('HH:mm')
     moment.locale('zh-cn')
   }
-})
+}
 </script>

@@ -1,11 +1,12 @@
 'use strict'
 
-import serverConfig from './config'
+const server = require('./config.js')
 const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
-const mongo_host = serverConfig.mongo.host
-const db = `mongodb://${mongo_host}:27017,${mongo_host}:27018,${mongo_host}:27019/lemon?replicaSet=rs`
+const mongo_host = server.mongo.host
+const mongo_port = server.mongo.port
+const db = `mongodb://${mongo_host}:${mongo_port}/lemon?replicaSet=rs`
 
 /**
  * mongoose连接数据库
@@ -77,8 +78,8 @@ app.use(router.routes()).use(router.allowedMethods())
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 
-const host = serverConfig.host
-const port = serverConfig.port
+const host = server.host
+const port = server.port
 
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js')

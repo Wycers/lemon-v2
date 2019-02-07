@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   qiniu: {
     accessKey: process.env.LEMON_QINIU_AK,
     secretKey: process.env.LEMON_QINIU_SK

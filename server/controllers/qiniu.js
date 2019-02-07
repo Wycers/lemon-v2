@@ -1,4 +1,4 @@
-import config from '../config'
+const config = require('../config')
 var qiniu = require('qiniu')
 var uuid = require('uuid')
 var xss = require('xss')
